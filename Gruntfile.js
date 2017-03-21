@@ -9,9 +9,14 @@ module.exports = function(grunt) {
           dest: "dist"
         }],
         options: {
-          module: "commonjs",
-          target: "es6",
-          sourceMap: false
+          "target": "es6",
+          "module": "commonjs",
+          "outDir": "dist",
+          "emitDecoratorMetadata": true,
+          "experimentalDecorators": true,
+          "lib": [
+            "es6"
+          ]
         }
       }
     },
