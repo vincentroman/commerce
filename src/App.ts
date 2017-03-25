@@ -1,21 +1,20 @@
+import "reflect-metadata";
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import "reflect-metadata";
-import { createConnection } from "typeorm";
+import { createConnection, Connection } from "typeorm";
+import { Config } from './util/Config';
 
 import ProductRouter from './router/ProductRouter';
 
-import { Product } from './entity/Product';
-
 class App {
     public express: express.Application;
-    db: any;
 
     constructor() {
         this.express = express();
-        this.setupMiddleware();
-        this.setupRoutes();
-        this.setupOrm();
+        this.setupOrm().then(connection => {
+            this.setupMiddleware();
+            this.setupRoutes();
+        }).catch(error => console.log("TypeORM connection error: ", error));
     }
 
     private setupMiddleware(): void {
@@ -34,24 +33,13 @@ class App {
         this.express.use('/api/v1/product', ProductRouter);
     }
 
-    private setupOrm(): void {
-        createConnection({
-            driver: {
-                type: "mysql",
-                host: "localhost",
-                port: 3306,
-                username: "root",
-                password: "admin",
-                database: "test"
-            },
+    private async setupOrm(): Promise<Connection> {
+        return createConnection({
+            driver: Config.getInstance().get("database"),
             entities: [
-                Product
+                __dirname + "/entity/*.js"
             ],
             autoSchemaSync: true
-        }).then(connection => {
-            this.db = connection;
-        }).catch(error => {
-            console.log(error);
         });
     }
 }
