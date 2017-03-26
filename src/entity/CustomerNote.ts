@@ -6,4 +6,14 @@ import { Customer } from "./Customer";
 export class CustomerNote extends DbEntity {
     @ManyToOne(type => Customer)
     customer: Customer;
+
+    public serialize(): Object {
+        return {
+            uuid: this.uuid
+        };
+    }
+
+    protected deserialize(o: Object): void {
+        this.uuid = o['uuid'];
+    }
 }

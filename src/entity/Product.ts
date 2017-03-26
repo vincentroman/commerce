@@ -9,4 +9,16 @@ export class Product extends DbEntity {
 
     @OneToMany(type => ProductVariant, variant => variant.product)
     variants: ProductVariant[];
+
+    public serialize(): Object {
+        return {
+            uuid: this.uuid,
+            title: this.title
+        };
+    }
+
+    protected deserialize(o: Object): void {
+        this.uuid = o['uuid'];
+        this.title = o['title'];
+    }
 }

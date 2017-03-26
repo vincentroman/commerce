@@ -9,15 +9,20 @@ export class Config {
         if (Config.INSTANCE) {
             throw new Error("Call Config.getInstance() instead!");
         }
-        this.loadConfig();
+        let filePath: string = path.join(process.cwd(), "./config.json");
+        this.loadConfig(filePath);
     }
 
     public get(key: string): any {
         return this.config[key];
     }
 
-    private loadConfig(): void {
-        let filePath: string = path.join(process.cwd(), "./config.json");;
+    public loadTestConfig(): void {
+        let filePath: string = path.join(process.cwd(), "./test/config.test.json");
+        this.loadConfig(filePath);
+    }
+
+    private loadConfig(filePath: string): void {
         console.log("Loading config from " + filePath);
         let buffer: string = fs.readFileSync(filePath, "utf8");
         try {

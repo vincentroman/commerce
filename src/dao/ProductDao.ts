@@ -8,4 +8,13 @@ export class ProductDao extends Dao<Product> {
     protected getRepository(): Repository<Product> {
         return this.getEm().getRepository(Product);
     }
+
+    public async getAll(): Promise<Product[]> {
+        return this.getRepository().find(undefined, {
+            alias: "product",
+            orderBy: {
+                title: "ASC"
+            }
+        });
+    }
 }

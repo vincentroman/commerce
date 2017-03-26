@@ -11,9 +11,13 @@ export abstract class Dao<T extends DbEntity> {
         return this.getRepository().findOne({uuid: uuid});
     }
 
+    public async getAll(): Promise<T[]> {
+        return this.getRepository().find();
+    }
+
     public async save(o: T): Promise<T> {
         if (!o.uuid) {
-            o.uuid = uuid(); // TODO Check is exists
+            o.uuid = uuid(); // TODO Check if exists
         }
         return this.getRepository().persist(o);
     }

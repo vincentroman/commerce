@@ -1,40 +1,58 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
+import { BaseRouter } from "./BaseRouter";
 
 import { Product } from '../entity/Product';
 import { ProductDao } from '../dao/ProductDao';
 
-class ProductRouter {
-    router: Router;
-
-    constructor() {
-        this.router = Router();
-        this.init();
+class ProductRouter extends BaseRouter {
+    protected init(): void {
+        this.router.get('/get/:id', this.getOne.bind(this));
+        this.router.get('/list', this.list.bind(this));
+        this.router.delete('/delete/:id', this.delete.bind(this));
+        this.router.put('/save', this.save.bind(this));
     }
 
-    private init() {
-        this.router.get('/', this.getAll.bind(this));
-        this.router.get('/save', this.save.bind(this));
+    private getOne(req: Request, res: Response, next: NextFunction): void {
+        let productDao: ProductDao = Container.get(ProductDao);
+        let id = req.params.id;
+        productDao.getByUuid(id).then(product => {
+            res.send(product.serialize());
+        }).catch(e => this.notFound(res));
+    }
+
+    private list(req: Request, res: Response, next: NextFunction): void {
+        let productDao: ProductDao = Container.get(ProductDao);
+        productDao.getAll().then(products => {
+            res.send(products.map(product => product.serialize()));
+        });
+    }
+
+    private delete(req: Request, res: Response, next: NextFunction): void {
+        let productDao: ProductDao = Container.get(ProductDao);
+        let id = req.params.id;
+        productDao.getByUuid(id).then(product => {
+            productDao.delete(product).then(product => {
+                this.ok(res);
+            });
+        }).catch(e => this.notFound(e));
     }
 
     private save(req: Request, res: Response, next: NextFunction): void {
         let productDao: ProductDao = Container.get(ProductDao);
-
-        let p1 = new Product();
-        p1.title = "1, 2, polizei";
-
-        let p2 = new Product();
-        p2.title = "3, 4, Grenadier!";
-
-        productDao.save(p1);
-        productDao.save(p2);
-
-        res.send({});
-    }
-
-    private getAll(req: Request, res: Response, next: NextFunction): void {
-        let all = ['1abc'];
-        res.send(all);
+        let product: Product = new Product(req.body);
+        if (product.uuid) {
+            productDao.getByUuid(product.uuid).then(loaded => {
+                product.id = loaded.id;
+                productDao.save(product).then(product => {
+                    this.saved(res, product);
+                });
+            }).catch(e => this.notFound(res));
+        } else {
+            productDao.save(product).then(product => {
+                this.saved(res, product);
+            });
+        }
     }
 }
 
