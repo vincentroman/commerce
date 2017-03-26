@@ -4,12 +4,10 @@ import { DbEntity } from "./DbEntity";
 @Entity()
 export class User extends DbEntity {
     public serialize(): Object {
-        return {
-            uuid: this.uuid
-        };
+        return Object.assign(super.serialize(), {
+        });
     }
 
-    protected deserialize(o: Object): void {
-        this.uuid = o['uuid'];
+    public  deserialize(o: Object): void {
     }
 }

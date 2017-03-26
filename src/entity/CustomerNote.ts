@@ -8,12 +8,10 @@ export class CustomerNote extends DbEntity {
     customer: Customer;
 
     public serialize(): Object {
-        return {
-            uuid: this.uuid
-        };
+        return Object.assign(super.serialize(), {
+        });
     }
 
-    protected deserialize(o: Object): void {
-        this.uuid = o['uuid'];
+    public  deserialize(o: Object): void {
     }
 }

@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 import { createConnection, Connection } from "typeorm";
 import { Config } from './util/Config';
 
+import CustomerRouter from './router/CustomerRouter';
 import ProductRouter from './router/ProductRouter';
 
 export class App extends EventEmitter {
@@ -39,6 +40,7 @@ export class App extends EventEmitter {
             });
         });
         this.express.use('/', router);
+        this.express.use('/api/v1/customer', CustomerRouter);
         this.express.use('/api/v1/product', ProductRouter);
     }
 
@@ -50,7 +52,7 @@ export class App extends EventEmitter {
                 __dirname + "/entity/*.ts"
             ],
             logging: {
-                logQueries: true
+                //logQueries: true
             },
             autoSchemaSync: true
         });

@@ -2,10 +2,10 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
 import { BaseRouter } from "./BaseRouter";
 
-import { Product } from '../entity/Product';
-import { ProductDao } from '../dao/ProductDao';
+import { Customer } from '../entity/Customer';
+import { CustomerDao } from '../dao/CustomerDao';
 
-class ProductRouter extends BaseRouter {
+class CustomerRouter extends BaseRouter {
     protected init(): void {
         this.router.get('/get/:id', this.getOne.bind(this));
         this.router.get('/list', this.list.bind(this));
@@ -14,46 +14,46 @@ class ProductRouter extends BaseRouter {
     }
 
     private getOne(req: Request, res: Response, next: NextFunction): void {
-        let dao: ProductDao = Container.get(ProductDao);
+        let dao: CustomerDao = Container.get(CustomerDao);
         let id = req.params.id;
-        dao.getByUuid(id).then(product => {
-            res.send(product.serialize());
+        dao.getByUuid(id).then(customer => {
+            res.send(customer.serialize());
         }).catch(e => this.notFound(res));
     }
 
     private list(req: Request, res: Response, next: NextFunction): void {
-        let dao: ProductDao = Container.get(ProductDao);
-        dao.getAll().then(products => {
-            res.send(products.map(product => product.serialize()));
+        let dao: CustomerDao = Container.get(CustomerDao);
+        dao.getAll().then(customers => {
+            res.send(customers.map(customer => customer.serialize()));
         });
     }
 
     private delete(req: Request, res: Response, next: NextFunction): void {
-        let dao: ProductDao = Container.get(ProductDao);
+        let dao: CustomerDao = Container.get(CustomerDao);
         let id = req.params.id;
-        dao.getByUuid(id).then(product => {
-            dao.delete(product).then(product => {
+        dao.getByUuid(id).then(customer => {
+            dao.delete(customer).then(customer => {
                 this.ok(res);
             });
         }).catch(e => this.notFound(e));
     }
 
     private save(req: Request, res: Response, next: NextFunction): void {
-        let dao: ProductDao = Container.get(ProductDao);
+        let dao: CustomerDao = Container.get(CustomerDao);
         if (req.body.uuid) {
-            dao.getByUuid(req.body.uuid).then(product => {
-                product.deserialize(req.body)
-                dao.save(product).then(product => {
-                    this.saved(res, product);
+            dao.getByUuid(req.body.uuid).then(customer => {
+                customer.deserialize(req.body)
+                dao.save(customer).then(customer => {
+                    this.saved(res, customer);
                 });
             }).catch(e => this.notFound(res));
         } else {
-            let product: Product = new Product(req.body);
-            dao.save(product).then(product => {
-                this.saved(res, product);
+            let customer: Customer = new Customer(req.body);
+            dao.save(customer).then(customer => {
+                this.saved(res, customer);
             });
         }
     }
 }
 
-export default new ProductRouter().router;
+export default new CustomerRouter().router;

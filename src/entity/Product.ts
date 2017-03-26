@@ -11,14 +11,12 @@ export class Product extends DbEntity {
     variants: ProductVariant[];
 
     public serialize(): Object {
-        return {
-            uuid: this.uuid,
+        return Object.assign(super.serialize(), {
             title: this.title
-        };
+        });
     }
 
-    protected deserialize(o: Object): void {
-        this.uuid = o['uuid'];
+    public deserialize(o: Object): void {
         this.title = o['title'];
     }
 }
