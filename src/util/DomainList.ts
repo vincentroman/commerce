@@ -2,15 +2,19 @@ export class DomainList {
     private static LOCAL_DOMAINS: string = "(.*\\.)?localhost|(.*)?\\.local";
     private static DOMAIN_PREFIX: string = "(.*\\.)?";
 
-    private domains: string[] = [];
-    private strict: boolean = false;
+    domains: string[] = [];
+    strict: boolean = true;
 
-    constructor(strict?: boolean, regex?: string) {
+    constructor(strict?: boolean, regex?: RegExp|string) {
         if (strict) {
             this.strict = strict;
         }
         if (regex) {
-            this.domains = this.extractDomains(regex);
+            if (regex instanceof RegExp) {
+                this.domains = this.extractDomains(regex.source);
+            } else {
+                this.domains = this.extractDomains(regex);
+            }
         }
     }
 
@@ -24,20 +28,20 @@ export class DomainList {
         if (this.strict && domain.indexOf(".") !== domain.lastIndexOf(".")) {
             throw new Error("There must be exactly one dot (.) in the domain name");
         }
-        if (domain.match(".*[\\*\\[\\]\\{\\}\\(\\)\\?\\+].*").length > 0) {
+        if (new RegExp(".*[\\*\\[\\]\\{\\}\\(\\)\\?\\+].*").test(domain)) {
             throw new Error("Invalid characters in domain name");
         }
         this.domains.push(domain);
     }
 
-    public getRegex(): string {
+    public getRegex(): RegExp {
         let regex: string = "";
         regex += "^" + DomainList.LOCAL_DOMAINS;
         this.domains.forEach(domain => {
             regex += "|" + DomainList.DOMAIN_PREFIX + domain.replace(".", "\\.");
         });
         regex += "$";
-        return regex;
+        return new RegExp(regex);
     }
 
     private extractDomains(regex: string): string[] {
@@ -53,7 +57,7 @@ export class DomainList {
         if (regex.endsWith("$")) {
             regex = regex.substr(0, regex.length-1);
         }
-        let tokens: string[] = regex.split("\\|");
+        let tokens: string[] = regex.split("|");
         tokens.forEach(token => {
             if (token !== undefined && token != null && token !== "") {
                 if (token.startsWith(DomainList.DOMAIN_PREFIX)) {

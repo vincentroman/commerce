@@ -25,7 +25,7 @@ describe("LicenseKey", () => {
             key.uuid = uuid();
             key.onlineVerification = false;
             let keyString: string = key.toString(privateKey);
-            console.log(keyString);
+            expect(keyString).to.be.not.empty;
         });
     });
 
