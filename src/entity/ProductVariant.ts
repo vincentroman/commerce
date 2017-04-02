@@ -13,5 +13,6 @@ export class ProductVariant extends DbEntity {
     }
 
     public  deserialize(o: Object): void {
+        // TODO
     }
 }

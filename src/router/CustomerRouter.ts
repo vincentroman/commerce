@@ -42,7 +42,7 @@ class CustomerRouter extends BaseRouter {
         let dao: CustomerDao = Container.get(CustomerDao);
         if (req.body.uuid) {
             dao.getByUuid(req.body.uuid).then(customer => {
-                customer.deserialize(req.body)
+                customer.deserialize(req.body);
                 dao.save(customer).then(customer => {
                     this.saved(res, customer);
                 });

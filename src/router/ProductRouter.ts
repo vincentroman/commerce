@@ -42,7 +42,7 @@ class ProductRouter extends BaseRouter {
         let dao: ProductDao = Container.get(ProductDao);
         if (req.body.uuid) {
             dao.getByUuid(req.body.uuid).then(product => {
-                product.deserialize(req.body)
+                product.deserialize(req.body);
                 dao.save(product).then(product => {
                     this.saved(res, product);
                 });

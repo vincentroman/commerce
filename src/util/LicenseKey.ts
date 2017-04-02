@@ -16,9 +16,6 @@ export class LicenseKey {
     uuid: string = "";
     onlineVerification: boolean = false;
 
-    constructor() {
-    }
-
     /**
      * Creates a signed license key from the provided details.
      * @param privateKey

@@ -13,5 +13,6 @@ export class CustomerNote extends DbEntity {
     }
 
     public  deserialize(o: Object): void {
+        // TODO
     }
 }

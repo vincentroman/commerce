@@ -21,7 +21,7 @@ export abstract class DbEntity {
         }
     }
 
-    public serialize(): Object{
+    public serialize(): Object {
         return {
             uuid:       this.uuid,
             createDate: moment(this.createDate).format("YYYY-MM-DD HH:mm:ss"),
