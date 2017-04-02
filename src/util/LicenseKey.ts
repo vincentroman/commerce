@@ -1,6 +1,5 @@
 import * as moment from 'moment';
 import * as crypto from 'crypto';
-import * as NodeRSA from 'node-rsa';
 
 export class LicenseKey {
     public static readonly TYPE_TRIAL: string = "trial";
@@ -17,11 +16,14 @@ export class LicenseKey {
     uuid: string = "";
     onlineVerification: boolean = false;
 
-    constructor(licenseKey?: string) {
-
+    constructor() {
     }
 
-    public toString(): string {
+    /**
+     * Creates a signed license key from the provided details.
+     * @param privateKey
+     */
+    public toString(privateKey: string): string {
         let details = {
             version:            2,
             description:        this.description,
@@ -29,14 +31,13 @@ export class LicenseKey {
             uuid:               this.uuid,
             onlineVerification: this.onlineVerification,
             product:            this.product,
-            issueDate:          moment(this.issueDate).format(""),
-            expiryDate:         moment(this.expiryDate).format(""),
+            issueDate:          moment(this.issueDate).format("yyyy-MM-dd"),
+            expiryDate:         moment(this.expiryDate).format("yyyy-MM-dd"),
             subject:            this.subject,
             owner:              this.owner
         };
         let detailsBase64: string = new Buffer(JSON.stringify(details)).toString('base64');
-        let signature: string = LicenseKey.getSignature(detailsBase64, "");
-        console.log("------------_> " + signature);
+        let signature: string = LicenseKey.getSignature(detailsBase64, privateKey);
         let result = {
             signature: signature,
             details: detailsBase64
@@ -65,5 +66,24 @@ export class LicenseKey {
         let sign = crypto.createSign('RSA-SHA1');
         sign.update(s);
         return sign.sign(privateKey, 'base64');
+    }
+
+    public static factory(licenseKey: string, publicKey: string): LicenseKey {
+        let json: any = JSON.parse(Buffer.from(licenseKey, 'base64').toString());
+        if (!LicenseKey.isSignatureValid(json.details, json.signature, publicKey)) {
+            throw new Error("Invalid signature");
+        }
+        let detailsDecoded: any = JSON.parse(Buffer.from(json.details, 'base64').toString());
+        let key: LicenseKey = new LicenseKey();
+        key.description = detailsDecoded.description;
+        key.expiryDate = moment(detailsDecoded.expiryDate, "YYYY-MM-DD").toDate();
+        key.issueDate = moment(detailsDecoded.issueDate, "YYYY-MM-DD").toDate();
+        key.onlineVerification = detailsDecoded.onlineVerification;
+        key.owner = detailsDecoded.owner;
+        key.product = detailsDecoded.product;
+        key.subject = detailsDecoded.subject;
+        key.type = detailsDecoded.type;
+        key.uuid = detailsDecoded.uuid;
+        return key;
     }
 }
