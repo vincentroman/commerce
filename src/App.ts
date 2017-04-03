@@ -5,8 +5,14 @@ import * as bodyParser from 'body-parser';
 import { createConnection, Connection } from "typeorm";
 import { Config } from './util/Config';
 
+import BrokerRouter from './router/BrokerRouter';
 import CustomerRouter from './router/CustomerRouter';
+import CustomerNoteRouter from './router/CustomerNoteRouter';
+import OrderItemRouter from './router/OrderItemRouter';
+import OrderRouter from './router/OrderRouter';
 import ProductRouter from './router/ProductRouter';
+import ProductVariantRouter from './router/ProductVariantRouter';
+import UserRouter from './router/UserRouter';
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
@@ -40,8 +46,14 @@ export class App extends EventEmitter {
             });
         });
         this.express.use('/', router);
+        this.express.use('/api/v1/broker', BrokerRouter);
         this.express.use('/api/v1/customer', CustomerRouter);
+        this.express.use('/api/v1/customernote', CustomerNoteRouter);
+        this.express.use('/api/v1/orderitem', OrderItemRouter);
+        this.express.use('/api/v1/order', OrderRouter);
         this.express.use('/api/v1/product', ProductRouter);
+        this.express.use('/api/v1/productvariant', ProductVariantRouter);
+        this.express.use('/api/v1/user', UserRouter);
     }
 
     private async setupOrm(): Promise<Connection> {
