@@ -10,10 +10,10 @@ export abstract class CrudRouter<TEntity extends DbEntity, TDao extends Dao<TEnt
     protected abstract createEntity(requestBody: any): TEntity;
 
     protected init(): void {
-        this.router.get('/get/:id', this.getOne.bind(this));
-        this.router.get('/list', this.list.bind(this));
-        this.router.delete('/delete/:id', this.delete.bind(this));
-        this.router.put('/save', this.save.bind(this));
+        this.addRouteGet('/get/:id', this.getOne);
+        this.addRouteGet('/list', this.list);
+        this.addRouteDelete('/delete/:id', this.delete);
+        this.addRoutePut('/save', this.save);
     }
 
     private getOne(req: Request, res: Response, next: NextFunction): void {

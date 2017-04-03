@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 import { createConnection, Connection } from "typeorm";
 import { Config } from './util/Config';
 
+import AuthRouter from './router/AuthRouter';
 import BrokerRouter from './router/BrokerRouter';
 import CustomerRouter from './router/CustomerRouter';
 import CustomerNoteRouter from './router/CustomerNoteRouter';
@@ -46,6 +47,7 @@ export class App extends EventEmitter {
             });
         });
         this.express.use('/', router);
+        this.express.use('/api/v1/auth', AuthRouter);
         this.express.use('/api/v1/broker', BrokerRouter);
         this.express.use('/api/v1/customer', CustomerRouter);
         this.express.use('/api/v1/customernote', CustomerNoteRouter);

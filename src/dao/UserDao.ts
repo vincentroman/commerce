@@ -8,4 +8,8 @@ export class UserDao extends Dao<User> {
     protected getRepository(): Repository<User> {
         return this.getEm().getRepository(User);
     }
+
+    public async getByEmail(email: string): Promise<User> {
+        return this.getRepository().findOne({email: email});
+    }
 }
