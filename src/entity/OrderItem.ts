@@ -12,9 +12,6 @@ export class OrderItem extends DbEntity {
     productVariant: ProductVariant;
 
     @Column()
-    referenceId: string;
-
-    @Column()
     quantity: number;
 
     public serialize(): Object {
