@@ -171,6 +171,7 @@ describe("OrderNotificationMapper", () => {
                 done();
             }).catch((e) => done(e));
         });
+
         it("Should map a DNN Store Order correctly", (done) => {
             let input = '<?xml version="1.0" encoding="utf-8" ?>'+
                 '<order-notification>'+
@@ -233,6 +234,28 @@ describe("OrderNotificationMapper", () => {
                 expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
                 done();
             }).catch((e) => done(e));
+        });
+
+        it("Should reject for invalid product name", (done) => {
+            let input = {
+                "id": "WEW150414-9157-20105",
+                "items": [
+                    {
+                        "productName": "wpac-x-ticket",
+                        "priceTotalUSD": 22.81,
+                        "quantity": 1
+                    }
+                ],
+                "customer": {
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "company": "",
+                    "email": "no-reply@weweave.net"
+                }
+            };
+            OrderNotificationMapper.map(input, broker2).then((order) => {
+                done(new Error("Should not get here"));
+            }).catch((e) => done());
         });
     });
 });
