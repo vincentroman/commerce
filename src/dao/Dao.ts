@@ -30,5 +30,9 @@ export abstract class Dao<T extends DbEntity> {
         return getEntityManager();
     }
 
+    public async removeAll(): Promise<void> {
+        return this.getRepository().clear();
+    }
+
     protected abstract getRepository(): Repository<T>;
 }

@@ -1,8 +1,16 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
+import { Container } from "typedi";
 
+import { Broker } from "../src/entity/Broker";
 import { Order } from "../src/entity/Order";
+import { Product } from "../src/entity/Product";
+import { ProductVariant } from "../src/entity/ProductVariant";
 import { OrderNotificationMapper } from "../src/util/OrderNotificationMapper";
+import { BrokerDao } from "../src/dao/BrokerDao";
+import { ProductDao } from "../src/dao/ProductDao";
+import { ProductVariantDao } from "../src/dao/ProductVariantDao";
+import { BrokerProductVariantDao } from "../src/dao/BrokerProductVariantDao";
 
 const expect = chai.expect;
 
@@ -27,6 +35,106 @@ const expect = chai.expect;
  */
 
 describe("OrderNotificationMapper", () => {
+    let broker1: Broker, broker2: Broker;
+
+    before((done) => {
+        let brokerDao: BrokerDao = Container.get(BrokerDao);
+        let productDao: ProductDao = Container.get(ProductDao);
+        let productVariantDao: ProductVariantDao = Container.get(ProductVariantDao);
+        let bpvDao: BrokerProductVariantDao = Container.get(BrokerProductVariantDao);
+        broker1 = new Broker();
+        broker1.mappingTemplate = JSON.stringify({
+            "id": {
+                "path": "order-notification.order._attributes.id"
+            },
+            "customer": {
+                "path": "order-notification.order.customer",
+                "nested": {
+                    "firstname": {
+                        "path": "address.first-name._text"
+                    },
+                    "lastname": {
+                        "path": "address.last-name._text"
+                    },
+                    "company": {
+                        "path": "address.company._text"
+                    },
+                    "email": {
+                        "path": "address.email._text"
+                    }
+                }
+            },
+            "items": {
+                "path": "order-notification.order.order-item",
+                "nested": {
+                    "id": "product._attributes.id",
+                    "quantity": "quantity._text"
+                }
+            }
+        });
+        broker1.name = "DNN Store";
+        broker2 = new Broker();
+        broker2.mappingTemplate = JSON.stringify({
+            "id": {
+                "path": "id"
+            },
+            "customer": {
+                "path": "customer",
+                "nested": {
+                    "firstname": {
+                        "path": "firstName"
+                    },
+                    "lastname": {
+                        "path": "lastName"
+                    },
+                    "company": {
+                        "path": "company"
+                    },
+                    "email": {
+                        "path": "email"
+                    }
+                }
+            },
+            "items": {
+                "path": "items",
+                "nested": {
+                    "id": "productName",
+                    "quantity": "quantity"
+                }
+            }
+        });
+        broker2.name = "FastSpring";
+        brokerDao.save(broker1).then(() => {
+            brokerDao.save(broker2).then(() => {
+                let p1: Product = new Product();
+                p1.title = "WP Ajaxify Comments";
+                productDao.save(p1).then(() => {
+                    let pv1: ProductVariant = new ProductVariant();
+                    pv1.product = p1;
+                    productVariantDao.save(pv1).then(() => {
+                        bpvDao.add(broker2, pv1, "wpac-support-ticket").then(() => {
+                            bpvDao.add(broker1, pv1, "55305-9").then(() => {
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    after((done) => {
+        Container.get(BrokerProductVariantDao).removeAll().then(() => {
+            Container.get(ProductVariantDao).removeAll().then(() => {
+                Container.get(ProductDao).removeAll().then(() => {
+                    Container.get(BrokerDao).removeAll().then(() => {
+                        done();
+                    });
+                });
+            });
+        });
+    });
+
     describe("map()", () => {
         it("Should map a FastSpring Order correctly", (done) => {
             let input = {
@@ -45,36 +153,7 @@ describe("OrderNotificationMapper", () => {
                     "email": "no-reply@weweave.net"
                 }
             };
-            let template = {
-                "id": {
-                    "path": "id"
-                },
-                "customer": {
-                    "path": "customer",
-                    "nested": {
-                        "firstname": {
-                            "path": "firstName"
-                        },
-                        "lastname": {
-                            "path": "lastName"
-                        },
-                        "company": {
-                            "path": "company"
-                        },
-                        "email": {
-                            "path": "email"
-                        }
-                    }
-                },
-                "items": {
-                    "path": "items",
-                    "nested": {
-                        "id": "productName",
-                        "quantity": "quantity"
-                    }
-                }
-            };
-            OrderNotificationMapper.map(input, template).then((order) => {
+            OrderNotificationMapper.map(input, broker2).then((order) => {
                 expect(order).to.be.not.null;
                 expect(order.referenceId).to.equal("WEW150414-9157-20105");
                 expect(order.customer).to.be.not.null;
@@ -87,6 +166,8 @@ describe("OrderNotificationMapper", () => {
                 expect(order.items).to.have.lengthOf(1);
                 expect(order.items[0].quantity).to.equal(1);
                 expect(order.items[0].productVariant).to.be.not.null;
+                expect(order.items[0].productVariant.product).to.be.not.null;
+                expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
                 done();
             }).catch((e) => done(e));
         });
@@ -135,38 +216,21 @@ describe("OrderNotificationMapper", () => {
                 '        <ip>208.79.252.140</ip>'+
                 '    </order>'+
                 '</order-notification>';
-            let template = {
-                "id": {
-                    "path": "order-notification.order._attributes.id"
-                },
-                "customer": {
-                    "path": "order-notification.order.customer",
-                    "nested": {
-                        "firstname": {
-                            "path": "address.first-name._text"
-                        },
-                        "lastname": {
-                            "path": "address.last-name._text"
-                        },
-                        "company": {
-                            "path": "address.company._text"
-                        },
-                        "email": {
-                            "path": "address.email._text"
-                        }
-                    }
-                },
-                "items": {
-                    "path": "order-notification.order.order-item",
-                    "nested": {
-                        "id": "product._attributes.id",
-                        "quantity": "quantity._text"
-                    }
-                }
-            };
-            OrderNotificationMapper.map(input, template).then((order) => {
+            OrderNotificationMapper.map(input, broker1).then((order) => {
                 expect(order).to.be.not.null;
-                // TODO
+                expect(order.referenceId).to.equal("1227037271-23207-250782");
+                expect(order.customer).to.be.not.null;
+                expect(order.customer.firstname).to.equal("Joe");
+                expect(order.customer.lastname).to.equal("Goe");
+                expect(order.customer.company).to.equal("DR");
+                expect(order.customer.email).to.equal("no-reply@weweave.net");
+                expect(order.items).to.be.not.null;
+                expect(order.items).to.be.instanceOf(Array);
+                expect(order.items).to.have.lengthOf(1);
+                expect(order.items[0].quantity).to.equal(2);
+                expect(order.items[0].productVariant).to.be.not.null;
+                expect(order.items[0].productVariant.product).to.be.not.null;
+                expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
                 done();
             }).catch((e) => done(e));
         });
