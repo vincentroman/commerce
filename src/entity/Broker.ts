@@ -6,7 +6,7 @@ export class Broker extends DbEntity {
     @Column()
     name: string;
 
-    @Column("text")
+    @Column("text", {nullable: true})
     mappingTemplate: string;
 
     public serialize(): Object {

@@ -10,6 +10,7 @@ import BrokerRouter from './router/BrokerRouter';
 import CustomerRouter from './router/CustomerRouter';
 import CustomerNoteRouter from './router/CustomerNoteRouter';
 import OrderItemRouter from './router/OrderItemRouter';
+import OrderNotificationRouter from './router/OrderNotificationRouter';
 import OrderRouter from './router/OrderRouter';
 import ProductRouter from './router/ProductRouter';
 import ProductVariantRouter from './router/ProductVariantRouter';
@@ -52,6 +53,7 @@ export class App extends EventEmitter {
         this.express.use('/api/v1/customer', CustomerRouter);
         this.express.use('/api/v1/customernote', CustomerNoteRouter);
         this.express.use('/api/v1/orderitem', OrderItemRouter);
+        this.express.use('/api/v1/ordernotification', OrderNotificationRouter);
         this.express.use('/api/v1/order', OrderRouter);
         this.express.use('/api/v1/product', ProductRouter);
         this.express.use('/api/v1/productvariant', ProductVariantRouter);

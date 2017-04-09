@@ -92,5 +92,19 @@ export abstract class BaseRouter {
         });
     }
 
+    protected badRequest(res: Response): void {
+        res.status(400).send({
+            message: "Bad Request",
+            status: res.status
+        });
+    }
+
+    protected internalServerError(res: Response): void {
+        res.status(500).send({
+            message: "Internal Server Error",
+            status: res.status
+        });
+    }
+
     protected abstract init(): void;
 }

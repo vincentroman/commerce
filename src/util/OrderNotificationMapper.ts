@@ -7,29 +7,36 @@ import { Customer } from '../entity/Customer';
 import { Order } from '../entity/Order';
 import { OrderItem } from '../entity/OrderItem';
 import { CustomerDao } from "../dao/CustomerDao";
+import { OrderDao } from "../dao/OrderDao";
 import { OrderItemDao } from "../dao/OrderItemDao";
 import { BrokerProductVariantDao } from "../dao/BrokerProductVariantDao";
 
 export class OrderNotificationMapper {
-    public static map(input: string|Object, broker: Broker): Promise<Order> {
+    public static map(input: string|Object, broker: Broker, persist?: boolean): Promise<Order> {
         return new Promise<Order>((resolve, reject) => {
             let convertedInput: Object = OrderNotificationMapper.getInputAsJson(input);
             let template = JSON.parse(broker.mappingTemplate);
             jsonMapper(convertedInput, template).then((result) => {
                 let order: Order = new Order();
+                order.broker = broker;
                 order.referenceId = result.id;
-                OrderNotificationMapper.getOrCreateCustomer(result.customer).then((customer) => {
+                OrderNotificationMapper.getOrCreateCustomer(result.customer, persist).then((customer) => {
                     order.customer = customer;
-                    OrderNotificationMapper.getOrderItems(broker, result.items).then((items) => {
+                    OrderNotificationMapper.getOrderItems(broker, result.items, persist).then((items) => {
                         order.items = items;
-                        resolve(order);
+                        if (persist) {
+                            let orderDao = Container.get(OrderDao);
+                            orderDao.save(order).then(order => resolve(order));
+                        } else {
+                            resolve(order);
+                        }
                     }).catch((e) => reject(e));
                 });
             }).catch((e) => reject(e));
         });
     }
 
-    private static async getOrCreateCustomer(json: any): Promise<Customer> {
+    private static async getOrCreateCustomer(json: any, persist?: boolean): Promise<Customer> {
         let customerDao: CustomerDao = Container.get(CustomerDao);
         let customer: Customer = await customerDao.getByEmail(json.email);
         return new Promise<Customer>((resolve, reject) => {
@@ -40,12 +47,18 @@ export class OrderNotificationMapper {
                 customer.company = json.company;
                 customer.email = json.email;
                 customer.country = json.country;
+                if (persist) {
+                    customerDao.save(customer).then(customer => resolve(customer));
+                } else {
+                    resolve(customer);
+                }
+            } else {
+                resolve(customer);
             }
-            resolve(customer);
         });
     }
 
-    private static async getOrderItems(broker: Broker, jsonItems: Array<any>): Promise<OrderItem[]> {
+    private static async getOrderItems(broker: Broker, jsonItems: Array<any>, persist?: boolean): Promise<OrderItem[]> {
         jsonItems = [].concat(jsonItems);
         let orderItemDao: OrderItemDao = Container.get(OrderItemDao);
         let brokerProductVariantDao: BrokerProductVariantDao = Container.get(BrokerProductVariantDao);
@@ -59,7 +72,11 @@ export class OrderNotificationMapper {
                     let item: OrderItem = new OrderItem();
                     item.productVariant = brokerProductVariant.productVariant;
                     item.quantity = parseInt(json.quantity);
-                    resolve(item);
+                    if (persist) {
+                        orderItemDao.save(item).then(item => resolve(item));
+                    } else {
+                        resolve(item);
+                    }
                 });
             });
         });

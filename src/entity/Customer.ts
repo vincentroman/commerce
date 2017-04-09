@@ -3,19 +3,19 @@ import { DbEntity } from "./DbEntity";
 
 @Entity()
 export class Customer extends DbEntity {
-    @Column()
+    @Column({nullable: true})
     company: string;
 
-    @Column()
+    @Column({nullable: true})
     firstname: string;
 
-    @Column()
+    @Column({nullable: true})
     lastname: string;
 
     @Column()
     email: string;
 
-    @Column()
+    @Column({nullable: true})
     country: string;
 
     public serialize(): Object {
