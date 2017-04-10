@@ -1,6 +1,7 @@
-import { Entity, Column } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn } from "typeorm";
 import { DbEntity } from "./DbEntity";
-import * as hashy from 'hashy';
+import * as hashy  from 'hashy';
+import { Customer } from "./Customer";
 
 @Entity()
 export class User extends DbEntity {
@@ -9,6 +10,10 @@ export class User extends DbEntity {
 
     @Column()
     password: string;
+
+    @OneToOne(type => Customer)
+    @JoinColumn()
+    customer: Customer;
 
     public async setPlainPassword(password: string): Promise<void> {
         let hash: string = await hashy.hash(password, 'bcrypt');

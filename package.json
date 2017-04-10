@@ -21,6 +21,7 @@
     "nodemailer": "^4.0.0",
     "reflect-metadata": "^0.1.10",
     "sqlite3": "^3.1.8",
+    "str1n9": "^1.0.6",
     "typedi": "^0.4.3",
     "typeorm": "0.0.11",
     "uuid": "^3.0.1",
