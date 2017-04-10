@@ -7,7 +7,7 @@ import { Broker } from "../src/entity/Broker";
 import { Order } from "../src/entity/Order";
 import { OrderItem } from "../src/entity/OrderItem";
 import { Product } from "../src/entity/Product";
-import { ProductVariant } from "../src/entity/ProductVariant";
+import { ProductVariant, ProductVariantType } from "../src/entity/ProductVariant";
 import { OrderNotificationMapper } from "../src/util/OrderNotificationMapper";
 import { BrokerDao } from "../src/dao/BrokerDao";
 import { OrderDao } from "../src/dao/OrderDao";
@@ -105,16 +105,17 @@ describe('Router '+endpoint, () => {
                 productDao.save(p1).then((p1) => {
                     let pv1: ProductVariant = new ProductVariant();
                     pv1.product = p1;
+                    pv1.type = ProductVariantType.LimitedLicense;
                     productVariantDao.save(pv1).then((pv1) => {
                         bpvDao.add(broker2, pv1, "wpac-support-ticket").then(() => {
                             bpvDao.add(broker1, pv1, "55305-9").then(() => {
                                 done();
-                            });
-                        });
-                    });
-                });
-            });
-        });
+                            }).catch(e => done(e));
+                        }).catch(e => done(e));
+                    }).catch(e => done(e));
+                }).catch(e => done(e));
+            }).catch(e => done(e));
+        }).catch(e => done(e));
     });
 
     afterEach(done => {
@@ -176,6 +177,9 @@ describe('Router '+endpoint, () => {
                     expect(order.items[0].quantity).to.be.equal(1);
                     expect(order.items[0].productVariant).to.be.not.null;
                     expect(order.items[0].productVariant).to.be.not.undefined;
+                    expect(order.items[0].productVariant.type).to.be.not.null;
+                    expect(order.items[0].productVariant.type).to.be.not.undefined;
+                    expect(order.items[0].productVariant.type).to.be.equal(ProductVariantType.LimitedLicense);
                     expect(order.items[0].productVariant.product).to.be.not.null;
                     expect(order.items[0].productVariant.product).to.be.not.undefined;
                     expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");

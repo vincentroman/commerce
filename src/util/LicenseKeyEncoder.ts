@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import * as crypto from 'crypto';
 
-export class LicenseKey {
+export class LicenseKeyEncoder {
     public static readonly TYPE_TRIAL: string = "trial";
     public static readonly TYPE_LIMITED: string = "limited";
     public static readonly TYPE_LIFETIME: string = "lifetime";
@@ -34,7 +34,7 @@ export class LicenseKey {
             owner:              this.owner
         };
         let detailsBase64: string = new Buffer(JSON.stringify(details)).toString('base64');
-        let signature: string = LicenseKey.getSignature(detailsBase64, privateKey);
+        let signature: string = LicenseKeyEncoder.getSignature(detailsBase64, privateKey);
         let result = {
             signature: signature,
             details: detailsBase64
@@ -65,13 +65,13 @@ export class LicenseKey {
         return sign.sign(privateKey, 'base64');
     }
 
-    public static factory(licenseKey: string, publicKey: string): LicenseKey {
+    public static factory(licenseKey: string, publicKey: string): LicenseKeyEncoder {
         let json: any = JSON.parse(Buffer.from(licenseKey, 'base64').toString());
-        if (!LicenseKey.isSignatureValid(json.details, json.signature, publicKey)) {
+        if (!LicenseKeyEncoder.isSignatureValid(json.details, json.signature, publicKey)) {
             throw new Error("Invalid signature");
         }
         let detailsDecoded: any = JSON.parse(Buffer.from(json.details, 'base64').toString());
-        let key: LicenseKey = new LicenseKey();
+        let key: LicenseKeyEncoder = new LicenseKeyEncoder();
         key.description = detailsDecoded.description;
         key.expiryDate = moment(detailsDecoded.expiryDate, "YYYY-MM-DD").toDate();
         key.issueDate = moment(detailsDecoded.issueDate, "YYYY-MM-DD").toDate();

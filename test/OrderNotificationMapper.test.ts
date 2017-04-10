@@ -5,7 +5,7 @@ import { Container } from "typedi";
 import { Broker } from "../src/entity/Broker";
 import { Order } from "../src/entity/Order";
 import { Product } from "../src/entity/Product";
-import { ProductVariant } from "../src/entity/ProductVariant";
+import { ProductVariant, ProductVariantType } from "../src/entity/ProductVariant";
 import { OrderNotificationMapper } from "../src/util/OrderNotificationMapper";
 import { BrokerDao } from "../src/dao/BrokerDao";
 import { ProductDao } from "../src/dao/ProductDao";
@@ -111,16 +111,17 @@ describe("OrderNotificationMapper", () => {
                 productDao.save(p1).then(() => {
                     let pv1: ProductVariant = new ProductVariant();
                     pv1.product = p1;
+                    pv1.type = ProductVariantType.LimitedLicense;
                     productVariantDao.save(pv1).then(() => {
                         bpvDao.add(broker2, pv1, "wpac-support-ticket").then(() => {
                             bpvDao.add(broker1, pv1, "55305-9").then(() => {
                                 done();
-                            });
-                        });
-                    });
-                });
-            });
-        });
+                            }).catch(e => done(e));
+                        }).catch(e => done(e));
+                    }).catch(e => done(e));
+                }).catch(e => done(e));
+            }).catch(e => done(e));
+        }).catch(e => done(e));
     });
 
     after((done) => {
@@ -129,10 +130,10 @@ describe("OrderNotificationMapper", () => {
                 Container.get(ProductDao).removeAll().then(() => {
                     Container.get(BrokerDao).removeAll().then(() => {
                         done();
-                    });
-                });
-            });
-        });
+                    }).catch(e => done(e));
+                }).catch(e => done(e));
+            }).catch(e => done(e));
+        }).catch(e => done(e));
     });
 
     describe("map()", () => {
@@ -230,6 +231,9 @@ describe("OrderNotificationMapper", () => {
                 expect(order.items).to.have.lengthOf(1);
                 expect(order.items[0].quantity).to.equal(2);
                 expect(order.items[0].productVariant).to.be.not.null;
+                expect(order.items[0].productVariant.type).to.be.not.null;
+                expect(order.items[0].productVariant.type).to.be.not.undefined;
+                expect(order.items[0].productVariant.type).to.be.equal(ProductVariantType.LimitedLicense);
                 expect(order.items[0].productVariant.product).to.be.not.null;
                 expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
                 done();

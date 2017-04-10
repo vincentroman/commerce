@@ -71,7 +71,7 @@ export class OrderNotificationMapper {
                     }
                     let item: OrderItem = new OrderItem();
                     item.productVariant = brokerProductVariant.productVariant;
-                    item.quantity = parseInt(json.quantity);
+                    item.quantity = parseInt(json.quantity, 10);
                     if (persist) {
                         orderItemDao.save(item).then(item => resolve(item));
                     } else {
