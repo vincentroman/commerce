@@ -11,11 +11,27 @@ describe("Email", () => {
     describe("send()", () => {
         xit("Should send an email successfully", () => {
             return Email.send({
-                recipientEmail: "gmail.user@gmail.com",
-                senderEmail: "gmail.user@gmail.com",
+                recipient: {
+                    email: "gmail.user@gmail.com"
+                },
+                sender: {
+                    email: "gmail.user@gmail.com"
+                },
                 subject: "Hallo Welt",
                 text: ""
             });
+        });
+    });
+
+    describe("renderParamString()", () => {
+        it("Should fill in params correctly", () => {
+            let params = {
+                firstname: "John",
+                lastname: "Doe"
+            };
+            let s = "Hello {firstname} {lastname}!";
+            let result = Email.renderParamString(s, params);
+            expect(result).to.equal("Hello John Doe!");
         });
     });
 });

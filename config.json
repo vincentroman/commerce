@@ -13,6 +13,11 @@
         "lifetime": "12h"
     },
     "mail": {
+        "logAndDiscard": false,
+        "sender": {
+            "name": "Your Company Ltd.",
+            "email": "no-reply@weweave.net"
+        },
         "service": "gmail",
         "auth": {
             "user": "gmail.user@gmail.com",

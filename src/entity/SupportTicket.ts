@@ -21,6 +21,9 @@ export class SupportTicket extends DbEntity {
     @ManyToOne(type => OrderItem, {nullable: true})
     orderItem: OrderItem;
 
+    @Column()
+    status: SupportRequestStatus;
+
     public serialize(): Object {
         return Object.assign(super.serialize(), {
             // TODO

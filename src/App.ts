@@ -9,12 +9,14 @@ import AuthRouter from './router/AuthRouter';
 import BrokerRouter from './router/BrokerRouter';
 import CustomerRouter from './router/CustomerRouter';
 import CommentRouter from './router/CommentRouter';
+import MailTemplateRouter from './router/MailTemplateRouter';
 import OrderItemRouter from './router/OrderItemRouter';
 import OrderNotificationRouter from './router/OrderNotificationRouter';
 import OrderRouter from './router/OrderRouter';
 import ProductRouter from './router/ProductRouter';
 import ProductVariantRouter from './router/ProductVariantRouter';
 import UserRouter from './router/UserRouter';
+import { DefaultSettingsCheck } from "./util/DefaultSettingsCheck";
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
@@ -30,8 +32,10 @@ export class App extends EventEmitter {
         this.setupOrm().then(connection => {
             this.setupMiddleware();
             this.setupRoutes();
-            this.emit("appStarted");
-            this.ready = true;
+            DefaultSettingsCheck.check().then(() => {
+                this.emit("appStarted");
+                this.ready = true;
+            });
         }).catch(error => console.log("TypeORM connection error: ", error));
     }
 
@@ -52,6 +56,7 @@ export class App extends EventEmitter {
         this.express.use('/api/v1/broker', BrokerRouter);
         this.express.use('/api/v1/customer', CustomerRouter);
         this.express.use('/api/v1/comment', CommentRouter);
+        this.express.use('/api/v1/mailtemplate', MailTemplateRouter);
         this.express.use('/api/v1/orderitem', OrderItemRouter);
         this.express.use('/api/v1/ordernotification', OrderNotificationRouter);
         this.express.use('/api/v1/order', OrderRouter);

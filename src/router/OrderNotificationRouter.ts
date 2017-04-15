@@ -16,6 +16,9 @@ import { User } from "../entity/User";
 import { UserDao } from "../dao/UserDao";
 import { SupportTicket } from "../entity/SupportTicket";
 import { SupportTicketDao } from "../dao/SupportTicketDao";
+import { MailTemplateDao } from "../dao/MailTemplateDao";
+import { MailTemplateType } from "../entity/MailTemplate";
+import { Email, Address } from "../util/Email";
 
 class OrderNotificationRouter extends BaseRouter {
     protected init(): void {
@@ -42,14 +45,26 @@ class OrderNotificationRouter extends BaseRouter {
             userDao.getByEmail(customer.email)
             .then(user => resolve(user))
             .catch(e => {
+                let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
                 let user: User = new User();
                 let plainPassword: string = str1n9.randomString(12, 'cln');
                 user.customer = customer;
                 user.email = customer.email;
                 user.setPlainPassword(plainPassword).then(() => {
                     userDao.save(user).then((user) => {
-                        // TODO send mail with login data
-                        resolve(user);
+                        mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
+                            let recipient: Address = {
+                                name: customer.firstname + " " + customer.lastname,
+                                email: customer.email
+                            };
+                            let params = {
+                                username: user.email,
+                                password: plainPassword
+                            };
+                            Email.sendByTemplate(template, recipient, params).then(() => {
+                                resolve(user);
+                            });
+                        });
                     }).catch(e => reject(e));
                 }).catch(e => reject(e));
             });
@@ -66,29 +81,65 @@ class OrderNotificationRouter extends BaseRouter {
 
     private checkOrderItemTriggers(item: OrderItem): Promise<void> {
         return new Promise<void>((resolve, reject) => {
+            let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
             let productVariant: ProductVariant = item.productVariant;
             let type: ProductVariantType = productVariant.type;
+            let recipient: Address = {
+                name: item.order.customer.firstname + " " + item.order.customer.lastname,
+                email: item.order.customer.email
+            };
             if (type === ProductVariantType.Eval) {
-                // TODO Send Buy reminder
+                mailTemplateDao.getByType(MailTemplateType.DownloadEval).then((template) => {
+                    let params = {
+                        productName: item.productVariant.product.title
+                    };
+                    Email.sendByTemplate(template, recipient, params).then(() => {
+                        resolve();
+                    });
+                });
             } else if (type === ProductVariantType.LifetimeLicense) {
                 this.createLicenseKeyRequest(item).then(licenseKey => {
-                    // TODO Send Mail
-                    resolve();
+                    mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
+                        let params = {
+                            productName: item.productVariant.product.title
+                        };
+                        Email.sendByTemplate(template, recipient, params).then(() => {
+                            resolve();
+                        });
+                    });
                 }).catch(e => reject());
             } else if (type === ProductVariantType.LimitedLicense) {
                 this.createLicenseKeyRequest(item).then(licenseKey => {
-                    // TODO Send Mail
-                    resolve();
+                    mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
+                        let params = {
+                            productName: item.productVariant.product.title
+                        };
+                        Email.sendByTemplate(template, recipient, params).then(() => {
+                            resolve();
+                        });
+                    });
                 }).catch(e => reject());
             } else if (type === ProductVariantType.TrialLicense) {
                 this.createLicenseKeyRequest(item).then(licenseKey => {
-                    // TODO Send Mail
-                    resolve();
+                    mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
+                        let params = {
+                            productName: item.productVariant.product.title
+                        };
+                        Email.sendByTemplate(template, recipient, params).then(() => {
+                            resolve();
+                        });
+                    });
                 }).catch(e => reject());
             } else if (type === ProductVariantType.SupportTicket) {
                 this.createSupportRequest(item).then(supportTicket => {
-                    // TODO Send Mail
-                    resolve();
+                    mailTemplateDao.getByType(MailTemplateType.PurchaseSupportTicket).then((template) => {
+                        let params = {
+                            productName: item.productVariant.product.title
+                        };
+                        Email.sendByTemplate(template, recipient, params).then(() => {
+                            resolve();
+                        });
+                    });
                 }).catch(e => reject());
             }
             resolve();
