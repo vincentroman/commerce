@@ -43,6 +43,11 @@ export class App extends EventEmitter {
     private setupMiddleware(): void {
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: false }));
+        this.express.use((req, res, next) => {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+            next();
+        });
     }
 
     private setupRoutes(): void {

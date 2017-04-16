@@ -10,10 +10,6 @@ import "rxjs/add/operator/toPromise";
 
 @Injectable()
 export class AuthService {
-    isLoggedIn: boolean = false;
-    jwt: string = "";
-    user: User = new User();
-
     constructor(
         private router: Router,
         private http: Http,
@@ -26,9 +22,16 @@ export class AuthService {
             email: email,
             password: password
         };
-        return this.http.post(this.httpService.getUrl("auth/auth"), payload, this.httpService.getOptions())
+        return this.http.post(this.httpService.getUrl("auth/login"), payload, this.httpService.getOptions())
                 .toPromise()
                 .then(res => {
+                    this.sessionService.saveJwt(res.text());
+                    this.http.get(this.httpService.getUrl("user/me"), this.httpService.getOptions())
+                    .toPromise()
+                    .then((res) => {
+                        console.log(res);
+                    })
+                    .catch();
                     let user: User = new User();
                     return user;
                 })

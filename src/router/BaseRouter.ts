@@ -12,6 +12,21 @@ export abstract class BaseRouter {
     }
 
     protected checkAuth(req: Request, res: Response, next: NextFunction): void {
+        try {
+            this.getJwtPayload(req);
+            next();
+            return;
+        } catch (e) {
+            this.forbidden(res);
+        }
+    }
+
+    protected getJwtUserUuid(req: Request): string {
+        let payload = this.getJwtPayload(req);
+        return payload.userId;
+    }
+
+    protected getJwtPayload(req: Request): any {
         let authHeader: string = req.header('Authorization');
         if (authHeader.startsWith('Bearer ')) {
             let token: string = authHeader.substr('Bearer '.length);
@@ -20,15 +35,11 @@ export abstract class BaseRouter {
                 algorithms: ['HS256'],
                 issuer: config.issuer
             };
-            try {
-                let payload = jwt.verify(token, config.secret, options);
-                next();
-                return;
-            } catch (e) {
-                // Invalid JWT token
-            }
+            let payload = jwt.verify(token, config.secret, options);
+            return payload;
+        } else {
+            throw new Error("No JWT header found");
         }
-        this.forbidden(res);
     }
 
     protected addRoutePost(route: string, fn: Function, authRequired?: boolean): void {

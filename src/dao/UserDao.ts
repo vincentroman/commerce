@@ -12,4 +12,8 @@ export class UserDao extends Dao<User> {
     public async getByEmail(email: string): Promise<User> {
         return this.getRepository().findOne({email: email});
     }
+
+    public async getAdmins(): Promise<User[]> {
+        return this.getRepository().find({roleAdmin: true});
+    }
 }

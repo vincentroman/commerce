@@ -11,6 +11,12 @@ export class User extends DbEntity {
     @Column()
     password: string;
 
+    @Column()
+    roleAdmin: boolean = false;
+
+    @Column()
+    roleCustomer: boolean = false;
+
     @OneToOne(type => Customer)
     @JoinColumn()
     customer: Customer;
@@ -27,12 +33,14 @@ export class User extends DbEntity {
     public serialize(): Object {
         return Object.assign(super.serialize(), {
             email: this.email,
-            password: this.password
+            roleAdmin: this.roleAdmin,
+            roleCustomer: this.roleCustomer
         });
     }
 
     public deserialize(o: Object): void {
         this.email = o['email'];
-        this.password = o['password'];
+        this.roleAdmin = (o['roleAdmin'] === 1 || o['roleAdmin'] === "true" ? true : false);
+        this.roleCustomer = (o['roleCustomer'] === 1 || o['roleCustomer'] === "true" ? true : false);
     }
 }

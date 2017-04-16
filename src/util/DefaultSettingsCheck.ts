@@ -1,10 +1,26 @@
 import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { Container } from "typedi";
 import { MailTemplate, MailTemplateType } from "../entity/MailTemplate";
+import { UserDao } from "../dao/UserDao";
+import { User } from "../entity/User";
 
 export class DefaultSettingsCheck {
     public static async check(): Promise<void> {
+        await DefaultSettingsCheck.checkAdminUser();
         await DefaultSettingsCheck.checkMailTemplates();
+    }
+
+    private static async checkAdminUser(): Promise<void> {
+        let dao: UserDao = Container.get(UserDao);
+        let users: User[] = await dao.getAdmins();
+        if (users.length === 0) {
+            let user: User = new User();
+            user.email = "admin";
+            await user.setPlainPassword("admin");
+            user.roleAdmin = true;
+            user.roleCustomer = false;
+            await dao.save(user);
+        }
     }
 
     private static async checkMailTemplates(): Promise<void> {
