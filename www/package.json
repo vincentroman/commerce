@@ -1,0 +1,44 @@
+{
+  "name": "weweave-commerce-www",
+  "version": "0.0.1",
+  "scripts": {
+    "serve": "lite-server -c=bs-config.json",
+    "start": "concurrently \"npm run build:watch\" \"npm run serve\"",
+    "build:watch": "tsc -p src/ -w",
+    "css": "grunt css",
+    "clean": "rm -rf dist/",
+    "grunt": "grunt"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@angular/common": "~4.0.2",
+    "@angular/compiler": "~4.0.2",
+    "@angular/core": "~4.0.2",
+    "@angular/forms": "~4.0.2",
+    "@angular/http": "~4.0.2",
+    "@angular/platform-browser": "~4.0.2",
+    "@angular/platform-browser-dynamic": "~4.0.2",
+    "@angular/router": "~4.0.2",
+    "@angular/upgrade": "~4.0.2",
+    "angular-in-memory-web-api": "~0.3.1",
+    "bootstrap": "^3.3.7",
+    "core-js": "^2.4.1",
+    "jquery": "^3.2.1",
+    "reflect-metadata": "^0.1.10",
+    "rxjs": "5.3.0",
+    "systemjs": "0.20.12",
+    "zone.js": "^0.8.5"
+  },
+  "devDependencies": {
+    "concurrently": "^3.4.0",
+    "grunt": "^1.0.1",
+    "grunt-bootlint": "^0.10.2",
+    "grunt-cli": "^1.2.0",
+    "grunt-sass": "^2.0.0",
+    "grunt-ts": "^6.0.0-beta.15",
+    "grunt-tslint": "^5.0.1",
+    "lite-server": "^2.3.0",
+    "tslint": "^5.1.0",
+    "typescript": "^2.2.2"
+  }
+}
