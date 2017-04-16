@@ -2,8 +2,6 @@ import * as nodemailer from 'nodemailer';
 import { Config } from "../util/Config";
 import { MailTemplate } from "../entity/MailTemplate";
 import { Customer } from "../entity/Customer";
-import { Order } from "../entity/Order";
-import { OrderItem } from "../entity/OrderItem";
 
 export class Email {
     public static send(options: EmailOptions): Promise<void> {
@@ -50,9 +48,9 @@ export class Email {
 
     public static renderParamString(s: string, params: any): string {
         let result = s;
-        for (let key in params) {
+        Object.keys(params).map((key) => {
             result = result.replace("{"+key+"}", params[key]);
-        }
+        });
         return result;
     }
 }

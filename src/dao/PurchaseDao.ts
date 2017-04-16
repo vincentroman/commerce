@@ -2,17 +2,17 @@ import { Repository } from "typeorm";
 import { Service } from "typedi";
 import { Container } from "typedi";
 import { Dao } from "./Dao";
-import { OrderItemDao } from "./OrderItemDao";
-import { Order } from "../entity/Order";
-import { OrderItem } from "../entity/OrderItem";
+import { PurchaseItemDao } from "./PurchaseItemDao";
+import { Purchase } from "../entity/Purchase";
+import { PurchaseItem } from "../entity/PurchaseItem";
 
 @Service()
-export class OrderDao extends Dao<Order> {
-    protected getRepository(): Repository<Order> {
-        return this.getEm().getRepository(Order);
+export class PurchaseDao extends Dao<Purchase> {
+    protected getRepository(): Repository<Purchase> {
+        return this.getEm().getRepository(Purchase);
     }
 
-    public async getByUuid(uuid: string): Promise<Order> {
+    public async getByUuid(uuid: string): Promise<Purchase> {
         return this.getRepository()
             .createQueryBuilder("order")
             .innerJoinAndSelect("order.broker", "broker")
@@ -25,7 +25,7 @@ export class OrderDao extends Dao<Order> {
     }
 
     public async removeAll(): Promise<void> {
-        return Container.get(OrderItemDao).removeAll().then(() => {
+        return Container.get(PurchaseItemDao).removeAll().then(() => {
             return super.removeAll();
         });
     }

@@ -4,13 +4,13 @@ import chaiHttp = require('chai-http');
 
 import { Container } from "typedi";
 import { Broker } from "../src/entity/Broker";
-import { Order } from "../src/entity/Order";
-import { OrderItem } from "../src/entity/OrderItem";
+import { Purchase } from "../src/entity/Purchase";
+import { PurchaseItem } from "../src/entity/PurchaseItem";
 import { Product } from "../src/entity/Product";
 import { ProductVariant, ProductVariantType } from "../src/entity/ProductVariant";
 import { OrderNotificationMapper } from "../src/util/OrderNotificationMapper";
 import { BrokerDao } from "../src/dao/BrokerDao";
-import { OrderDao } from "../src/dao/OrderDao";
+import { PurchaseDao } from "../src/dao/PurchaseDao";
 import { ProductDao } from "../src/dao/ProductDao";
 import { ProductVariantDao } from "../src/dao/ProductVariantDao";
 import { BrokerProductVariantDao } from "../src/dao/BrokerProductVariantDao";
@@ -124,7 +124,7 @@ describe('Router '+endpoint, () => {
 
     afterEach(done => {
         Container.get(LicenseKeyDao).removeAll().then(() => {
-            Container.get(OrderDao).removeAll().then(() => {
+            Container.get(PurchaseDao).removeAll().then(() => {
                 Container.get(UserDao).removeAll().then(() => {
                     Container.get(CustomerDao).removeAll().then(() => {
                         Container.get(BrokerProductVariantDao).removeAll().then(() => {
@@ -168,7 +168,7 @@ describe('Router '+endpoint, () => {
                 expect(res).to.be.json;
                 expect(res.body).to.be.an('object');
                 expect(res.body.uuid).to.be.string;
-                let orderDao: OrderDao = Container.get(OrderDao);
+                let orderDao: PurchaseDao = Container.get(PurchaseDao);
                 return orderDao.getByUuid(res.body.uuid).then(order => {
                     expect(order).to.be.not.null;
                     expect(order).to.be.not.undefined;
@@ -183,7 +183,7 @@ describe('Router '+endpoint, () => {
                     expect(order.items).to.have.lengthOf(1);
                     expect(order.items[0]).to.be.not.null;
                     expect(order.items[0]).to.be.not.undefined;
-                    expect(order.items[0]).to.be.an.instanceOf(OrderItem);
+                    expect(order.items[0]).to.be.an.instanceOf(PurchaseItem);
                     expect(order.items[0].quantity).to.be.equal(1);
                     expect(order.items[0].productVariant).to.be.not.null;
                     expect(order.items[0].productVariant).to.be.not.undefined;

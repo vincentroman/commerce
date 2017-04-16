@@ -2,7 +2,7 @@ import { Entity, Column, ManyToOne } from "typeorm";
 import { DbEntity } from "./DbEntity";
 import { ProductVariant } from "./ProductVariant";
 import { Customer } from "./Customer";
-import { OrderItem } from "./OrderItem";
+import { PurchaseItem } from "./PurchaseItem";
 
 @Entity()
 export class LicenseKey extends DbEntity {
@@ -18,8 +18,8 @@ export class LicenseKey extends DbEntity {
     @ManyToOne(type => Customer)
     customer: Customer;
 
-    @ManyToOne(type => OrderItem, {nullable: true})
-    orderItem: OrderItem;
+    @ManyToOne(type => PurchaseItem, {nullable: true})
+    purchaseItem: PurchaseItem;
 
     public serialize(): Object {
         return Object.assign(super.serialize(), {

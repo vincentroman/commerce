@@ -7,16 +7,16 @@ Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
 
 import { Broker } from "../src/entity/Broker";
-import { Order } from "../src/entity/Order";
+import { Purchase } from "../src/entity/Purchase";
 import { BrokerDao } from "../src/dao/BrokerDao";
-import { OrderDao } from "../src/dao/OrderDao";
+import { PurchaseDao } from "../src/dao/PurchaseDao";
 
 const expect = chai.expect;
 
 describe("OrderDao", () => {
     after(done => {
         let brokerDao: BrokerDao = Container.get(BrokerDao);
-        let orderDao: OrderDao = Container.get(OrderDao);
+        let orderDao: PurchaseDao = Container.get(PurchaseDao);
         orderDao.removeAll().then(() => {
             brokerDao.removeAll().then(() => {
                 done();
@@ -27,12 +27,12 @@ describe("OrderDao", () => {
     describe("store and load with dependencies", () => {
         it("Should work", () => {
             let brokerDao: BrokerDao = Container.get(BrokerDao);
-            let orderDao: OrderDao = Container.get(OrderDao);
+            let orderDao: PurchaseDao = Container.get(PurchaseDao);
             let broker = new Broker();
             broker.name = "Some dummy broker";
             broker.mappingTemplate = "{}";
             return brokerDao.save(broker).then((broker) => {
-                let order = new Order();
+                let order = new Purchase();
                 order.broker = broker;
                 order.referenceId = "abcdef";
                 return orderDao.save(order).then((order) => {

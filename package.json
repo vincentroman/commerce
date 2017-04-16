@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "grunt": "grunt",
-    "start": "node dist/server.js",
+    "start": "npm run clean && npm run grunt && node dist/server.js",
+    "clean": "rm -rf dist/",
     "test": "mocha --reporter spec --compilers ts:ts-node/register 'test/**/*.test.ts'"
   },
   "author": "weweave GbR <mail@weweave.net>",

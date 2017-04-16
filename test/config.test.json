@@ -1,7 +1,12 @@
 {
     "database": {
-        "type": "sqlite",
-        "storage": ":memory:"
+        "driver": {
+            "type": "sqlite",
+            "storage": ":memory:"
+        },
+        "logging": {
+            "logQueries": false
+        }
     },
     "session": {
         "secret": "fkj49l7WwjUtqcfLZKlLA269J28kC4uL",

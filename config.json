@@ -1,11 +1,16 @@
 {
     "database": {
-        "type": "mysql",
-        "host": "localhost",
-        "port": 3306,
-        "username": "root",
-        "password": "root",
-        "database": "commerce"
+        "driver": {
+            "type": "mysql",
+            "host": "localhost",
+            "port": 3306,
+            "username": "root",
+            "password": "root",
+            "database": "commerce"
+        },
+        "logging": {
+            "logQueries": false
+        }
     },
     "session": {
         "secret": "fkj49l7WwjUtqcfLZKlLA269J28kC4uL",

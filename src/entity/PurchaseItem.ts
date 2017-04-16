@@ -1,12 +1,12 @@
 import { Entity, Column, ManyToOne } from "typeorm";
 import { DbEntity } from "./DbEntity";
-import { Order } from "./Order";
+import { Purchase } from "./Purchase";
 import { ProductVariant } from "./ProductVariant";
 
 @Entity()
-export class OrderItem extends DbEntity {
-    @ManyToOne(type => Order)
-    order: Order;
+export class PurchaseItem extends DbEntity {
+    @ManyToOne(type => Purchase)
+    purchase: Purchase;
 
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;

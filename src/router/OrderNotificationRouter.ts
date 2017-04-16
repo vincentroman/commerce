@@ -4,10 +4,10 @@ import { Container } from "typedi";
 import { BaseRouter } from "./BaseRouter";
 import { Broker } from "../entity/Broker";
 import { BrokerDao } from "../dao/BrokerDao";
-import { OrderDao } from "../dao/OrderDao";
+import { PurchaseDao } from "../dao/PurchaseDao";
 import { OrderNotificationMapper } from "../util/OrderNotificationMapper";
-import { Order } from "../entity/Order";
-import { OrderItem } from "../entity/OrderItem";
+import { Purchase } from "../entity/Purchase";
+import { PurchaseItem } from "../entity/PurchaseItem";
 import { ProductVariant, ProductVariantType } from "../entity/ProductVariant";
 import { LicenseKey } from "../entity/LicenseKey";
 import { LicenseKeyDao } from "../dao/LicenseKeyDao";
@@ -71,22 +71,22 @@ class OrderNotificationRouter extends BaseRouter {
         });
     }
 
-    private checkOrderTriggers(order: Order): Promise<void[]> {
-        let process: Promise<void>[] = order.items.map((item) => {
-            item.order = order;
+    private checkOrderTriggers(purchase: Purchase): Promise<void[]> {
+        let process: Promise<void>[] = purchase.items.map((item) => {
+            item.purchase = purchase;
             return this.checkOrderItemTriggers(item);
         });
         return Promise.all<void>(process);
     }
 
-    private checkOrderItemTriggers(item: OrderItem): Promise<void> {
+    private checkOrderItemTriggers(item: PurchaseItem): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
             let productVariant: ProductVariant = item.productVariant;
             let type: ProductVariantType = productVariant.type;
             let recipient: Address = {
-                name: item.order.customer.firstname + " " + item.order.customer.lastname,
-                email: item.order.customer.email
+                name: item.purchase.customer.firstname + " " + item.purchase.customer.lastname,
+                email: item.purchase.customer.email
             };
             if (type === ProductVariantType.Eval) {
                 mailTemplateDao.getByType(MailTemplateType.DownloadEval).then((template) => {
@@ -146,20 +146,20 @@ class OrderNotificationRouter extends BaseRouter {
         });
     }
 
-    private createLicenseKeyRequest(item: OrderItem): Promise<LicenseKey> {
+    private createLicenseKeyRequest(item: PurchaseItem): Promise<LicenseKey> {
         let licenseKeyDao: LicenseKeyDao = Container.get(LicenseKeyDao);
         let key: LicenseKey = new LicenseKey();
-        key.orderItem = item;
-        key.customer = item.order.customer;
+        key.purchaseItem = item;
+        key.customer = item.purchase.customer;
         key.productVariant = item.productVariant;
         return licenseKeyDao.save(key);
     }
 
-    private createSupportRequest(item: OrderItem): Promise<SupportTicket> {
+    private createSupportRequest(item: PurchaseItem): Promise<SupportTicket> {
         let supportTicketDao: SupportTicketDao;
         let ticket = new SupportTicket();
-        ticket.orderItem = item;
-        ticket.customer = item.order.customer;
+        ticket.purchaseItem = item;
+        ticket.customer = item.purchase.customer;
         ticket.productVariant = item.productVariant;
         return supportTicketDao.save(ticket);
     }

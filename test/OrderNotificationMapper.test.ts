@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import { Container } from "typedi";
 
 import { Broker } from "../src/entity/Broker";
-import { Order } from "../src/entity/Order";
+import { Purchase } from "../src/entity/Purchase";
 import { Product } from "../src/entity/Product";
 import { ProductVariant, ProductVariantType } from "../src/entity/ProductVariant";
 import { OrderNotificationMapper } from "../src/util/OrderNotificationMapper";

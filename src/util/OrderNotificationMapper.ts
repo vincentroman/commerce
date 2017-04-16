@@ -4,31 +4,31 @@ import { Container } from "typedi";
 import { Broker } from '../entity/Broker';
 import { BrokerProductVariant } from "../entity/BrokerProductVariant";
 import { Customer } from '../entity/Customer';
-import { Order } from '../entity/Order';
-import { OrderItem } from '../entity/OrderItem';
+import { Purchase } from '../entity/Purchase';
+import { PurchaseItem } from '../entity/PurchaseItem';
 import { CustomerDao } from "../dao/CustomerDao";
-import { OrderDao } from "../dao/OrderDao";
-import { OrderItemDao } from "../dao/OrderItemDao";
+import { PurchaseDao } from "../dao/PurchaseDao";
+import { PurchaseItemDao } from "../dao/PurchaseItemDao";
 import { BrokerProductVariantDao } from "../dao/BrokerProductVariantDao";
 
 export class OrderNotificationMapper {
-    public static map(input: string|Object, broker: Broker, persist?: boolean): Promise<Order> {
-        return new Promise<Order>((resolve, reject) => {
+    public static map(input: string|Object, broker: Broker, persist?: boolean): Promise<Purchase> {
+        return new Promise<Purchase>((resolve, reject) => {
             let convertedInput: Object = OrderNotificationMapper.getInputAsJson(input);
             let template = JSON.parse(broker.mappingTemplate);
             jsonMapper(convertedInput, template).then((result) => {
-                let order: Order = new Order();
-                order.broker = broker;
-                order.referenceId = result.id;
+                let purchase: Purchase = new Purchase();
+                purchase.broker = broker;
+                purchase.referenceId = result.id;
                 OrderNotificationMapper.getOrCreateCustomer(result.customer, persist).then((customer) => {
-                    order.customer = customer;
+                    purchase.customer = customer;
                     OrderNotificationMapper.getOrderItems(broker, result.items, persist).then((items) => {
-                        order.items = items;
+                        purchase.items = items;
                         if (persist) {
-                            let orderDao = Container.get(OrderDao);
-                            orderDao.save(order).then(order => resolve(order));
+                            let purchaseDao = Container.get(PurchaseDao);
+                            purchaseDao.save(purchase).then(order => resolve(order));
                         } else {
-                            resolve(order);
+                            resolve(purchase);
                         }
                     }).catch((e) => reject(e));
                 });
@@ -58,29 +58,29 @@ export class OrderNotificationMapper {
         });
     }
 
-    private static async getOrderItems(broker: Broker, jsonItems: Array<any>, persist?: boolean): Promise<OrderItem[]> {
+    private static async getOrderItems(broker: Broker, jsonItems: Array<any>, persist?: boolean): Promise<PurchaseItem[]> {
         jsonItems = [].concat(jsonItems);
-        let orderItemDao: OrderItemDao = Container.get(OrderItemDao);
+        let purchaseItemDao: PurchaseItemDao = Container.get(PurchaseItemDao);
         let brokerProductVariantDao: BrokerProductVariantDao = Container.get(BrokerProductVariantDao);
-        let process: Promise<OrderItem>[] = jsonItems.map((json) => {
-            return new Promise<OrderItem>((resolve, reject) => {
+        let process: Promise<PurchaseItem>[] = jsonItems.map((json) => {
+            return new Promise<PurchaseItem>((resolve, reject) => {
                 brokerProductVariantDao.getByBrokerId(broker, json.id).then((brokerProductVariant) => {
                     if (brokerProductVariant === undefined || brokerProductVariant == null) {
                         reject(new Error("No such id for broker: " + json.id));
                         return;
                     }
-                    let item: OrderItem = new OrderItem();
+                    let item: PurchaseItem = new PurchaseItem();
                     item.productVariant = brokerProductVariant.productVariant;
                     item.quantity = parseInt(json.quantity, 10);
                     if (persist) {
-                        orderItemDao.save(item).then(item => resolve(item));
+                        purchaseItemDao.save(item).then(item => resolve(item));
                     } else {
                         resolve(item);
                     }
                 });
             });
         });
-        return Promise.all<OrderItem>(process);
+        return Promise.all<PurchaseItem>(process);
     }
 
     private static getInputAsJson(input: string|Object): Object {

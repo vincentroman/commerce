@@ -10,9 +10,9 @@ import BrokerRouter from './router/BrokerRouter';
 import CustomerRouter from './router/CustomerRouter';
 import CommentRouter from './router/CommentRouter';
 import MailTemplateRouter from './router/MailTemplateRouter';
-import OrderItemRouter from './router/OrderItemRouter';
+import PurchaseItemRouter from './router/PurchaseItemRouter';
 import OrderNotificationRouter from './router/OrderNotificationRouter';
-import OrderRouter from './router/OrderRouter';
+import PurchaseRouter from './router/PurchaseRouter';
 import ProductRouter from './router/ProductRouter';
 import ProductVariantRouter from './router/ProductVariantRouter';
 import UserRouter from './router/UserRouter';
@@ -35,6 +35,7 @@ export class App extends EventEmitter {
             DefaultSettingsCheck.check().then(() => {
                 this.emit("appStarted");
                 this.ready = true;
+                console.log("Server ready");
             });
         }).catch(error => console.log("TypeORM connection error: ", error));
     }
@@ -57,24 +58,23 @@ export class App extends EventEmitter {
         this.express.use('/api/v1/customer', CustomerRouter);
         this.express.use('/api/v1/comment', CommentRouter);
         this.express.use('/api/v1/mailtemplate', MailTemplateRouter);
-        this.express.use('/api/v1/orderitem', OrderItemRouter);
+        this.express.use('/api/v1/purchaseitem', PurchaseItemRouter);
         this.express.use('/api/v1/ordernotification', OrderNotificationRouter);
-        this.express.use('/api/v1/order', OrderRouter);
+        this.express.use('/api/v1/purchase', PurchaseRouter);
         this.express.use('/api/v1/product', ProductRouter);
         this.express.use('/api/v1/productvariant', ProductVariantRouter);
         this.express.use('/api/v1/user', UserRouter);
     }
 
     private async setupOrm(): Promise<Connection> {
+        let config = Config.getInstance().get("database");
         return createConnection({
-            driver: Config.getInstance().get("database"),
+            driver: config.driver,
             entities: [
                 __dirname + "/entity/*.js",
                 __dirname + "/entity/*.ts"
             ],
-            logging: {
-                //logQueries: true
-            },
+            logging: config.logging,
             autoSchemaSync: true
         });
     }
