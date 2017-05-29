@@ -39,7 +39,10 @@ export class SessionService {
 
     logout(): boolean {
         sessionStorage.removeItem("jwt");
+        sessionStorage.removeItem("user");
         this.isLoggedIn = false;
+        this.jwt = "";
+        this.user = new User();
         this.router.navigate(["/login"]);
         return false;
     }

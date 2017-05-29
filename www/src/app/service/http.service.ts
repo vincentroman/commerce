@@ -35,7 +35,8 @@ export class HttpService {
     handleError(error: Response): Response {
         if (error.status === 403) {
             this.sessionService.logout();
+            return;
         }
-        return error;
+        throw error;
     }
 }
