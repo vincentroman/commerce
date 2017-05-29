@@ -1,25 +1,32 @@
 import { RestModel } from "./rest-model";
 import { Serializable } from "./serializable";
+import { Customer } from "./customer";
 
 export class User extends RestModel implements Serializable<User> {
     email: string;
-    displayName: string;
     password: string;
+    roleAdmin: boolean = false;
+    roleCustomer: boolean = false;
+    customer: Customer;
 
     serialize(): Object {
         return {
-            "id": this.id,
+            "uuid": this.uuid,
             "email": this.email,
-            "displayName": this.displayName,
-            "password": this.password
+            "password": this.password,
+            "roleAdmin": this.roleAdmin,
+            "roleCustomer": this.roleCustomer,
+            "customer": (this.customer ? this.customer.serialize() : null),
         };
     }
 
     deserialize(input: any): User {
-        this.id = input.id;
+        this.uuid = input.uuid;
         this.email = input.email;
-        this.displayName = input.displayName;
         this.password = "";
+        this.roleAdmin = input.roleAdmin;
+        this.roleCustomer = input.roleCustomer;
+        this.customer = (input.customer ? new Customer().deserialize(input.customer) : null);
         return this;
     }
 }

@@ -26,14 +26,15 @@ export class AuthService {
                 .toPromise()
                 .then(res => {
                     this.sessionService.saveJwt(res.text());
-                    this.http.get(this.httpService.getUrl("user/me"), this.httpService.getOptions())
+                    return this.http.get(this.httpService.getUrl("user/me"), this.httpService.getOptions())
                     .toPromise()
                     .then((res) => {
-                        console.log(res);
+                        console.log("Raw user: %s", JSON.stringify(res.json()));
+                        let user: User = new User().deserialize(res.json());
+                        this.sessionService.saveUser(user);
+                        return user;
                     })
                     .catch();
-                    let user: User = new User();
-                    return user;
                 })
                 .catch(error => {
                     return this.httpService.handleError(error);

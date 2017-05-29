@@ -20,7 +20,7 @@ export class HttpService {
     getHeaders(): Headers {
         return new Headers({
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + this.sessionService.getJwt()
+            "Authorization": "Bearer " + this.sessionService.jwt
         });
     }
 

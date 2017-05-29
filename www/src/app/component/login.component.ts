@@ -26,10 +26,11 @@ export class LoginComponent {
         this.submitting = true;
         this.authService.login(this.model.email, this.model.password)
             .then(res => {
-                console.log(res);
+                this.router.navigate(['/home']);
             })
             .catch(res => {
-                console.log(res);
+                this.loginError = true;
+                this.submitting = false;
             });
     }
 }

@@ -1,3 +1,3 @@
 export class RestModel {
-    id: string;
+    uuid: string;
 }

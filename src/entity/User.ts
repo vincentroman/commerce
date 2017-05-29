@@ -32,6 +32,7 @@ export class User extends DbEntity {
 
     public serialize(): Object {
         return Object.assign(super.serialize(), {
+            uuid: this.uuid,
             email: this.email,
             roleAdmin: this.roleAdmin,
             roleCustomer: this.roleCustomer
