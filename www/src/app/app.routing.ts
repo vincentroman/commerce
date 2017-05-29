@@ -6,6 +6,7 @@ import { LoginComponent } from "./component/login.component";
 import { GuestGuard } from "./guard/guest-guard.service";
 import { AuthGuard } from "./guard/auth-guard.service";
 import { AdminGuard } from "./guard/admin-guard.service";
+import { BrokerListComponent } from "./component/broker-list.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -13,6 +14,9 @@ const appRoutes: Routes = [
 
     // Authenticated routes
     { path: "home", component: HomeComponent, canActivate: [AuthGuard] },
+
+    // Admin routes
+    { path: "brokers", component: BrokerListComponent, canActivate: [AdminGuard] },
 
     {
         path: "",

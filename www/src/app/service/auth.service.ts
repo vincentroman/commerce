@@ -7,6 +7,7 @@ import { SessionService } from "./session.service";
 import { User } from "../model/user";
 
 import "rxjs/add/operator/toPromise";
+import { UserService } from "./user.service";
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
         private router: Router,
         private http: Http,
         private sessionService: SessionService,
+        private userService: UserService,
         private httpService: HttpService
     ) {}
 
@@ -26,11 +28,8 @@ export class AuthService {
                 .toPromise()
                 .then(res => {
                     this.sessionService.saveJwt(res.text());
-                    return this.http.get(this.httpService.getUrl("user/me"), this.httpService.getOptions())
-                    .toPromise()
-                    .then((res) => {
-                        console.log("Raw user: %s", JSON.stringify(res.json()));
-                        let user: User = new User().deserialize(res.json());
+                    return this.userService.me()
+                    .then(user => {
                         this.sessionService.saveUser(user);
                         return user;
                     })

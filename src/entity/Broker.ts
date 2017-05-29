@@ -11,10 +11,13 @@ export class Broker extends DbEntity {
 
     public serialize(): Object {
         return Object.assign(super.serialize(), {
+            name: this.name,
+            mappingTemplate: this.mappingTemplate
         });
     }
 
-    public  deserialize(o: Object): void {
-        // TODO
+    public deserialize(o: Object): void {
+        this.name = o['name'];
+        this.mappingTemplate = o['mappingTemplate'];
     }
 }

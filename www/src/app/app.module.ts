@@ -17,6 +17,9 @@ import { routing } from "./app.routing";
 import { AuthGuard } from "./guard/auth-guard.service";
 import { GuestGuard } from "./guard/guest-guard.service";
 import { AdminGuard } from "./guard/admin-guard.service";
+import { BrokerListComponent } from "./component/broker-list.component";
+import { UserService } from "./service/user.service";
+import { BrokerService } from "./service/broker.service";
 
 @NgModule({
     imports: [
@@ -28,6 +31,7 @@ import { AdminGuard } from "./guard/admin-guard.service";
     ],
     declarations: [
         AppComponent,
+        BrokerListComponent,
         LoginComponent,
         HomeComponent,
         NavComponent
@@ -36,6 +40,8 @@ import { AdminGuard } from "./guard/admin-guard.service";
         AuthService,
         HttpService,
         SessionService,
+        UserService,
+        BrokerService,
         AuthGuard,
         GuestGuard,
         AdminGuard
