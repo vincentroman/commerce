@@ -7,6 +7,7 @@ import { GuestGuard } from "./guard/guest-guard.service";
 import { AuthGuard } from "./guard/auth-guard.service";
 import { AdminGuard } from "./guard/admin-guard.service";
 import { BrokerListComponent } from "./component/broker-list.component";
+import { BrokerEditComponent } from "./component/broker-edit.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -17,6 +18,8 @@ const appRoutes: Routes = [
 
     // Admin routes
     { path: "brokers", component: BrokerListComponent, canActivate: [AdminGuard] },
+    { path: "brokers/new", component: BrokerEditComponent, canActivate: [AdminGuard] },
+    { path: "brokers/edit/:id", component: BrokerEditComponent, canActivate: [AdminGuard] },
 
     {
         path: "",

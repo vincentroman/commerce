@@ -18,7 +18,7 @@ export abstract class CrudService<T extends RestModel & Serializable<T>> {
 
     list(): Promise<T[]> {
         return this.http
-            .get(this.httpService.getUrl(this.getPath + "/list"), this.httpService.getOptions())
+            .get(this.httpService.getUrl(this.getPath() + "/list"), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: T[] = (<T[]>res.json()).map(o => this.newTypeInstance().deserialize(o));
@@ -43,10 +43,10 @@ export abstract class CrudService<T extends RestModel & Serializable<T>> {
     }
 
     save(entity: T): Promise<T> {
-        return this.http.post(this.httpService.getUrl(this.getPath() + "/set"), entity.serialize(), this.httpService.getOptions())
+        return this.http.put(this.httpService.getUrl(this.getPath() + "/save"), entity.serialize(), this.httpService.getOptions())
             .toPromise()
             .then(res => {
-                let entity = this.newTypeInstance().deserialize(<T>res.json());
+                entity.uuid = res.json().uuid;
                 return entity;
             })
             .catch(error => {

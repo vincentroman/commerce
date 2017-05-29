@@ -20,6 +20,7 @@ import { AdminGuard } from "./guard/admin-guard.service";
 import { BrokerListComponent } from "./component/broker-list.component";
 import { UserService } from "./service/user.service";
 import { BrokerService } from "./service/broker.service";
+import { BrokerEditComponent } from "./component/broker-edit.component";
 
 @NgModule({
     imports: [
@@ -31,6 +32,7 @@ import { BrokerService } from "./service/broker.service";
     ],
     declarations: [
         AppComponent,
+        BrokerEditComponent,
         BrokerListComponent,
         LoginComponent,
         HomeComponent,
