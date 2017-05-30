@@ -21,6 +21,8 @@ import { BrokerListComponent } from "./component/broker-list.component";
 import { UserService } from "./service/user.service";
 import { BrokerService } from "./service/broker.service";
 import { BrokerEditComponent } from "./component/broker-edit.component";
+import { CustomerListComponent } from "./component/customer-list.component";
+import { CustomerEditComponent } from "./component/customer-edit.component";
 
 @NgModule({
     imports: [
@@ -34,6 +36,8 @@ import { BrokerEditComponent } from "./component/broker-edit.component";
         AppComponent,
         BrokerEditComponent,
         BrokerListComponent,
+        CustomerEditComponent,
+        CustomerListComponent,
         LoginComponent,
         HomeComponent,
         NavComponent

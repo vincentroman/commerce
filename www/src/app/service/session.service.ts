@@ -19,7 +19,6 @@ export class SessionService {
             this.jwt = jwt;
             this.isLoggedIn = true;
             let userSerialized = sessionStorage.getItem("user");
-            console.log(userSerialized);
             if (userSerialized) {
                 this.user = new User().deserialize(JSON.parse(userSerialized));
             }

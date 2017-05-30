@@ -8,6 +8,8 @@ import { AuthGuard } from "./guard/auth-guard.service";
 import { AdminGuard } from "./guard/admin-guard.service";
 import { BrokerListComponent } from "./component/broker-list.component";
 import { BrokerEditComponent } from "./component/broker-edit.component";
+import { CustomerListComponent } from "./component/customer-list.component";
+import { CustomerEditComponent } from "./component/customer-edit.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -20,6 +22,9 @@ const appRoutes: Routes = [
     { path: "brokers", component: BrokerListComponent, canActivate: [AdminGuard] },
     { path: "brokers/new", component: BrokerEditComponent, canActivate: [AdminGuard] },
     { path: "brokers/edit/:uuid", component: BrokerEditComponent, canActivate: [AdminGuard] },
+    { path: "customers", component: CustomerListComponent, canActivate: [AdminGuard] },
+    { path: "customers/new", component: CustomerEditComponent, canActivate: [AdminGuard] },
+    { path: "customers/edit/:uuid", component: CustomerEditComponent, canActivate: [AdminGuard] },
 
     {
         path: "",

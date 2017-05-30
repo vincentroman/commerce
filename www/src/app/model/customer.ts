@@ -10,7 +10,7 @@ export class Customer extends RestModel implements Serializable<Customer> {
 
     serialize(): Object {
         return {
-            "id": this.uuid,
+            "uuid": this.uuid,
             "company": this.company,
             "firstname": this.firstname,
             "lastname": this.lastname,
@@ -24,6 +24,7 @@ export class Customer extends RestModel implements Serializable<Customer> {
         this.firstname = input.firstname;
         this.lastname = input.lastname;
         this.email = input.email;
+        this.company = input.company;
         this.country = input.country;
         return this;
     }

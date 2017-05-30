@@ -1,0 +1,35 @@
+<div class="page-header">
+    <div class="btn-toolbar pull-right">
+        <button type="button" class="btn btn-danger btn-lg" (click)="delete()" [hidden]="!entity.uuid" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>
+        <a routerLink="/customers" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
+        <a routerLink="/customers/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
+    </div>
+    <h1 [hidden]="entity.uuid">Add Customer</h1>
+    <h1 [hidden]="!entity.uuid">Edit Customer</h1>
+</div>
+<form (ngSubmit)="submit()" #form="ngForm">
+    <div class="alert alert-success" role="alert" [hidden]="!success">Customer saved successfully.</div>
+    <div class="alert alert-danger" role="alert" [hidden]="!error">Error saving customer. Please try again.</div>
+    <div class="form-group">
+        <label for="firstname">Firstname</label>
+        <input type="text" id="firstname" name="firstname" placeholder="Firstname" class="form-control" [(ngModel)]="entity.firstname" required="required" autofocus="autofocus" />
+    </div>
+    <div class="form-group">
+        <label for="lastname">Lastname</label>
+        <input type="text" id="lastname" name="lastname" placeholder="Lastname" class="form-control" [(ngModel)]="entity.lastname" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="company">Company</label>
+        <input type="text" id="company" name="company" placeholder="Company" class="form-control" [(ngModel)]="entity.company" />
+    </div>
+    <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="Email Address" class="form-control" [(ngModel)]="entity.email" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="country">Country Code (2 letters)</label>
+        <input type="text" id="country" name="country" placeholder="2 letter country code" class="form-control" [(ngModel)]="entity.country" />
+    </div>
+    <a routerLink="/customers" class="btn btn-default">Cancel</a>
+    <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
+</form>
