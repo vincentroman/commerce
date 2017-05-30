@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from "@angular/core";
-import { Router, ActivatedRoute, Params } from "@angular/router";
+import { Component } from "@angular/core";
+import { Router, ActivatedRoute } from "@angular/router";
+import { EntityEditComponent } from "./entity-edit.component";
 import { BrokerService } from "../service/broker.service";
 import { Broker } from "../model/broker";
 
@@ -9,44 +10,20 @@ import { Broker } from "../model/broker";
         BrokerService
     ]
 })
-export class BrokerEditComponent implements OnInit {
-    broker: Broker = new Broker();
-    submitting: boolean = false;
-    success: boolean = false;
-    error: boolean = false;
-
+export class BrokerEditComponent extends EntityEditComponent<Broker> {
     constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private brokerService: BrokerService
-    ) {}
-
-    ngOnInit(): void {
-        this.route.params.forEach((params: Params) => {
-            let id: string = params["id"];
-            if (id) {
-                this.brokerService.get(id).then(broker => this.broker = broker);
-            }
-        });
+        protected route: ActivatedRoute,
+        protected router: Router,
+        protected brokerService: BrokerService
+    ) {
+        super(route, router, brokerService);
     }
 
-    submit(): void {
-        this.submitting = true;
-        this.success = false;
-        this.brokerService.save(this.broker)
-            .then(broker => {
-                this.broker = broker;
-                this.submitting = false;
-                this.success = true;
-            });
+    protected newTypeInstance(): Broker {
+        return new Broker();
     }
 
-    delete(uuid: string): void {
-        if (confirm("Delete this broker?")) {
-            this.submitting = true;
-            this.success = false;
-            this.brokerService.delete(this.broker.uuid)
-                .then(res => this.router.navigate(["/brokers"]));
-        }
+    protected getListPath(): string {
+        return "/brokers";
     }
 }

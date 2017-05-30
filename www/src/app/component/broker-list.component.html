@@ -4,7 +4,7 @@
     </div>
     <h1>Brokers</h1>
 </div>
-<table class="table table-hover" [hidden]="!brokers || !brokers.length">
+<table class="table table-hover" [hidden]="!entities || !entities.length">
     <thead>
         <tr>
             <th>UUID</th>
@@ -12,12 +12,12 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let broker of brokers" class="clickable" (click)="showBroker(broker.uuid)">
+        <tr *ngFor="let broker of entities" class="clickable" (click)="showEntity(broker.uuid)">
             <td>{{broker.uuid}}</td>
             <td>{{broker.name}}</td>
         </tr>
     </tbody>
 </table>
-<p [hidden]="!brokers || brokers.length">
+<p [hidden]="!entities ||entities.length">
     No records found.
 </p>

@@ -19,7 +19,7 @@ const appRoutes: Routes = [
     // Admin routes
     { path: "brokers", component: BrokerListComponent, canActivate: [AdminGuard] },
     { path: "brokers/new", component: BrokerEditComponent, canActivate: [AdminGuard] },
-    { path: "brokers/edit/:id", component: BrokerEditComponent, canActivate: [AdminGuard] },
+    { path: "brokers/edit/:uuid", component: BrokerEditComponent, canActivate: [AdminGuard] },
 
     {
         path: "",

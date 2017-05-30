@@ -1,20 +1,21 @@
 <div class="page-header">
     <div class="btn-toolbar pull-right">
-        <button type="button" class="btn btn-danger btn-lg" (click)="delete()" [hidden]="!broker.uuid"><span class="glyphicon glyphicon-remove"></span></button>
-        <a routerLink="/brokers/new" class="btn btn-primary btn-lg" [hidden]="!broker.uuid"><span class="glyphicon glyphicon-plus"></span></a>
+        <button type="button" class="btn btn-danger btn-lg" (click)="delete()" [hidden]="!entity.uuid"><span class="glyphicon glyphicon-remove"></span></button>
+        <a routerLink="/brokers/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid"><span class="glyphicon glyphicon-plus"></span></a>
     </div>
-    <h1>Edit Broker</h1>
+    <h1 [hidden]="entity.uuid">Add Broker</h1>
+    <h1 [hidden]="!entity.uuid">Edit Broker</h1>
 </div>
 <form (ngSubmit)="submit()" #form="ngForm">
     <div class="alert alert-success" role="alert" [hidden]="!success">Broker saved successfully.</div>
     <div class="alert alert-danger" role="alert" [hidden]="!error">Error saving broker. Please try again.</div>
     <div class="form-group">
         <label for="name">Name</label>
-        <input type="text" id="name" name="name" placeholder="Broker Name" class="form-control" [(ngModel)]="broker.name" required="required" autofocus="autofocus" />
+        <input type="text" id="name" name="name" placeholder="Broker Name" class="form-control" [(ngModel)]="entity.name" required="required" autofocus="autofocus" />
     </div>
     <div class="form-group">
         <label for="mappingTemplate">Mapping Template</label>
-        <textarea id="mappingTemplate" name="mappingTemplate" placeholder="Mapping Template" [(ngModel)]="broker.mappingTemplate" required="required" class="form-control"></textarea>
+        <textarea id="mappingTemplate" name="mappingTemplate" placeholder="Mapping Template" [(ngModel)]="entity.mappingTemplate" required="required" class="form-control" rows="10"></textarea>
     </div>
     <a routerLink="/brokers" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>

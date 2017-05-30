@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { Router } from "@angular/router";
+import { EntityListComponent } from "./entity-list.component";
+
 import { BrokerService } from "../service/broker.service";
 import { Broker } from "../model/broker";
 
@@ -9,19 +11,15 @@ import { Broker } from "../model/broker";
         BrokerService
     ]
 })
-export class BrokerListComponent implements OnInit {
-    brokers: Broker[];
-
+export class BrokerListComponent extends EntityListComponent<Broker> {
     constructor(
-        private router: Router,
-        private brokerService: BrokerService
-    ) {}
-
-    ngOnInit(): void {
-        this.brokerService.list().then(brokers => this.brokers = brokers);
+        protected router: Router,
+        protected brokerService: BrokerService
+    ) {
+        super(router, brokerService);
     }
 
-    showBroker(uuid: string): void {
-        this.router.navigate(["/brokers/edit", uuid]);
+    protected getEditPath(): string {
+        return "/brokers/edit";
     }
 }
