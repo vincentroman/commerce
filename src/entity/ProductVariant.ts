@@ -12,11 +12,12 @@ export class ProductVariant extends DbEntity {
 
     public serialize(): Object {
         return Object.assign(super.serialize(), {
+            type: this.type
         });
     }
 
     public  deserialize(o: Object): void {
-        // TODO
+        this.type = o['type'];
     }
 }
 

@@ -23,6 +23,8 @@ import { BrokerService } from "./service/broker.service";
 import { BrokerEditComponent } from "./component/broker-edit.component";
 import { CustomerListComponent } from "./component/customer-list.component";
 import { CustomerEditComponent } from "./component/customer-edit.component";
+import { ProductEditComponent } from "./component/product-edit.component";
+import { ProductListComponent } from "./component/product-list.component";
 
 @NgModule({
     imports: [
@@ -40,6 +42,8 @@ import { CustomerEditComponent } from "./component/customer-edit.component";
         CustomerListComponent,
         LoginComponent,
         HomeComponent,
+        ProductListComponent,
+        ProductEditComponent,
         NavComponent
     ],
     providers: [

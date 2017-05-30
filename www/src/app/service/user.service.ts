@@ -1,11 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Headers, Http, Response, URLSearchParams } from "@angular/http";
-import "rxjs/add/operator/toPromise";
-
+import { Http } from "@angular/http";
 import { HttpService } from "./http.service";
-
-import { User } from "../model/user";
 import { CrudService } from "./crud.service";
+import { User } from "../model/user";
 
 @Injectable()
 export class UserService extends CrudService<User> {

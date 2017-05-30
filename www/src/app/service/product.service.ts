@@ -2,10 +2,10 @@ import { Injectable } from "@angular/core";
 import { Http } from "@angular/http";
 import { HttpService } from "./http.service";
 import { CrudService } from "./crud.service";
-import { Broker } from "../model/broker";
+import { Product } from "../model/product";
 
 @Injectable()
-export class BrokerService extends CrudService<Broker> {
+export class ProductService extends CrudService<Product> {
     constructor(
         protected httpService: HttpService,
         protected http: Http
@@ -13,11 +13,11 @@ export class BrokerService extends CrudService<Broker> {
         super(httpService, http);
     }
 
-    protected newTypeInstance(): Broker {
-        return new Broker();
+    protected newTypeInstance(): Product {
+        return new Product();
     }
 
     protected getPath(): string {
-        return "broker";
+        return "product";
     }
 }
