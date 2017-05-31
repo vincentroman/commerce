@@ -25,6 +25,7 @@ import { CustomerListComponent } from "./component/customer-list.component";
 import { CustomerEditComponent } from "./component/customer-edit.component";
 import { ProductEditComponent } from "./component/product-edit.component";
 import { ProductListComponent } from "./component/product-list.component";
+import { ProductVariantEditComponent } from "./component/product-variant-edit.component";
 
 @NgModule({
     imports: [
@@ -44,6 +45,7 @@ import { ProductListComponent } from "./component/product-list.component";
         HomeComponent,
         ProductListComponent,
         ProductEditComponent,
+        ProductVariantEditComponent,
         NavComponent
     ],
     providers: [

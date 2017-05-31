@@ -12,6 +12,7 @@ import { CustomerListComponent } from "./component/customer-list.component";
 import { CustomerEditComponent } from "./component/customer-edit.component";
 import { ProductListComponent } from "./component/product-list.component";
 import { ProductEditComponent } from "./component/product-edit.component";
+import { ProductVariantEditComponent } from "./component/product-variant-edit.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -32,6 +33,8 @@ const appRoutes: Routes = [
     { path: "products", component: ProductListComponent, canActivate: [AdminGuard] },
     { path: "products/new", component: ProductEditComponent, canActivate: [AdminGuard] },
     { path: "products/edit/:uuid", component: ProductEditComponent, canActivate: [AdminGuard] },
+    { path: "products/edit/:productUuid/variants/new", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
+    { path: "products/edit/:productUuid/variants/edit/:uuid", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
 
     {
         path: "",

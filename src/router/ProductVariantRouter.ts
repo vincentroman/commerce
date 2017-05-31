@@ -9,6 +9,7 @@ class ProductVariantRouter extends CrudRouter<ProductVariant, ProductVariantDao>
     protected getDao(): ProductVariantDao {
         return Container.get(ProductVariantDao);
     }
+
     protected createEntity(requestBody: any): ProductVariant {
         return new ProductVariant(requestBody);
     }
