@@ -3,7 +3,7 @@ import { DbEntity } from "./DbEntity";
 import { ProductVariant } from "./ProductVariant";
 
 @Entity()
-export class Product extends DbEntity {
+export class Product extends DbEntity<Product> {
     @Column()
     title: string;
 
@@ -16,7 +16,8 @@ export class Product extends DbEntity {
         });
     }
 
-    public deserialize(o: Object): void {
+    public deserialize(o: Object): Product {
         this.title = o['title'];
+        return this;
     }
 }

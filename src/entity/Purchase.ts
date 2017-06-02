@@ -5,7 +5,7 @@ import { Broker } from "./Broker";
 import { PurchaseItem } from "./PurchaseItem";
 
 @Entity()
-export class Purchase extends DbEntity {
+export class Purchase extends DbEntity<Purchase> {
     @ManyToOne(type => Customer)
     customer: Customer;
 
@@ -24,7 +24,8 @@ export class Purchase extends DbEntity {
         });
     }
 
-    public  deserialize(o: Object): void {
+    public  deserialize(o: Object): Purchase {
         // TODO
+        return this;
     }
 }

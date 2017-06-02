@@ -2,7 +2,7 @@ import { getEntityManager, Repository, EntityManager } from "typeorm";
 import * as uuid from 'uuid/v4';
 import { DbEntity } from "../entity/DbEntity";
 
-export abstract class Dao<T extends DbEntity> {
+export abstract class Dao<T extends DbEntity<T>> {
     public async getById(id: number): Promise<T> {
         return this.getRepository().findOneById(id);
     }

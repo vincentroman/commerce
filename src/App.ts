@@ -16,6 +16,7 @@ import PurchaseRouter from './router/PurchaseRouter';
 import ProductRouter from './router/ProductRouter';
 import ProductVariantRouter from './router/ProductVariantRouter';
 import UserRouter from './router/UserRouter';
+import BrokerProductVariantRouter from "./router/BrokerProductVariantRouter";
 import { DefaultSettingsCheck } from "./util/DefaultSettingsCheck";
 
 export class App extends EventEmitter {
@@ -61,6 +62,7 @@ export class App extends EventEmitter {
         this.express.use('/', router);
         this.express.use('/api/v1/auth', AuthRouter);
         this.express.use('/api/v1/broker', BrokerRouter);
+        this.express.use('/api/v1/brokerproductvariant', BrokerProductVariantRouter);
         this.express.use('/api/v1/customer', CustomerRouter);
         this.express.use('/api/v1/comment', CommentRouter);
         this.express.use('/api/v1/mailtemplate', MailTemplateRouter);

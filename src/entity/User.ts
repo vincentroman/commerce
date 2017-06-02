@@ -4,7 +4,7 @@ import * as hashy  from 'hashy';
 import { Customer } from "./Customer";
 
 @Entity()
-export class User extends DbEntity {
+export class User extends DbEntity<User> {
     @Column({unique: true})
     email: string;
 
@@ -38,9 +38,10 @@ export class User extends DbEntity {
         });
     }
 
-    public deserialize(o: Object): void {
+    public deserialize(o: Object): User {
         this.email = o['email'];
         this.roleAdmin = (o['roleAdmin'] === 1 || o['roleAdmin'] === "true" ? true : false);
         this.roleCustomer = (o['roleCustomer'] === 1 || o['roleCustomer'] === "true" ? true : false);
+        return this;
     }
 }

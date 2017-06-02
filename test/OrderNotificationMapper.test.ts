@@ -111,10 +111,14 @@ describe("OrderNotificationMapper", () => {
                 productDao.save(p1).then(() => {
                     let pv1: ProductVariant = new ProductVariant();
                     pv1.product = p1;
+                    pv1.title = "PV 1";
                     pv1.type = ProductVariantType.LimitedLicense;
+                    pv1.numDomains = 1;
+                    pv1.numSupportYears = 1;
+                    pv1.price = 99;
                     productVariantDao.save(pv1).then(() => {
-                        bpvDao.add(broker2, pv1, "wpac-support-ticket").then(() => {
-                            bpvDao.add(broker1, pv1, "55305-9").then(() => {
+                        bpvDao.addOrReplace(broker2, pv1, "wpac-support-ticket").then(() => {
+                            bpvDao.addOrReplace(broker1, pv1, "55305-9").then(() => {
                                 done();
                             }).catch(e => done(e));
                         }).catch(e => done(e));

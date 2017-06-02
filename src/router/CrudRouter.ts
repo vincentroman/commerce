@@ -5,7 +5,7 @@ import { BaseRouter } from "./BaseRouter";
 import { Dao } from '../dao/Dao';
 import { DbEntity } from '../entity/DbEntity';
 
-export abstract class CrudRouter<TEntity extends DbEntity, TDao extends Dao<TEntity>> extends BaseRouter {
+export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends Dao<TEntity>> extends BaseRouter {
     protected abstract getDao(): TDao;
     protected abstract createEntity(requestBody: any): TEntity;
 

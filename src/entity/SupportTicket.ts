@@ -5,7 +5,7 @@ import { Customer } from "./Customer";
 import { PurchaseItem } from "./PurchaseItem";
 
 @Entity()
-export class SupportTicket extends DbEntity {
+export class SupportTicket extends DbEntity<SupportTicket> {
     @Column("text", {nullable: true})
     text: string;
 
@@ -30,8 +30,9 @@ export class SupportTicket extends DbEntity {
         });
     }
 
-    public deserialize(o: Object): void {
+    public deserialize(o: Object): SupportTicket {
         // TODO
+        return this;
     }
 }
 

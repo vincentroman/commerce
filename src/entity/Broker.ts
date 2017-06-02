@@ -2,7 +2,7 @@ import { Entity, Column, ManyToOne } from "typeorm";
 import { DbEntity } from "./DbEntity";
 
 @Entity()
-export class Broker extends DbEntity {
+export class Broker extends DbEntity<Broker> {
     @Column()
     name: string;
 
@@ -16,8 +16,9 @@ export class Broker extends DbEntity {
         });
     }
 
-    public deserialize(o: Object): void {
+    public deserialize(o: Object): Broker {
         this.name = o['name'];
         this.mappingTemplate = o['mappingTemplate'];
+        return this;
     }
 }

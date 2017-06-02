@@ -2,7 +2,7 @@ import { AbstractEntity, Column, PrimaryGeneratedColumn, CreateDateColumn, Updat
 import * as moment from 'moment';
 
 @AbstractEntity()
-export abstract class DbEntity {
+export abstract class DbEntity<T extends DbEntity<T>> {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -29,5 +29,5 @@ export abstract class DbEntity {
         };
     }
 
-    public abstract deserialize(o: Object): void;
+    public abstract deserialize(o: Object): T;
 }

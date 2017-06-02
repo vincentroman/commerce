@@ -4,7 +4,7 @@ import { Customer } from "./Customer";
 import { SupportTicket } from "./SupportTicket";
 
 @Entity()
-export class Comment extends DbEntity {
+export class Comment extends DbEntity<Comment> {
     @ManyToOne(type => Customer, {nullable: true})
     customer: Customer;
 
@@ -16,7 +16,8 @@ export class Comment extends DbEntity {
         });
     }
 
-    public  deserialize(o: Object): void {
+    public  deserialize(o: Object): Comment {
         // TODO
+        return this;
     }
 }

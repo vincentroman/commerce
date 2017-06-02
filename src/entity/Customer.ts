@@ -2,7 +2,7 @@ import { Entity, Column } from "typeorm";
 import { DbEntity } from "./DbEntity";
 
 @Entity()
-export class Customer extends DbEntity {
+export class Customer extends DbEntity<Customer> {
     @Column({nullable: true})
     company: string;
 
@@ -28,11 +28,12 @@ export class Customer extends DbEntity {
         });
     }
 
-    public deserialize(o: Object): void {
+    public deserialize(o: Object): Customer {
         this.company        = o['company'];
         this.firstname      = o['firstname'];
         this.lastname       = o['lastname'];
         this.email          = o['email'];
         this.country        = o['country'];
+        return this;
     }
 }

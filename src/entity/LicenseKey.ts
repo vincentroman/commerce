@@ -5,7 +5,7 @@ import { Customer } from "./Customer";
 import { PurchaseItem } from "./PurchaseItem";
 
 @Entity()
-export class LicenseKey extends DbEntity {
+export class LicenseKey extends DbEntity<LicenseKey> {
     @Column("text", {nullable: true})
     licenseKey: string;
 
@@ -27,7 +27,8 @@ export class LicenseKey extends DbEntity {
         });
     }
 
-    public deserialize(o: Object): void {
+    public deserialize(o: Object): LicenseKey {
         // TODO
+        return this;
     }
 }

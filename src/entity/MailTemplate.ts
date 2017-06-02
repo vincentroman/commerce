@@ -2,7 +2,7 @@ import { Entity, Column } from "typeorm";
 import { DbEntity } from "./DbEntity";
 
 @Entity()
-export class MailTemplate extends DbEntity {
+export class MailTemplate extends DbEntity<MailTemplate> {
     @Column({unique: true})
     type: MailTemplateType;
 
@@ -17,8 +17,9 @@ export class MailTemplate extends DbEntity {
         });
     }
 
-    public  deserialize(o: Object): void {
+    public  deserialize(o: Object): MailTemplate {
         // TODO
+        return this;
     }
 }
 
