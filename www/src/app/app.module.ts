@@ -26,6 +26,8 @@ import { CustomerEditComponent } from "./component/customer-edit.component";
 import { ProductEditComponent } from "./component/product-edit.component";
 import { ProductListComponent } from "./component/product-list.component";
 import { ProductVariantEditComponent } from "./component/product-variant-edit.component";
+import { MailTemplateListComponent } from "./component/mail-template-list.component";
+import { MailTemplateEditComponent } from "./component/mail-template-edit.component";
 
 @NgModule({
     imports: [
@@ -41,8 +43,10 @@ import { ProductVariantEditComponent } from "./component/product-variant-edit.co
         BrokerListComponent,
         CustomerEditComponent,
         CustomerListComponent,
-        LoginComponent,
         HomeComponent,
+        LoginComponent,
+        MailTemplateEditComponent,
+        MailTemplateListComponent,
         ProductListComponent,
         ProductEditComponent,
         ProductVariantEditComponent,

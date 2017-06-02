@@ -14,11 +14,16 @@ export class MailTemplate extends DbEntity<MailTemplate> {
 
     public serialize(): Object {
         return Object.assign(super.serialize(), {
+            type: this.type,
+            subject: this.subject,
+            body: this.body
         });
     }
 
-    public  deserialize(o: Object): MailTemplate {
-        // TODO
+    public deserialize(o: Object): MailTemplate {
+        this.type = o['type'];
+        this.subject = o['subject'];
+        this.body = o['body'];
         return this;
     }
 }
@@ -27,5 +32,6 @@ export enum MailTemplateType {
     NewAccount = 1,
     PurchaseLicenseKey = 2,
     PurchaseSupportTicket = 3,
-    DownloadEval = 4
+    DownloadEval = 4,
+    ResetPassword = 5
 }

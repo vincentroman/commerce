@@ -13,6 +13,8 @@ import { CustomerEditComponent } from "./component/customer-edit.component";
 import { ProductListComponent } from "./component/product-list.component";
 import { ProductEditComponent } from "./component/product-edit.component";
 import { ProductVariantEditComponent } from "./component/product-variant-edit.component";
+import { MailTemplateListComponent } from "./component/mail-template-list.component";
+import { MailTemplateEditComponent } from "./component/mail-template-edit.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -29,6 +31,10 @@ const appRoutes: Routes = [
     { path: "customers", component: CustomerListComponent, canActivate: [AdminGuard] },
     { path: "customers/new", component: CustomerEditComponent, canActivate: [AdminGuard] },
     { path: "customers/edit/:uuid", component: CustomerEditComponent, canActivate: [AdminGuard] },
+
+    { path: "mailtemplates", component: MailTemplateListComponent, canActivate: [AdminGuard] },
+    { path: "mailtemplates/new", component: MailTemplateEditComponent, canActivate: [AdminGuard] },
+    { path: "mailtemplates/edit/:uuid", component: MailTemplateEditComponent, canActivate: [AdminGuard] },
 
     { path: "products", component: ProductListComponent, canActivate: [AdminGuard] },
     { path: "products/new", component: ProductEditComponent, canActivate: [AdminGuard] },
