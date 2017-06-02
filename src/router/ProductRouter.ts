@@ -9,8 +9,10 @@ class ProductRouter extends CrudRouter<Product, ProductDao> {
     protected getDao(): ProductDao {
         return Container.get(ProductDao);
     }
-    protected createEntity(requestBody: any): Product {
-        return new Product(requestBody);
+    protected createEntity(requestBody: any): Promise<Product> {
+        return new Promise((resolve, reject) => {
+            resolve(new Product(requestBody));
+        });
     }
 }
 

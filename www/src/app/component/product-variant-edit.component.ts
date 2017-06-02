@@ -15,6 +15,7 @@ import { Product } from "../model/product";
 })
 export class ProductVariantEditComponent extends EntityEditComponent<ProductVariant> implements OnInit {
     product: Product = new Product();
+    productUuid: string = "";
 
     constructor(
         protected route: ActivatedRoute,
@@ -25,18 +26,21 @@ export class ProductVariantEditComponent extends EntityEditComponent<ProductVari
         super(route, router, productVariantService);
     }
 
-    ngOnInit(): void {
-        super.ngOnInit();
+    protected onInit(): void {
         this.route.params.forEach((params: Params) => {
             let productUuid: string = params["productUuid"];
             if (productUuid) {
+                this.productUuid = productUuid;
                 this.productService.get(productUuid).then(product => this.product = product);
             }
         });
     }
 
     protected newTypeInstance(): ProductVariant {
-        return new ProductVariant();
+        let pv: ProductVariant = new ProductVariant();
+        pv.product = new Product();
+        pv.product.uuid = this.productUuid;
+        return pv;
     }
 
     protected getListPath(): string {

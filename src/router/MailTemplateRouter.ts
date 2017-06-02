@@ -8,8 +8,10 @@ class MailTemplateRouter extends CrudRouter<MailTemplate, MailTemplateDao> {
     protected getDao(): MailTemplateDao {
         return Container.get(MailTemplateDao);
     }
-    protected createEntity(requestBody: any): MailTemplate {
-        return new MailTemplate(requestBody);
+    protected createEntity(requestBody: any): Promise<MailTemplate> {
+        return new Promise((resolve, reject) => {
+            resolve(new MailTemplate(requestBody));
+        });
     }
 }
 

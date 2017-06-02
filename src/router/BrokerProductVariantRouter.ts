@@ -6,12 +6,15 @@ import { Dao } from '../dao/Dao';
 import { DbEntity } from '../entity/DbEntity';
 import { BrokerProductVariantDao } from "../dao/BrokerProductVariantDao";
 import { ProductDao } from "../dao/ProductDao";
+import { BrokerProductVariant } from "../entity/BrokerProductVariant";
+import { BrokerDao } from "../dao/BrokerDao";
+import { ProductVariantDao } from "../dao/ProductVariantDao";
 
 class BrokerProductVariantRouter extends BaseRouter {
 
     protected init(): void {
         this.addRouteGet('/:productId/list', this.list);
-        this.addRoutePut('/:productId/saveall', this.saveAll);
+        this.addRoutePut('/:productId/save', this.save);
     }
 
     private list(req: Request, res: Response, next: NextFunction): void {
@@ -25,25 +28,18 @@ class BrokerProductVariantRouter extends BaseRouter {
         }).catch(e => this.notFound(res));;
     }
 
-    private saveAll(req: Request, res: Response, next: NextFunction): void {
-        let productDao: ProductDao = Container.get(ProductDao);
-        let dao: BrokerProductVariantDao = Container.get(BrokerProductVariantDao);
-        let productId = req.params.productId;
-        /*
-        if (req.body.uuid) {
-            dao.getByUuid(req.body.uuid).then(entity => {
-                entity.deserialize(req.body);
-                dao.save(entity).then(entity => {
-                    this.saved(res, entity);
+    private save(req: Request, res: Response, next: NextFunction): void {
+        Container.get(BrokerDao).getByUuid(req.body.broker.uuid).then(broker => {
+            Container.get(ProductVariantDao).getByUuid(req.body.productVariant.uuid).then(productVariant => {
+                Container.get(BrokerProductVariantDao).addOrReplace(broker, productVariant, req.body.idForBroker).then(bpv => {
+                    this.saved(res, bpv);
                 });
-            }).catch(e => this.notFound(res));
-        } else {
-            let entity: TEntity = this.createEntity(req.body);
-            dao.save(entity).then(entity => {
-                this.saved(res, entity);
+            }).catch(e => {
+                this.notFound(res);
             });
-        }
-        */
+        }).catch(e => {
+            this.notFound(res);
+        });
     }
 }
 

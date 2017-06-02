@@ -9,6 +9,7 @@ export abstract class EntityEditComponent<T extends RestModel & Serializable<T>>
     submitting: boolean = false;
     success: boolean = false;
     error: boolean = false;
+    uuid: string = "";
 
     constructor(
         protected route: ActivatedRoute,
@@ -20,18 +21,29 @@ export abstract class EntityEditComponent<T extends RestModel & Serializable<T>>
 
     protected abstract getListPath(): string;
 
+    protected onInit(): void {
+        // Overwrite this in child classes if necessary
+    }
+
     ngOnInit(): void {
         this.route.params.forEach((params: Params) => {
             let uuid: string = params["uuid"];
             if (uuid) {
-                this.crudService.get(uuid).then(entity => this.entity = entity);
+                this.uuid = uuid;
             }
         });
+        this.onInit();
+        if (this.uuid) {
+            this.crudService.get(this.uuid).then(entity => this.entity = entity);
+        } else {
+            this.entity = this.newTypeInstance();
+        }
     }
 
     submit(): void {
         this.submitting = true;
         this.success = false;
+        console.log("Submitting %s", JSON.stringify(this.entity));
         this.crudService.save(this.entity)
             .then(entity => {
                 this.entity = entity;

@@ -5,10 +5,10 @@ import { ProductVariant } from "./ProductVariant";
 
 @Entity()
 export class BrokerProductVariant extends DbEntity<BrokerProductVariant> {
-    @ManyToOne(type => Broker)
+    @ManyToOne(type => Broker, {nullable: false})
     broker: Broker;
 
-    @ManyToOne(type => ProductVariant)
+    @ManyToOne(type => ProductVariant, {nullable: false})
     productVariant: ProductVariant;
 
     @Column()

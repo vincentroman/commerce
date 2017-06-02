@@ -9,8 +9,10 @@ class CommentRouter extends CrudRouter<Comment, CommentDao> {
     protected getDao(): CommentDao {
         return Container.get(CommentDao);
     }
-    protected createEntity(requestBody: any): Comment {
-        return new Comment(requestBody);
+    protected createEntity(requestBody: any): Promise<Comment> {
+        return new Promise((resolve, reject) => {
+            resolve(new Comment(requestBody));
+        });
     }
 }
 

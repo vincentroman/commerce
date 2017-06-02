@@ -8,8 +8,10 @@ class PurchaseRouter extends CrudRouter<Purchase, PurchaseDao> {
     protected getDao(): PurchaseDao {
         return Container.get(PurchaseDao);
     }
-    protected createEntity(requestBody: any): Purchase {
-        return new Purchase(requestBody);
+    protected createEntity(requestBody: any): Promise<Purchase> {
+        return new Promise((resolve, reject) => {
+            resolve(new Purchase(requestBody));
+        });
     }
 }
 

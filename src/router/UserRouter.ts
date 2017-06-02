@@ -10,8 +10,10 @@ class UserRouter extends CrudRouter<User, UserDao> {
         return Container.get(UserDao);
     }
 
-    protected createEntity(requestBody: any): User {
-        return new User(requestBody);
+    protected createEntity(requestBody: any): Promise<User> {
+        return new Promise((resolve, reject) => {
+            resolve(new User(requestBody));
+        });
     }
 
     protected init(): void {

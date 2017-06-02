@@ -7,7 +7,7 @@ import { DbEntity } from '../entity/DbEntity';
 
 export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends Dao<TEntity>> extends BaseRouter {
     protected abstract getDao(): TDao;
-    protected abstract createEntity(requestBody: any): TEntity;
+    protected abstract createEntity(requestBody: any): Promise<TEntity>;
 
     protected init(): void {
         this.addRouteGet('/get/:id', this.getOne);
@@ -51,10 +51,11 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
                 });
             }).catch(e => this.notFound(res));
         } else {
-            let entity: TEntity = this.createEntity(req.body);
-            dao.save(entity).then(entity => {
-                this.saved(res, entity);
-            });
+            this.createEntity(req.body).then(entity => {
+                dao.save(entity).then(entity => {
+                    this.saved(res, entity);
+                });
+            }).catch(e => this.badRequest(res));
         }
     }
 }

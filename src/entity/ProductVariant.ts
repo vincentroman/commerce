@@ -7,7 +7,7 @@ export class ProductVariant extends DbEntity<ProductVariant> {
     @Column()
     title: string;
 
-    @ManyToOne(type => Product, product => product.variants)
+    @ManyToOne(type => Product, product => product.variants, {nullable: false})
     product: Product;
 
     @Column()
@@ -38,6 +38,9 @@ export class ProductVariant extends DbEntity<ProductVariant> {
         this.numDomains = o['numDomains'];
         this.numSupportYears = o['numSupportYears'];
         this.price = o['price'];
+        if (this.product) {
+            this.product.deserialize(o['product']);
+        }
         return this;
     }
 }

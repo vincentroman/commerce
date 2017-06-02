@@ -9,8 +9,10 @@ class BrokerRouter extends CrudRouter<Broker, BrokerDao> {
     protected getDao(): BrokerDao {
         return Container.get(BrokerDao);
     }
-    protected createEntity(requestBody: any): Broker {
-        return new Broker(requestBody);
+    protected createEntity(requestBody: any): Promise<Broker> {
+        return new Promise((resolve, reject) => {
+            resolve(new Broker(requestBody));
+        });
     }
 }
 

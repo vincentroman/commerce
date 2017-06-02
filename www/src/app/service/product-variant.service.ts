@@ -3,6 +3,7 @@ import { Http } from "@angular/http";
 import { HttpService } from "./http.service";
 import { CrudService } from "./crud.service";
 import { ProductVariant } from "../model/product-variant";
+import { BrokerProductVariant } from "../model/broker-product-variant";
 
 @Injectable()
 export class ProductVariantService extends CrudService<ProductVariant> {
@@ -19,5 +20,44 @@ export class ProductVariantService extends CrudService<ProductVariant> {
 
     protected getPath(): string {
         return "productvariant";
+    }
+
+    listForProduct(productUuid: string): Promise<ProductVariant[]> {
+        return this.http
+            .get(this.httpService.getUrl(this.getPath() + "/list/" + productUuid), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let list: ProductVariant[] = (<ProductVariant[]>res.json()).map(o => this.newTypeInstance().deserialize(o));
+                return list;
+            })
+            .catch(error => {
+                return this.httpService.handleError(error);
+            });
+    }
+
+    public getBrokerProductVariants(productUuid: string): Promise<BrokerProductVariant[]> {
+        return this.http
+            .get(this.httpService.getUrl("brokerproductvariant/" + productUuid + "/list"), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let list: BrokerProductVariant[] = (<BrokerProductVariant[]>res.json()).map(o => new BrokerProductVariant().deserialize(o));
+                return list;
+            })
+            .catch(error => {
+                return this.httpService.handleError(error);
+            });
+    }
+
+    public saveBrokerProductVariant(productUuid: string, bpv: BrokerProductVariant): Promise<BrokerProductVariant> {
+        return this.http.put(this.httpService.getUrl("brokerproductvariant/" + productUuid + "/save"),
+                bpv.serialize(), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                bpv.uuid = res.json().uuid;
+                return bpv;
+            })
+            .catch(error => {
+                return this.httpService.handleError(error);
+            });
     }
 }
