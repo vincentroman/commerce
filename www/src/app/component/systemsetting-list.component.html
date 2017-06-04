@@ -1,19 +1,19 @@
 <div class="page-header">
     <div class="btn-toolbar pull-right">
     </div>
-    <h1>Mail Templates</h1>
+    <h1>System Settings</h1>
 </div>
 <table class="table table-hover" [hidden]="!entities || !entities.length">
     <thead>
         <tr>
-            <th>Type</th>
-            <th>Subject</th>
+            <th>Setting</th>
+            <th>Value</th>
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let mailTemplate of entities" class="clickable" (click)="showEntity(mailTemplate.uuid)">
-            <td>{{mailTemplate.getPrintableType()}}</td>
-            <td>{{mailTemplate.subject}}</td>
+        <tr *ngFor="let setting of entities" class="clickable" (click)="showEntity(setting.uuid)">
+            <td>{{setting.description}}</td>
+            <td>{{setting.value}}</td>
         </tr>
     </tbody>
 </table>

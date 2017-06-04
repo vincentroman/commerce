@@ -4,6 +4,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { createConnection, Connection } from "typeorm";
 import { Config } from './util/Config';
+import { DefaultSettingsCheck } from "./util/DefaultSettingsCheck";
 
 import AuthRouter from './router/AuthRouter';
 import BrokerRouter from './router/BrokerRouter';
@@ -17,7 +18,7 @@ import ProductRouter from './router/ProductRouter';
 import ProductVariantRouter from './router/ProductVariantRouter';
 import UserRouter from './router/UserRouter';
 import BrokerProductVariantRouter from "./router/BrokerProductVariantRouter";
-import { DefaultSettingsCheck } from "./util/DefaultSettingsCheck";
+import SystemSettingRouter from "./router/SystemSettingRouter";
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
@@ -71,6 +72,7 @@ export class App extends EventEmitter {
         this.express.use('/api/v1/purchase', PurchaseRouter);
         this.express.use('/api/v1/product', ProductRouter);
         this.express.use('/api/v1/productvariant', ProductVariantRouter);
+        this.express.use('/api/v1/systemsetting', SystemSettingRouter);
         this.express.use('/api/v1/user', UserRouter);
     }
 

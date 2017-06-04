@@ -16,6 +16,8 @@ import { ProductVariantEditComponent } from "./component/product-variant-edit.co
 import { MailTemplateListComponent } from "./component/mail-template-list.component";
 import { MailTemplateEditComponent } from "./component/mail-template-edit.component";
 import { ResetPasswordComponent } from "./component/reset-password.component";
+import { SystemSettingListComponent } from "./component/systemsetting-list.component";
+import { SystemSettingEditComponent } from "./component/systemsetting-edit.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -35,7 +37,6 @@ const appRoutes: Routes = [
     { path: "customers/edit/:uuid", component: CustomerEditComponent, canActivate: [AdminGuard] },
 
     { path: "mailtemplates", component: MailTemplateListComponent, canActivate: [AdminGuard] },
-    { path: "mailtemplates/new", component: MailTemplateEditComponent, canActivate: [AdminGuard] },
     { path: "mailtemplates/edit/:uuid", component: MailTemplateEditComponent, canActivate: [AdminGuard] },
 
     { path: "products", component: ProductListComponent, canActivate: [AdminGuard] },
@@ -43,6 +44,9 @@ const appRoutes: Routes = [
     { path: "products/edit/:uuid", component: ProductEditComponent, canActivate: [AdminGuard] },
     { path: "products/edit/:productUuid/variants/new", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
     { path: "products/edit/:productUuid/variants/edit/:uuid", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
+
+    { path: "systemsettings", component: SystemSettingListComponent, canActivate: [AdminGuard] },
+    { path: "systemsettings/edit/:uuid", component: SystemSettingEditComponent, canActivate: [AdminGuard] },
 
     {
         path: "",

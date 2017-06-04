@@ -15,6 +15,7 @@ import { SessionService } from "../service/session.service";
         <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn || !session.user.roleAdmin"><a routerLink="/mailtemplates">Mail Templates<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-envelope"></span></a></li>
         <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn || !session.user.roleAdmin"><a routerLink="/orders">Orders<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-shopping-cart"></span></a></li>
         <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn || !session.user.roleAdmin"><a routerLink="/products">Products<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-book"></span></a></li>
+        <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn || !session.user.roleAdmin"><a routerLink="/systemsettings">Settings<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-cog"></span></a></li>
         <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn"><a href="#" (click)="session.logout()">Log out<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-log-out"></span></a></li>
     `
 })

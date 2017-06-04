@@ -29,6 +29,8 @@ import { ProductVariantEditComponent } from "./component/product-variant-edit.co
 import { MailTemplateListComponent } from "./component/mail-template-list.component";
 import { MailTemplateEditComponent } from "./component/mail-template-edit.component";
 import { ResetPasswordComponent } from "./component/reset-password.component";
+import { SystemSettingListComponent } from "./component/systemsetting-list.component";
+import { SystemSettingEditComponent } from "./component/systemsetting-edit.component";
 
 @NgModule({
     imports: [
@@ -52,7 +54,9 @@ import { ResetPasswordComponent } from "./component/reset-password.component";
         ProductEditComponent,
         ProductVariantEditComponent,
         NavComponent,
-        ResetPasswordComponent
+        ResetPasswordComponent,
+        SystemSettingListComponent,
+        SystemSettingEditComponent
     ],
     providers: [
         AuthService,

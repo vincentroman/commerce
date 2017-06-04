@@ -3,11 +3,14 @@ import { Container } from "typedi";
 import { MailTemplate, MailTemplateType } from "../entity/MailTemplate";
 import { UserDao } from "../dao/UserDao";
 import { User } from "../entity/User";
+import { SystemSettingId, SystemSettingType } from "../entity/SystemSetting";
+import { SystemSettingDao } from "../dao/SystemSettingDao";
 
 export class DefaultSettingsCheck {
     public static async check(): Promise<void> {
         await DefaultSettingsCheck.checkAdminUser();
         await DefaultSettingsCheck.checkMailTemplates();
+        await DefaultSettingsCheck.checkSystemSettings();
     }
 
     private static async checkAdminUser(): Promise<void> {
@@ -66,5 +69,20 @@ export class DefaultSettingsCheck {
             template.body = "";
             await dao.save(template);
         }
+
+        // Reset Password
+        template = await dao.getByType(MailTemplateType.ResetPassword);
+        if (template === undefined || template == null) {
+            template = new MailTemplate();
+            template.type = MailTemplateType.ResetPassword;
+            template.subject = "";
+            template.body = "";
+            await dao.save(template);
+        }
+    }
+
+    private static async checkSystemSettings(): Promise<void> {
+        let dao: SystemSettingDao = Container.get(SystemSettingDao);
+        dao.createIfNotExists(SystemSettingId.MailServer_Host, SystemSettingType.String, "localhost", "SMTP Server");
     }
 }
