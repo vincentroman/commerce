@@ -39,4 +39,16 @@ export class AuthService {
                     throw this.httpService.handleError(error);
                 });
     }
+
+    resetPassword(email: string): Promise<void> {
+        let payload: any = {
+            email: email
+        };
+        return this.http.post(this.httpService.getUrl("auth/pwreset"), payload, this.httpService.getOptions())
+                .toPromise()
+                .then(res => { return; })
+                .catch(error => {
+                    throw this.httpService.handleError(error);
+                });
+    }
 }

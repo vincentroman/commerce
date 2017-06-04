@@ -15,10 +15,12 @@ import { ProductEditComponent } from "./component/product-edit.component";
 import { ProductVariantEditComponent } from "./component/product-variant-edit.component";
 import { MailTemplateListComponent } from "./component/mail-template-list.component";
 import { MailTemplateEditComponent } from "./component/mail-template-edit.component";
+import { ResetPasswordComponent } from "./component/reset-password.component";
 
 const appRoutes: Routes = [
     // Guest routes
     { path: "login", component: LoginComponent, canActivate: [GuestGuard] },
+    { path: "pwreset", component: ResetPasswordComponent, canActivate: [GuestGuard] },
 
     // Authenticated routes
     { path: "home", component: HomeComponent, canActivate: [AuthGuard] },

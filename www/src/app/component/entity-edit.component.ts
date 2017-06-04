@@ -43,7 +43,6 @@ export abstract class EntityEditComponent<T extends RestModel & Serializable<T>>
     submit(): void {
         this.submitting = true;
         this.success = false;
-        console.log("Submitting %s", JSON.stringify(this.entity));
         this.crudService.save(this.entity)
             .then(entity => {
                 this.entity = entity;
