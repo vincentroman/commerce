@@ -18,7 +18,7 @@
         "lifetime": "12h"
     },
     "mail": {
-        "logAndDiscard": false,
+        "logAndDiscard": true,
         "sender": {
             "name": "Your Company Ltd.",
             "email": "no-reply@weweave.net"

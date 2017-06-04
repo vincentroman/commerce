@@ -75,8 +75,13 @@ export class DefaultSettingsCheck {
         if (template === undefined || template == null) {
             template = new MailTemplate();
             template.type = MailTemplateType.ResetPassword;
-            template.subject = "";
-            template.body = "";
+            template.subject = "Reset your password";
+            template.body = "Dear {{firstname}} {{lastname}},\n\n" +
+                "you've requested a password reset on our website.\n\n" +
+                "Please follow this link to choose a new password:\n\n" +
+                "https://weweave.net/auth/pwchange/{{uuid}}\n\n" +
+                "If you did not initiate this password reset request, don't worry. " +
+                "Your password won't change unless you use the link above.";
             await dao.save(template);
         }
     }

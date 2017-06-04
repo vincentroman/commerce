@@ -5,10 +5,16 @@ import { BaseRouter } from "./BaseRouter";
 import { Config } from '../util/Config';
 import { User } from '../entity/User';
 import { UserDao } from '../dao/UserDao';
+import { PendingActionDao } from "../dao/PendingActionDao";
+import { PendingAction, ActionType } from "../entity/PendingAction";
+import { MailTemplateDao } from "../dao/MailTemplateDao";
+import { MailTemplateType } from "../entity/MailTemplate";
+import { Email, Address } from "../util/Email";
 
 class AuthRouter extends BaseRouter {
     protected init(): void {
         this.addRoutePost('/login', this.login);
+        this.addRoutePost('/pwreset', this.resetPassword);
         this.addRoutePost('/logout', this.logout, true);
     }
 
@@ -29,6 +35,35 @@ class AuthRouter extends BaseRouter {
     }
 
     private logout(req: Request, res: Response, next: NextFunction): void {
+        this.ok(res);
+    }
+
+    private resetPassword(req: Request, res: Response, next: NextFunction): void {
+        let userDao: UserDao = Container.get(UserDao);
+        let actionDao: PendingActionDao = Container.get(PendingActionDao);
+        let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
+        userDao.getByEmail(req.body.email).then((user) => {
+            if (user.customer) {
+                let action: PendingAction = new PendingAction();
+                action.type = ActionType.ResetPassword;
+                action.setPayload({
+                    userId: user.id
+                });
+                actionDao.save(action).then(action => {
+                    mailTemplateDao.getByType(MailTemplateType.ResetPassword).then(mailTemplate => {
+                        let params = {
+                            firstname: user.customer.firstname,
+                            lastname: user.customer.lastname,
+                            uuid: action.uuid
+                        };
+                        let recipient: Address = {
+                            email: user.customer.email
+                        };
+                        Email.sendByTemplate(mailTemplate, recipient, params);
+                    });
+                });
+            }
+        });
         this.ok(res);
     }
 
