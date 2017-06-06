@@ -26,7 +26,7 @@ export class LoginComponent {
         this.submitting = true;
         this.authService.login(this.model.email, this.model.password)
             .then(res => {
-                this.router.navigate(['/home']);
+                this.router.navigate(["/home"]);
             })
             .catch(res => {
                 this.loginError = true;

@@ -1,3 +1,4 @@
+import * as $ from "jquery";
 import { Component } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { EntityEditComponent } from "./entity-edit.component";
@@ -60,7 +61,7 @@ export class ProductEditComponent extends EntityEditComponent<Product> {
             if (broker.uuid === uuid) {
                 result = broker;
             }
-        })
+        });
         return result;
     }
 
@@ -70,7 +71,7 @@ export class ProductEditComponent extends EntityEditComponent<Product> {
             if (variant.uuid === uuid) {
                 result = variant;
             }
-        })
+        });
         return result;
     }
 

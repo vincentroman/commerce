@@ -1,0 +1,14 @@
+.git/
+.gitignore
+
+.tscache/
+dist/
+node_modules/
+test/
+
+www/.tscache/
+www/dist/
+www/node_modules/
+
+**/.baseDir.js
+**/.baseDir.ts
