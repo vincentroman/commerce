@@ -1,4 +1,4 @@
-import * as str1n9 from 'str1n9';
+import * as pwGen from 'generate-password';
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
 import { BaseRouter } from "./BaseRouter";
@@ -47,7 +47,10 @@ class OrderNotificationRouter extends BaseRouter {
             .catch(e => {
                 let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
                 let user: User = new User();
-                let plainPassword: string = str1n9.randomString(12, 'cln');
+                let plainPassword: string = pwGen.generate({
+                    length: 12,
+                    numbers: true
+                });
                 user.customer = customer;
                 user.email = customer.email;
                 user.setPlainPassword(plainPassword).then(() => {

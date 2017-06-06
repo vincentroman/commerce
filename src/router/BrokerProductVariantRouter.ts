@@ -25,7 +25,7 @@ class BrokerProductVariantRouter extends BaseRouter {
             dao.getByProduct(product).then(entities => {
                 res.send(entities.map(entity => entity.serialize()));
             });
-        }).catch(e => this.notFound(res));;
+        }).catch(e => this.notFound(res));
     }
 
     private save(req: Request, res: Response, next: NextFunction): void {

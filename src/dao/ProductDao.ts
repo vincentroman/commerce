@@ -10,11 +10,9 @@ export class ProductDao extends Dao<Product> {
     }
 
     public async getAll(): Promise<Product[]> {
-        return this.getRepository().find(undefined, {
-            alias: "product",
-            orderBy: {
-                title: "ASC"
-            }
-        });
+        return this.getRepository()
+            .createQueryBuilder("p")
+            .orderBy("p.title", "ASC")
+            .getMany();
     }
 }

@@ -8,7 +8,11 @@ export abstract class Dao<T extends DbEntity<T>> {
     }
 
     public async getByUuid(uuid: string): Promise<T> {
-        return this.getRepository().findOne({uuid: uuid});
+        return this.getRepository()
+            .createQueryBuilder("e")
+            .where("e.uuid = :uuid")
+            .setParameters({uuid: uuid})
+            .getOne();
     }
 
     public async getAll(): Promise<T[]> {

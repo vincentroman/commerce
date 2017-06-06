@@ -49,7 +49,7 @@ export class BrokerProductVariantDao extends Dao<BrokerProductVariant> {
     }
 
     public async addOrReplace(broker: Broker, productVariant: ProductVariant, idForBroker: string): Promise<BrokerProductVariant> {
-        let bpv: BrokerProductVariant = await this.getByBrokerProductVariant(broker, productVariant);;
+        let bpv: BrokerProductVariant = await this.getByBrokerProductVariant(broker, productVariant);
         if (!idForBroker) {
             if (bpv) {
                 await this.delete(bpv);
