@@ -2,6 +2,7 @@ import "reflect-metadata";
 import * as EventEmitter from "events";
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import * as path from 'path';
 import { createConnection, Connection } from "typeorm";
 import { Config } from './util/Config';
 import { DefaultSettingsCheck } from "./util/DefaultSettingsCheck";
@@ -55,11 +56,6 @@ export class App extends EventEmitter {
 
     private setupRoutes(): void {
         let router = express.Router();
-        router.get('/', (req, res, next) => {
-            res.json({
-                message: 'Hello World!'
-            });
-        });
         this.express.use('/', router);
         this.express.use('/api/v1/auth', AuthRouter);
         this.express.use('/api/v1/broker', BrokerRouter);
@@ -74,6 +70,32 @@ export class App extends EventEmitter {
         this.express.use('/api/v1/productvariant', ProductVariantRouter);
         this.express.use('/api/v1/systemsetting', SystemSettingRouter);
         this.express.use('/api/v1/user', UserRouter);
+        this.addStaticFilesRoutes();
+    }
+
+    private addStaticFilesRoutes(): void {
+        let router = express.Router();
+
+        let staticFilesPaths = [
+            path.join(__dirname, "../www/dist"),
+            path.join(__dirname, "../www/src")
+        ];
+        staticFilesPaths.forEach(staticFilesPath => {
+            console.log("Adding static files path %s", staticFilesPath);
+            this.express.use(express.static(staticFilesPath));
+        });
+
+        // node_modules
+        let nodePath = path.join(__dirname, "../www/node_modules");
+        console.log("Adding route to node_modules in %s", nodePath);
+        this.express.use('/node_modules', express.static(nodePath));
+
+        // HTML5 Push State
+        let fallbackPath = path.join(__dirname, "../www/src/index.html");
+        console.log("Adding fallback route to index.html as %s", fallbackPath);
+        this.express.get('*', function(request, response) {
+            response.sendFile(fallbackPath);
+        });
     }
 
     private async setupOrm(): Promise<Connection> {
