@@ -5,9 +5,12 @@ import { App } from './App';
 
 //import App from './App';
 
+console.log("Starting server...");
+
 debug('ts-express:server');
 
 const port = normalizePort(process.env.PORT || 3000);
+console.log("Setting port to %d...", port);
 App.getInstance().express.set('port', port);
 
 const server = http.createServer(App.getInstance().express);

@@ -1,5 +1,6 @@
 node_modules/
 .tscache/
+*.tmp.*
 dist/
 **/.baseDir.js
 **/.baseDir.ts

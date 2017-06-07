@@ -1,5 +1,6 @@
 .git/
 .gitignore
+package-lock.json
 
 .tscache/
 dist/
@@ -9,6 +10,7 @@ test/
 www/.tscache/
 www/dist/
 www/node_modules/
+www/package-lock.json
 
 **/.baseDir.js
 **/.baseDir.ts

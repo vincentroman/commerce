@@ -1,4 +1,3 @@
-import * as $ from "jquery";
 import { Component } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { EntityEditComponent } from "./entity-edit.component";
@@ -104,7 +103,7 @@ export class ProductEditComponent extends EntityEditComponent<Product> {
         this.bpvEditMode.brokerUuid = brokerUuid;
         this.bpvEditMode.variantUuid = productVariantUuid;
         window.setTimeout(function() {
-            $("#edit-" + brokerUuid + "-" + productVariantUuid).focus();
+            document.getElementById("edit-" + brokerUuid + "-" + productVariantUuid).focus();
         }, 100);
     }
 
