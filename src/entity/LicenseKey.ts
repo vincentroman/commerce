@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import { Entity, Column, ManyToOne } from "typeorm";
 import { DbEntity } from "./DbEntity";
 import { ProductVariant } from "./ProductVariant";
@@ -23,12 +24,16 @@ export class LicenseKey extends DbEntity<LicenseKey> {
 
     public serialize(): Object {
         return Object.assign(super.serialize(), {
-            // TODO
+            licenseKey: this.licenseKey,
+            issueDate: moment(this.createDate).format("YYYY-MM-DD HH:mm:ss"),
+            productVariant: (this.productVariant ? this.productVariant.serialize() : null),
+            customer: (this.customer ? this.customer.serialize() : null),
+            purchaseItem: (this.purchaseItem ? this.purchaseItem.serialize() : null)
         });
     }
 
     public deserialize(o: Object): LicenseKey {
-        // TODO
+        // Deserializing not supported
         return this;
     }
 }

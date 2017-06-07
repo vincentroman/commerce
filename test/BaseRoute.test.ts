@@ -8,7 +8,7 @@ import { App } from '../src/App';
 
 chai.use(chaiHttp);
 const expect = chai.expect;
-let endpoint = '/';
+let endpoint = '/login';
 
 describe('GET '+endpoint, () => {
     before(done => {
@@ -16,17 +16,10 @@ describe('GET '+endpoint, () => {
         App.getInstance().on("appStarted", () => { done(); });
     });
 
-    it('should be json', () => {
+    it('should be html', () => {
         return chai.request(App.getInstance().express).get(endpoint)
         .then(res => {
-            expect(res.type).to.eql('application/json');
-        });
-    });
-
-    it('should have a message prop', () => {
-        return chai.request(App.getInstance().express).get(endpoint)
-        .then(res => {
-            expect(res.body.message).to.eql('Hello World!');
+            expect(res).to.have.header('content-type', /^text\/html/);
         });
     });
 });

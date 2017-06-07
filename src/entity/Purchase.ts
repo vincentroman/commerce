@@ -20,12 +20,15 @@ export class Purchase extends DbEntity<Purchase> {
 
     public serialize(): Object {
         return Object.assign(super.serialize(), {
-            // TODO
+            customer: (this.customer ? this.customer.serialize() : null),
+            broker: (this.broker ? this.broker.serialize() : null),
+            itemIds: (this.items ? this.items.map(item => item.uuid) : []),
+            referenceId: this.referenceId
         });
     }
 
     public  deserialize(o: Object): Purchase {
-        // TODO
+        // Deserializing not supported
         return this;
     }
 }

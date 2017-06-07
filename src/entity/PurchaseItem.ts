@@ -16,11 +16,14 @@ export class PurchaseItem extends DbEntity<PurchaseItem> {
 
     public serialize(): Object {
         return Object.assign(super.serialize(), {
+            purchase: (this.purchase ? this.purchase.serialize() : null),
+            productVariant: (this.productVariant ? this.productVariant.serialize() : null),
+            quantity: this.quantity
         });
     }
 
     public  deserialize(o: Object): PurchaseItem {
-        // TODO
+        // Deserializing not supported
         return this;
     }
 }
