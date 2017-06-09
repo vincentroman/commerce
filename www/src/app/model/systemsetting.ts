@@ -1,24 +1,22 @@
 import { RestModel } from "./rest-model";
-import { Serializable } from "./serializable";
 
-export class SystemSetting extends RestModel implements Serializable<SystemSetting> {
+export class SystemSetting extends RestModel<SystemSetting> {
     settingId: number;
     description: string;
     type: SystemSettingType;
     value: string;
 
     serialize(): Object {
-        return {
-            "uuid": this.uuid,
+        return Object.assign(super.serialize(), {
             "id": this.settingId,
             "type": this.type,
             "description": this.description,
             "value": this.value
-        };
+        });
     }
 
     deserialize(input: any): SystemSetting {
-        this.uuid = input.uuid;
+        this._deserialize(input);
         this.settingId = input.id;
         this.type = input.type;
         this.description = input.description;

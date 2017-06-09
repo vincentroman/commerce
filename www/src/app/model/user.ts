@@ -1,8 +1,7 @@
 import { RestModel } from "./rest-model";
-import { Serializable } from "./serializable";
 import { Customer } from "./customer";
 
-export class User extends RestModel implements Serializable<User> {
+export class User extends RestModel<User> {
     email: string;
     password: string;
     roleAdmin: boolean = false;
@@ -10,18 +9,17 @@ export class User extends RestModel implements Serializable<User> {
     customer: Customer;
 
     serialize(): Object {
-        return {
-            "uuid": this.uuid,
+        return Object.assign(super.serialize(), {
             "email": this.email,
             "password": this.password,
             "roleAdmin": this.roleAdmin,
             "roleCustomer": this.roleCustomer,
             "customer": (this.customer ? this.customer.serialize() : null),
-        };
+        });
     }
 
     deserialize(input: any): User {
-        this.uuid = input.uuid;
+        this._deserialize(input);
         this.email = input.email;
         this.password = "";
         this.roleAdmin = input.roleAdmin;

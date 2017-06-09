@@ -18,6 +18,8 @@ import { MailTemplateEditComponent } from "./component/mail-template-edit.compon
 import { ResetPasswordComponent } from "./component/reset-password.component";
 import { SystemSettingListComponent } from "./component/systemsetting-list.component";
 import { SystemSettingEditComponent } from "./component/systemsetting-edit.component";
+import { LicenseKeyListComponent } from "./component/license-key-list.component";
+import { LicenseKeyEditComponent } from "./component/license-key-edit.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -35,6 +37,10 @@ const appRoutes: Routes = [
     { path: "customers", component: CustomerListComponent, canActivate: [AdminGuard] },
     { path: "customers/new", component: CustomerEditComponent, canActivate: [AdminGuard] },
     { path: "customers/edit/:uuid", component: CustomerEditComponent, canActivate: [AdminGuard] },
+
+    { path: "licensekeys", component: LicenseKeyListComponent, canActivate: [AdminGuard] },
+    { path: "licensekeys/new", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
+    { path: "licensekeys/edit/:uuid", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
 
     { path: "mailtemplates", component: MailTemplateListComponent, canActivate: [AdminGuard] },
     { path: "mailtemplates/edit/:uuid", component: MailTemplateEditComponent, canActivate: [AdminGuard] },

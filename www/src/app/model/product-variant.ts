@@ -1,8 +1,7 @@
 import { RestModel } from "./rest-model";
-import { Serializable } from "./serializable";
 import { Product } from "./product";
 
-export class ProductVariant extends RestModel implements Serializable<ProductVariant> {
+export class ProductVariant extends RestModel<ProductVariant> {
     title: string;
     product: Product;
     type: ProductVariantType;
@@ -11,19 +10,18 @@ export class ProductVariant extends RestModel implements Serializable<ProductVar
     price: number;
 
     serialize(): Object {
-        return {
-            "uuid": this.uuid,
+        return Object.assign(super.serialize(), {
             "title": this.title,
             "product": (this.product ? this.product.serialize() : null),
             "type": this.type,
             "numDomains": this.numDomains,
             "numSupportYears": this.numSupportYears,
             "price": this.price
-        };
+        });
     }
 
     deserialize(input: any): ProductVariant {
-        this.uuid = input.uuid;
+        this._deserialize(input);
         this.title = input.title;
         if (input.product) {
             this.product = new Product().deserialize(input.product);

@@ -1,11 +1,10 @@
 import { RestModel } from "./rest-model";
-import { Serializable } from "./serializable";
 import { ProductVariant } from "./product-variant";
 import { Customer } from "./customer";
 import * as moment from "moment";
 import { PurchaseItem } from "./purchase-item";
 
-export class LicenseKey extends RestModel implements Serializable<LicenseKey> {
+export class LicenseKey extends RestModel<LicenseKey> {
     licenseKey: string;
     issueDate: moment.Moment;
     productVariant: ProductVariant;
@@ -13,13 +12,13 @@ export class LicenseKey extends RestModel implements Serializable<LicenseKey> {
     purchaseItem: PurchaseItem;
 
     serialize(): Object {
-        return {
+        return Object.assign(super.serialize(), {
             // Not supported
-        };
+        });
     }
 
     deserialize(input: any): LicenseKey {
-        this.uuid = input.uuid;
+        this._deserialize(input);
         this.licenseKey = input.licenseKey;
         this.issueDate = (input.issueDate ? moment(input.issueDate, "YYYY-MM-DD HH:mm:ss") : null);
         this.productVariant = (input.productVariant ? new ProductVariant().deserialize(input.productVariant) : null);

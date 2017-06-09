@@ -4,9 +4,8 @@ import "rxjs/add/operator/toPromise";
 
 import { HttpService } from "./http.service";
 import { RestModel } from "../model/rest-model";
-import { Serializable } from "../model/serializable";
 
-export abstract class CrudService<T extends RestModel & Serializable<T>> {
+export abstract class CrudService<T extends RestModel<T>> {
     constructor(
         protected httpService: HttpService,
         protected http: Http

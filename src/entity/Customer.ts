@@ -36,4 +36,18 @@ export class Customer extends DbEntity<Customer> {
         this.country        = o['country'];
         return this;
     }
+
+    public printableName(): string {
+        let tokens = [];
+        if (this.firstname) {
+            tokens.push(this.firstname);
+        }
+        if (this.lastname) {
+            tokens.push(this.lastname);
+        }
+        if (this.company) {
+            tokens.push("(" + this.company + ")");
+        }
+        return tokens.join(" ");
+    }
 }

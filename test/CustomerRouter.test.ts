@@ -5,6 +5,8 @@ import chaiHttp = require('chai-http');
 import { Config } from '../src/util/Config';
 Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
+import { CustomerDao } from "../src/dao/CustomerDao";
+import { Container } from "typedi";
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -131,6 +133,107 @@ describe('Router '+endpoint, () => {
             .catch(res => {
                 expect(res.status).to.equal(404);
             });
+        });
+    });
+
+    describe('GET '+endpoint+'suggest', () => {
+        let c1uuid = "";
+
+        after(done => {
+            let customerDao: CustomerDao = Container.get(CustomerDao);
+            customerDao.removeAll().then(() => {
+                done();
+            });
+        });
+
+        it('should return an empty list without any customers', () => {
+            return chai.request(App.getInstance().express).get(endpoint+'suggest')
+            .then(res => {
+                expect(res.status).to.equal(200);
+                expect(res).to.be.json;
+                expect(res.body).to.be.an('object');
+                expect(Object.keys(res.body)).to.have.lengthOf(0);
+            });
+        });
+
+        it('should return an ordered list of all customers without keyword and exclude', () => {
+            let customer1 = {
+                company: "weweave",
+                firstname: "John",
+                lastname: "Doe",
+                email: "no-reply@weweave.net",
+                country: "DE"
+            };
+            let customer2 = {
+                company: "",
+                firstname: "Andrew",
+                lastname: "Miller",
+                email: "no-reply@weweave.net",
+                country: "DE"
+            };
+            let customer3 = {
+                company: "",
+                firstname: "Bernd",
+                lastname: "Mustermann",
+                email: "no-reply@mustermann.net",
+                country: "DE"
+            };
+            return chai.request(App.getInstance().express).put(endpoint+'save').send(customer1).then((res) => {
+                c1uuid = res.body.uuid;
+                return chai.request(App.getInstance().express).put(endpoint+'save').send(customer2).then(() => {
+                    return chai.request(App.getInstance().express).put(endpoint+'save').send(customer3).then(() => {
+                        return chai.request(App.getInstance().express).get(endpoint+'suggest')
+                            .then(res => {
+                                expect(res.status).to.equal(200);
+                                expect(res).to.be.json;
+                                expect(res.body).to.be.an('object');
+                                expect(Object.keys(res.body)).to.have.lengthOf(3);
+                                let uuids = Object.keys(res.body);
+                                expect(res.body[uuids[0]]).to.equal("Andrew Miller");
+                                expect(res.body[uuids[1]]).to.equal("Bernd Mustermann");
+                                expect(res.body[uuids[2]]).to.equal("John Doe (weweave)");
+                            });
+                    });
+                });
+            });
+        });
+
+        it('should return an ordered list (1) of a subset of customers with keyword provided', () => {
+            return chai.request(App.getInstance().express).get(endpoint+'suggest?s=mill')
+                    .then(res => {
+                        expect(res.status).to.equal(200);
+                        expect(res).to.be.json;
+                        expect(res.body).to.be.an('object');
+                        expect(Object.keys(res.body)).to.have.lengthOf(1);
+                        let uuids = Object.keys(res.body);
+                        expect(res.body[uuids[0]]).to.equal("Andrew Miller");
+                    });
+        });
+
+        it('should return an ordered list (2) of a subset of customers with keyword provided', () => {
+            return chai.request(App.getInstance().express).get(endpoint+'suggest?s=w')
+                    .then(res => {
+                        expect(res.status).to.equal(200);
+                        expect(res).to.be.json;
+                        expect(res.body).to.be.an('object');
+                        expect(Object.keys(res.body)).to.have.lengthOf(2);
+                        let uuids = Object.keys(res.body);
+                        expect(res.body[uuids[0]]).to.equal("Andrew Miller");
+                        expect(res.body[uuids[1]]).to.equal("John Doe (weweave)");
+                    });
+        });
+
+        it('should return an ordered list of a subset of customers with exclude parameter provided', () => {
+            return chai.request(App.getInstance().express).get(endpoint+'suggest?exclude='+c1uuid)
+                    .then(res => {
+                        expect(res.status).to.equal(200);
+                        expect(res).to.be.json;
+                        expect(res.body).to.be.an('object');
+                        expect(Object.keys(res.body)).to.have.lengthOf(2);
+                        let uuids = Object.keys(res.body);
+                        expect(res.body[uuids[0]]).to.equal("Andrew Miller");
+                        expect(res.body[uuids[1]]).to.equal("Bernd Mustermann");
+                    });
         });
     });
 });

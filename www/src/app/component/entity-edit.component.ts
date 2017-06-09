@@ -2,9 +2,8 @@ import { Component, Input, OnInit } from "@angular/core";
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import { CrudService } from "../service/crud.service";
 import { RestModel } from "../model/rest-model";
-import { Serializable } from "../model/serializable";
 
-export abstract class EntityEditComponent<T extends RestModel & Serializable<T>> implements OnInit {
+export abstract class EntityEditComponent<T extends RestModel<T>> implements OnInit {
     entity: T = this.newTypeInstance();
     submitting: boolean = false;
     success: boolean = false;

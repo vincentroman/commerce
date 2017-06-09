@@ -14,6 +14,10 @@
             '@angular/router': 'npm:@angular/router/bundles/router.umd.js',
             '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
             'rxjs': 'npm:rxjs',
+            'moment': 'npm:moment/moment.js',
+            'jquery': 'npm:jquery/dist/jquery.min.js',
+            'typeahead.js': 'npm:typeahead.js/dist/typeahead.jquery.min.js',
+            'bloodhound': 'npm:typeahead.js/dist/bloodhound.min.js',
             'angular-in-memory-web-api': 'npm:angular-in-memory-web-api'
         },
         packages: {

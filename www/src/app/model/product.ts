@@ -1,18 +1,16 @@
 import { RestModel } from "./rest-model";
-import { Serializable } from "./serializable";
 
-export class Product extends RestModel implements Serializable<Product> {
+export class Product extends RestModel<Product> {
     title: string;
 
     serialize(): Object {
-        return {
-            "uuid": this.uuid,
+        return Object.assign(super.serialize(), {
             "title": this.title
-        };
+        });
     }
 
     deserialize(input: any): Product {
-        this.uuid = input.uuid;
+        this._deserialize(input);
         this.title = input.title;
         return this;
     }

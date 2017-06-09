@@ -1,22 +1,20 @@
 import { RestModel } from "./rest-model";
-import { Serializable } from "./serializable";
 
-export class MailTemplate extends RestModel implements Serializable<MailTemplate> {
+export class MailTemplate extends RestModel<MailTemplate> {
     type: MailTemplateType;
     subject: string;
     body: string;
 
     serialize(): Object {
-        return {
-            "uuid": this.uuid,
+        return Object.assign(super.serialize(), {
             "type": this.type,
             "subject": this.subject,
             "body": this.body
-        };
+        });
     }
 
     deserialize(input: any): MailTemplate {
-        this.uuid = input.uuid;
+        this._deserialize(input);
         this.type = input.type;
         this.subject = input.subject;
         this.body = input.body;

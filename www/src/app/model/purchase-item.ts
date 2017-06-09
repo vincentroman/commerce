@@ -1,21 +1,20 @@
 import { RestModel } from "./rest-model";
-import { Serializable } from "./serializable";
 import { ProductVariant } from "./product-variant";
 import { Purchase } from "./purchase";
 
-export class PurchaseItem extends RestModel implements Serializable<PurchaseItem> {
+export class PurchaseItem extends RestModel<PurchaseItem> {
     purchase: Purchase;
     productVariant: ProductVariant;
     quantity: number;
 
     serialize(): Object {
-        return {
+        return Object.assign(super.serialize(), {
             // Not supported
-        };
+        });
     }
 
     deserialize(input: any): PurchaseItem {
-        this.uuid = input.uuid;
+        this._deserialize(input);
         this.purchase = (input.purchase ? new Purchase().deserialize(input.purchase) : null);
         this.productVariant = (input.productVariant ? new ProductVariant().deserialize(input.productVariant) : null);
         this.quantity = input.quantity;

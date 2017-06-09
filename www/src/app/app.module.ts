@@ -31,6 +31,8 @@ import { MailTemplateEditComponent } from "./component/mail-template-edit.compon
 import { ResetPasswordComponent } from "./component/reset-password.component";
 import { SystemSettingListComponent } from "./component/systemsetting-list.component";
 import { SystemSettingEditComponent } from "./component/systemsetting-edit.component";
+import { LicenseKeyListComponent } from "./component/license-key-list.component";
+import { LicenseKeyEditComponent } from "./component/license-key-edit.component";
 
 @NgModule({
     imports: [
@@ -47,6 +49,8 @@ import { SystemSettingEditComponent } from "./component/systemsetting-edit.compo
         CustomerEditComponent,
         CustomerListComponent,
         HomeComponent,
+        LicenseKeyListComponent,
+        LicenseKeyEditComponent,
         LoginComponent,
         MailTemplateEditComponent,
         MailTemplateListComponent,

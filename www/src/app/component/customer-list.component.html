@@ -11,6 +11,7 @@
             <th>Lastname</th>
             <th>Company</th>
             <th>Email Address</th>
+            <th>Created</th>
         </tr>
     </thead>
     <tbody>
@@ -19,6 +20,7 @@
             <td>{{customer.lastname}}</td>
             <td>{{customer.company}}</td>
             <td>{{customer.email}}</td>
+            <td>{{customer.createDate.format('YYYY-MM-DD')}}</td>
         </tr>
     </tbody>
 </table>

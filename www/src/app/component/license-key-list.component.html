@@ -1,0 +1,29 @@
+<div class="page-header">
+    <div class="btn-toolbar pull-right">
+        <a routerLink="/licensekeys/new" class="btn btn-primary btn-lg" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
+    </div>
+    <h1>License Keys</h1>
+</div>
+<table class="table table-hover" [hidden]="!entities || !entities.length">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Variant</th>
+            <th>Customer</th>
+            <th>Created</th>
+            <th>Issued</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let licenseKey of entities" class="clickable" (click)="showEntity(licenseKey.uuid)">
+            <td><span *ngIf="licenseKey.productVariant && licenseKey.productVariant.product">{{licenseKey.productVariant.product.title}}</span></td>
+            <td><span *ngIf="licenseKey.productVariant">{{licenseKey.productVariant.title}}</span></td>
+            <td><span *ngIf="licenseKey.customer">{{licenseKey.customer.printableName()}}</span></td>
+            <td>{{licenseKey.createDate.format('YYYY-MM-DD')}}</td>
+            <td><span *ngIf="licenseKey.issueDate">{{licenseKey.issueDate.format('YYYY-MM-DD')}}</span></td>
+        </tr>
+    </tbody>
+</table>
+<p [hidden]="!entities ||entities.length">
+    No records found.
+</p>

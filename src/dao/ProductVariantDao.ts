@@ -10,6 +10,14 @@ export class ProductVariantDao extends Dao<ProductVariant> {
         return this.getEm().getRepository(ProductVariant);
     }
 
+    public async getAll(): Promise<ProductVariant[]> {
+        return this.getRepository()
+            .createQueryBuilder("pv")
+            .innerJoinAndSelect("pv.product", "product")
+            .orderBy("pv.title", "ASC")
+            .getMany();
+    }
+
     public async getAllForProduct(product: Product): Promise<ProductVariant[]> {
         return this.getRepository()
             .createQueryBuilder("pv")
