@@ -3,6 +3,7 @@ import { Http } from "@angular/http";
 import { HttpService } from "./http.service";
 import { CrudService } from "./crud.service";
 import { LicenseKey } from "../model/license-key";
+import { ProductVariantType } from "../model/product-variant";
 
 @Injectable()
 export class LicenseKeyService extends CrudService<LicenseKey> {
@@ -35,4 +36,26 @@ export class LicenseKeyService extends CrudService<LicenseKey> {
                 return this.httpService.handleError(error);
             });
     }
+
+    generate(details: LicenseGenerationDetails): Promise<string> {
+        return this.http.post(this.httpService.getUrl(this.getPath() + "/generate"), details, this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                return res.json().licenseKey;
+            })
+            .catch(error => {
+                return this.httpService.handleError(error);
+            });
+    }
+}
+
+export interface LicenseGenerationDetails {
+    productUuid: string;
+    type: "trial" | "limited" | "lifetime";
+    uuid: string;
+    onlineVerification: boolean;
+    owner: string;
+    validMonths: number;
+    wildcard: boolean;
+    domains: string[];
 }

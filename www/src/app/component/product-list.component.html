@@ -8,11 +8,13 @@
     <thead>
         <tr>
             <th>Title</th>
+            <th>License Key ID</th>
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let product of entities" class="clickable" (click)="showEntity(product.uuid)">
             <td>{{product.title}}</td>
+            <td>{{product.licenseKeyIdentifier}}</td>
         </tr>
     </tbody>
 </table>

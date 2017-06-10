@@ -89,5 +89,9 @@ export class DefaultSettingsCheck {
     private static async checkSystemSettings(): Promise<void> {
         let dao: SystemSettingDao = Container.get(SystemSettingDao);
         dao.createIfNotExists(SystemSettingId.MailServer_Host, SystemSettingType.String, "localhost", "SMTP Server");
+        dao.createIfNotExists(SystemSettingId.LicenseKey_PrivateKey, SystemSettingType.MultiLine,
+            "", "RSA Private Key for License Key Encoding");
+        dao.createIfNotExists(SystemSettingId.LicenseKey_PublicKey, SystemSettingType.MultiLine,
+            "", "RSA Public Key for License Key Encoding");
     }
 }

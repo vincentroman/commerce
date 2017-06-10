@@ -13,7 +13,9 @@
     </div>
     <div class="form-group">
         <label for="subject">Value</label>
-        <input type="text" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" required="required" autofocus="autofocus" />
+        <input type="text" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" autofocus="autofocus" *ngIf="entity.type == 1" />
+        <input type="number" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" autofocus="autofocus" *ngIf="entity.type == 2" />
+        <textarea rows="10" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" autofocus="autofocus" *ngIf="entity.type == 3"></textarea>
     </div>
     <a routerLink="/systemsettings" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>

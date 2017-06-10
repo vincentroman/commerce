@@ -28,8 +28,8 @@ export class LicenseKeyEncoder {
             uuid:               this.uuid,
             onlineVerification: this.onlineVerification,
             product:            this.product,
-            issueDate:          moment(this.issueDate).format("yyyy-MM-dd"),
-            expiryDate:         moment(this.expiryDate).format("yyyy-MM-dd"),
+            issueDate:          moment(this.issueDate).format("YYYY-MM-DD"),
+            expiryDate:         moment(this.expiryDate).format("YYYY-MM-DD"),
             subject:            this.subject,
             owner:              this.owner
         };

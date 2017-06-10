@@ -12,7 +12,7 @@ export class SystemSetting extends DbEntity<SystemSetting> {
     @Column()
     type: SystemSettingType;
 
-    @Column()
+    @Column("text")
     value: string;
 
     public serialize(): Object {
@@ -34,7 +34,9 @@ export class SystemSetting extends DbEntity<SystemSetting> {
 }
 
 export enum SystemSettingId {
-    MailServer_Host = 1
+    MailServer_Host = 1,
+    LicenseKey_PrivateKey = 50,
+    LicenseKey_PublicKey = 51
 }
 
 export enum SystemSettingType {

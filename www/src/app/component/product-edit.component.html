@@ -14,6 +14,10 @@
         <label for="title">Product Title</label>
         <input type="text" id="title" name="title" placeholder="Product Title" class="form-control" [(ngModel)]="entity.title" required="required" autofocus="autofocus" />
     </div>
+    <div class="form-group">
+        <label for="licenseKeyIdentifier">Identifier in License Key</label>
+        <input type="text" id="licenseKeyIdentifier" name="licenseKeyIdentifier" placeholder="License Key Identifier" class="form-control" [(ngModel)]="entity.licenseKeyIdentifier" required="required" />
+    </div>
     <a routerLink="/products" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
 </form>

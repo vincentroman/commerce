@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { EntityEditComponent } from "./entity-edit.component";
-import { LicenseKeyService } from "../service/license-key.service";
+import { LicenseKeyService, LicenseGenerationDetails } from "../service/license-key.service";
 import { LicenseKey } from "../model/license-key";
 import { Product } from "../model/product";
 import { ProductVariantService } from "../service/product-variant.service";
@@ -24,10 +24,9 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> {
     products: Product[] = [];
     productVariants: ProductVariant[] = [];
     licenseTypes = [
-        {id: ProductVariantType.Eval, label: "Evaluation"},
-        {id: ProductVariantType.LifetimeLicense, label: "Lifetime"},
-        {id: ProductVariantType.LimitedLicense, label: "Limited"},
-        {id: ProductVariantType.TrialLicense, label: "Trial"}
+        {id: "lifetime", label: "Lifetime"},
+        {id: "limited", label: "Limited"},
+        {id: "trial", label: "Trial"}
     ];
     model = {
         productVariantId: "",
@@ -39,7 +38,8 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> {
         validMonths: 0,
         wildcard: false,
         domains: "",
-        customerUuid: ""
+        customerUuid: "",
+        licenseKey: ""
     };
 
     constructor(
@@ -86,7 +86,54 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> {
     }
 
     private generateLicenseKey(): void {
-        // TODO
+        let details: LicenseGenerationDetails = {
+            productUuid: this.getProductVariantByUuid(this.model.productVariantId).product.uuid,
+            type: this.getLicenseType(),
+            uuid: this.model.uuid,
+            onlineVerification: this.model.onlineVerification,
+            domains: this.getDomainList(),
+            owner: this.model.owner,
+            validMonths: this.model.validMonths,
+            wildcard: this.model.wildcard
+        };
+        this.licenseKeyService.generate(details)
+            .then(licenseKey => {
+                this.model.licenseKey = licenseKey;
+                this.submitting = false;
+                this.success = true;
+            });
+    }
+
+    private getDomainList(): string[] {
+        let tokens: string[] = this.model.domains.split("\n");
+        let result: string[] = [];
+        tokens.forEach(token => {
+            token = token.trim();
+            if (token) {
+                result.push(token);
+            }
+        });
+        return result;
+    }
+
+    private getProductVariantByUuid(uuid: string): ProductVariant {
+        let result: ProductVariant = null;
+        this.productVariants.forEach(variant => {
+            if (variant.uuid === uuid) {
+                result = variant;
+            }
+        });
+        return result;
+    }
+
+    private getLicenseType(): "trial" | "limited" | "lifetime" {
+        if (this.model.licenseType === "lifetime") {
+            return "lifetime";
+        } else if (this.model.licenseType === "limited") {
+            return "limited";
+        } else {
+            return "trial";
+        }
     }
 
     public getProductVariantsForProduct(uuid: string): ProductVariant[] {
