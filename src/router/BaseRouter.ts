@@ -2,6 +2,7 @@ import { Router, Response, Request, NextFunction } from 'express';
 import { DbEntity } from '../entity/DbEntity';
 import { Config } from '../util/Config';
 import * as jwt from 'jsonwebtoken';
+import { JwtPayload } from "../util/JwtPayload";
 
 export abstract class BaseRouter {
     router: Router;
@@ -26,7 +27,12 @@ export abstract class BaseRouter {
         return payload.userId;
     }
 
-    protected getJwtPayload(req: Request): any {
+    protected getJwtCustomerUuid(req: Request): string {
+        let payload = this.getJwtPayload(req);
+        return payload.customerId;
+    }
+
+    protected getJwtPayload(req: Request): JwtPayload {
         let authHeader: string = req.header('Authorization');
         if (authHeader.startsWith('Bearer ')) {
             let token: string = authHeader.substr('Bearer '.length);
@@ -35,7 +41,7 @@ export abstract class BaseRouter {
                 algorithms: ['HS256'],
                 issuer: config.issuer
             };
-            let payload = jwt.verify(token, config.secret, options);
+            let payload = <JwtPayload>jwt.verify(token, config.secret, options);
             return payload;
         } else {
             throw new Error("No JWT header found");

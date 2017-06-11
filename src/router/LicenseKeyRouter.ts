@@ -27,8 +27,18 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
 
     protected init(): void {
         super.init();
+        this.addRouteGet('/my', this.my);
         this.addRoutePut('/assign', this.assign);
         this.addRoutePost('/generate', this.generate);
+        this.addRoutePost('/issue/:id', this.issue);
+    }
+
+    private my(req: Request, res: Response, next: NextFunction): void {
+        let dao: LicenseKeyDao = this.getDao();
+        let customerUuid = this.getJwtCustomerUuid(req);
+        dao.getAllCustomerLicenses(customerUuid).then(entities => {
+            res.send(entities.map(entity => entity.serialize()));
+        });
     }
 
     private assign(req: Request, res: Response, next: NextFunction): void {
@@ -86,6 +96,55 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         }).catch((e) => {
             this.badRequest(res);
         });
+    }
+
+    private issue(req: Request, res: Response, next: NextFunction): void {
+        let dao: LicenseKeyDao = this.getDao();
+        let id = req.params.id;
+        let customerUuid = this.getJwtCustomerUuid(req);
+        dao.getByUuid(id).then(entity => {
+            if (entity.customer) {
+                if (entity.customer.uuid === customerUuid) {
+                    let domains: string[] = req.body.domains;
+                    if (domains.length === entity.productVariant.numDomains) {
+                        let encoder: LicenseKeyEncoder = new LicenseKeyEncoder();
+                        let dl: DomainList = new DomainList(false);
+                        domains.forEach(domain => dl.addDomain(domain));
+                        encoder.issueDate = new Date();
+                        if (entity.productVariant.type === ProductVariantType.TrialLicense) {
+                            encoder.expiryDate = moment().add(1, "months").toDate();
+                        } else {
+                            encoder.expiryDate = moment().add(entity.productVariant.numSupportYears, "years").toDate();
+                        }
+                        encoder.description = entity.productVariant.product.title + " (" + entity.productVariant.numDomains + " domains)";
+                        encoder.onlineVerification = false;
+                        encoder.uuid = "";
+                        encoder.owner = entity.customer.printableName();
+                        encoder.product = entity.productVariant.product.licenseKeyIdentifier;
+                        encoder.subject = dl.getRegex().toString();
+                        encoder.type = this.getTypeString(entity.productVariant.type);
+                    } else {
+                        this.badRequest(res);
+                    }
+                } else {
+                    this.forbidden(res);
+                }
+            } else {
+                this.forbidden(res);
+            }
+        }).catch(e => this.notFound(res));
+    }
+
+    private getTypeString(type: ProductVariantType): string {
+        if (type === ProductVariantType.LifetimeLicense) {
+            return "lifetime";
+        } else if (type === ProductVariantType.LimitedLicense) {
+            return "limited";
+        } else if (type === ProductVariantType.TrialLicense) {
+            return "trial";
+        } else {
+            return "";
+        }
     }
 }
 

@@ -32,4 +32,17 @@ export class LicenseKeyDao extends Dao<LicenseKey> {
             .addOrderBy("lk.issueDate", "DESC")
             .getMany();
     }
+
+    public async getAllCustomerLicenses(customerUuid: string): Promise<LicenseKey[]> {
+        return this.getRepository()
+            .createQueryBuilder("lk")
+            .innerJoinAndSelect("lk.customer", "customer")
+            .innerJoinAndSelect("lk.productVariant", "productVariant")
+            .innerJoinAndSelect("productVariant.product", "product")
+            .where("customer.uuid = :customerUuid")
+            .orderBy("lk.createDate", "DESC")
+            .addOrderBy("lk.issueDate", "DESC")
+            .setParameters({customerUuid: customerUuid})
+            .getMany();
+    }
 }

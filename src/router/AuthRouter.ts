@@ -10,6 +10,7 @@ import { PendingAction, ActionType } from "../entity/PendingAction";
 import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { MailTemplateType } from "../entity/MailTemplate";
 import { Email, Address } from "../util/Email";
+import { JwtPayload } from "../util/JwtPayload";
 
 class AuthRouter extends BaseRouter {
     protected init(): void {
@@ -69,11 +70,10 @@ class AuthRouter extends BaseRouter {
 
     private createJwt(user: User): string {
         let config = Config.getInstance().get("session");
-        let payload = {
+        let payload: JwtPayload = {
             userId: user.uuid,
-            email: user.email,
-            roles: "",
-            customerId: ""
+            customerId: (user.customer ? user.customer.uuid : ""),
+            email: user.email
         };
         let options = {
             algorithm: 'HS256',
