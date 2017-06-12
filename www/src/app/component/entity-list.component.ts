@@ -13,8 +13,12 @@ export abstract class EntityListComponent<T extends RestModel<T>> implements OnI
 
     protected abstract getEditPath(): string;
 
-    ngOnInit(): void {
+    protected loadList(): void {
         this.crudService.list().then(entities => this.entities = entities);
+    }
+
+    ngOnInit(): void {
+        this.loadList();
     }
 
     showEntity(uuid: string): void {

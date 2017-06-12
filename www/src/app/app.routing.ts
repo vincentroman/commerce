@@ -20,6 +20,8 @@ import { SystemSettingListComponent } from "./component/systemsetting-list.compo
 import { SystemSettingEditComponent } from "./component/systemsetting-edit.component";
 import { LicenseKeyListComponent } from "./component/license-key-list.component";
 import { LicenseKeyEditComponent } from "./component/license-key-edit.component";
+import { CustomerGuard } from "./guard/customer-guard.service";
+import { LicenseKeyMyListComponent } from "./component/license-key-my-list.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -41,6 +43,7 @@ const appRoutes: Routes = [
     { path: "licensekeys", component: LicenseKeyListComponent, canActivate: [AdminGuard] },
     { path: "licensekeys/new", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
     { path: "licensekeys/edit/:uuid", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
+    { path: "licensekeys/my", component: LicenseKeyMyListComponent, canActivate: [CustomerGuard] },
 
     { path: "mailtemplates", component: MailTemplateListComponent, canActivate: [AdminGuard] },
     { path: "mailtemplates/edit/:uuid", component: MailTemplateEditComponent, canActivate: [AdminGuard] },

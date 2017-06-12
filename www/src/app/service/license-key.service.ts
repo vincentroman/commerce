@@ -22,6 +22,19 @@ export class LicenseKeyService extends CrudService<LicenseKey> {
         return "licensekey";
     }
 
+    my(): Promise<LicenseKey[]> {
+        return this.http
+            .get(this.httpService.getUrl(this.getPath() + "/my"), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let list: LicenseKey[] = (<LicenseKey[]>res.json()).map(o => this.newTypeInstance().deserialize(o));
+                return list;
+            })
+            .catch(error => {
+                return this.httpService.handleError(error);
+            });
+    }
+
     assign(productVariantUuid: string, customerUuid: string): Promise<string> {
         let payload = {
             productVariantUuid: productVariantUuid,

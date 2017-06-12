@@ -8,6 +8,7 @@ import { SessionService } from "../service/session.service";
     selector: "ul.navbar-nav.nav",
     template: `
         <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn"><a routerLink="/home">Home<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span></a></li>
+        <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn || !session.user.roleCustomer"><a routerLink="/licensekeys/my">License Keys<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-barcode"></span></a></li>
         <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn || !session.user.roleAdmin"><a routerLink="/brokers">Brokers<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-briefcase"></span></a></li>
         <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn || !session.user.roleAdmin"><a routerLink="/customers">Customers<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-user"></span></a></li>
         <li [routerLinkActive]="['active']" [hidden]="!session.isLoggedIn || !session.user.roleAdmin"><a routerLink="/licensekeys">License Keys<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-barcode"></span></a></li>

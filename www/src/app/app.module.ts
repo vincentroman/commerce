@@ -33,6 +33,8 @@ import { SystemSettingListComponent } from "./component/systemsetting-list.compo
 import { SystemSettingEditComponent } from "./component/systemsetting-edit.component";
 import { LicenseKeyListComponent } from "./component/license-key-list.component";
 import { LicenseKeyEditComponent } from "./component/license-key-edit.component";
+import { CustomerGuard } from "./guard/customer-guard.service";
+import { LicenseKeyMyListComponent } from "./component/license-key-my-list.component";
 
 @NgModule({
     imports: [
@@ -51,6 +53,7 @@ import { LicenseKeyEditComponent } from "./component/license-key-edit.component"
         HomeComponent,
         LicenseKeyListComponent,
         LicenseKeyEditComponent,
+        LicenseKeyMyListComponent,
         LoginComponent,
         MailTemplateEditComponent,
         MailTemplateListComponent,
@@ -70,7 +73,8 @@ import { LicenseKeyEditComponent } from "./component/license-key-edit.component"
         BrokerService,
         AuthGuard,
         GuestGuard,
-        AdminGuard
+        AdminGuard,
+        CustomerGuard
     ],
     bootstrap: [
         AppComponent,
