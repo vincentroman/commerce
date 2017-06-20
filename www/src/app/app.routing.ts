@@ -22,6 +22,8 @@ import { LicenseKeyListComponent } from "./component/license-key-list.component"
 import { LicenseKeyEditComponent } from "./component/license-key-edit.component";
 import { CustomerGuard } from "./guard/customer-guard.service";
 import { LicenseKeyMyListComponent } from "./component/license-key-my-list.component";
+import { LicenseKeyMyViewComponent } from "./component/license-key-my-view.component";
+import { LicenseKeyMyGenerateComponent } from "./component/license-key-my-generate.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -44,6 +46,8 @@ const appRoutes: Routes = [
     { path: "licensekeys/new", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
     { path: "licensekeys/edit/:uuid", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
     { path: "licensekeys/my", component: LicenseKeyMyListComponent, canActivate: [CustomerGuard] },
+    { path: "licensekeys/my/generate/:uuid", component: LicenseKeyMyGenerateComponent, canActivate: [CustomerGuard] },
+    { path: "licensekeys/my/view/:uuid", component: LicenseKeyMyViewComponent, canActivate: [CustomerGuard] },
 
     { path: "mailtemplates", component: MailTemplateListComponent, canActivate: [AdminGuard] },
     { path: "mailtemplates/edit/:uuid", component: MailTemplateEditComponent, canActivate: [AdminGuard] },

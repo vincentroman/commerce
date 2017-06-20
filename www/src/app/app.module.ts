@@ -35,6 +35,8 @@ import { LicenseKeyListComponent } from "./component/license-key-list.component"
 import { LicenseKeyEditComponent } from "./component/license-key-edit.component";
 import { CustomerGuard } from "./guard/customer-guard.service";
 import { LicenseKeyMyListComponent } from "./component/license-key-my-list.component";
+import { LicenseKeyMyGenerateComponent } from "./component/license-key-my-generate.component";
+import { LicenseKeyMyViewComponent } from "./component/license-key-my-view.component";
 
 @NgModule({
     imports: [
@@ -54,6 +56,8 @@ import { LicenseKeyMyListComponent } from "./component/license-key-my-list.compo
         LicenseKeyListComponent,
         LicenseKeyEditComponent,
         LicenseKeyMyListComponent,
+        LicenseKeyMyViewComponent,
+        LicenseKeyMyGenerateComponent,
         LoginComponent,
         MailTemplateEditComponent,
         MailTemplateListComponent,

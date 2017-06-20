@@ -14,7 +14,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let licenseKey of entities" class="clickable" (click)="showEntity(licenseKey.uuid)">
+        <tr *ngFor="let licenseKey of entities" class="clickable" (click)="viewEditKey(licenseKey)">
             <td><span *ngIf="licenseKey.productVariant && licenseKey.productVariant.product">{{licenseKey.productVariant.product.title}}</span></td>
             <td><span *ngIf="licenseKey.productVariant">{{licenseKey.productVariant.title}}</span></td>
             <td>{{licenseKey.createDate.format('YYYY-MM-DD')}}</td>

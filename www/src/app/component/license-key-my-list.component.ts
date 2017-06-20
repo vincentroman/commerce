@@ -23,6 +23,14 @@ export class LicenseKeyMyListComponent extends EntityListComponent<LicenseKey> {
     }
 
     protected getEditPath(): string {
-        return "/licensekeys/edit";
+        return "/licensekeys/view";
+    }
+
+    public viewEditKey(licenseKey: LicenseKey): void {
+        if (licenseKey.licenseKey) {
+            this.router.navigate(["/licensekeys/my/view", licenseKey.uuid]);
+        } else {
+            this.router.navigate(["/licensekeys/my/generate", licenseKey.uuid]);
+        }
     }
 }
