@@ -42,7 +42,7 @@ export class CustomerService extends CrudService<Customer> {
                     };
                     return settings;
                 },
-                transform: function(resp) {
+                transform: function(resp: Object) {
                     return $.map(resp, function(v, k) {
                         return {id: k, value: v};
                     });

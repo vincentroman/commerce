@@ -4,3 +4,5 @@ node_modules/
 dist/
 **/.baseDir.js
 **/.baseDir.ts
+package-lock.json
+www/package-lock.json
