@@ -28,15 +28,28 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     protected init(): void {
         super.init();
         this.addRouteGet('/my', this.my);
+        this.addRouteGet('/getmyone/:id', this.getMyOne);
         this.addRoutePut('/assign', this.assign);
         this.addRoutePost('/generate', this.generate);
         this.addRoutePost('/issue/:id', this.issue);
     }
 
+    protected getMyOne(req: Request, res: Response, next: NextFunction): void {
+        let customerUuid = this.getJwtCustomerUuid(req);
+        let dao: LicenseKeyDao = this.getDao();
+        let id = req.params.id;
+        dao.getByUuid(id).then(entity => {
+            if (entity.customer && entity.customer.uuid === customerUuid) {
+                res.send(entity.serialize());
+            } else {
+                this.forbidden(res);
+            }
+        }).catch(e => this.notFound(res));
+    }
+
     private my(req: Request, res: Response, next: NextFunction): void {
         let dao: LicenseKeyDao = this.getDao();
         let customerUuid = this.getJwtCustomerUuid(req);
-        console.log("JWT Customer UUID = %s", customerUuid);
         dao.getAllCustomerLicenses(customerUuid).then(entities => {
             res.send(entities.map(entity => entity.serialize()));
         });
@@ -124,6 +137,17 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                         encoder.product = entity.productVariant.product.licenseKeyIdentifier;
                         encoder.subject = dl.getRegex().toString();
                         encoder.type = this.getTypeString(entity.productVariant.type);
+                        Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PrivateKey).then(privateKeySetting => {
+                            let licenseKey = encoder.toString(privateKeySetting.value);
+                            entity.licenseKey = licenseKey;
+                            dao.save(entity).then(entity => {
+                                res.status(200).send({
+                                    message: "Operation successful",
+                                    status: res.status,
+                                    licenseKey: licenseKey
+                                });
+                            });
+                        });
                     } else {
                         this.badRequest(res);
                     }

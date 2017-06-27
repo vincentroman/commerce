@@ -1,5 +1,5 @@
-import { Component } from "@angular/core";
-import { Router, ActivatedRoute } from "@angular/router";
+import { Component, OnInit } from "@angular/core";
+import { Router, ActivatedRoute, Params } from "@angular/router";
 import { EntityEditComponent } from "./entity-edit.component";
 import { LicenseKeyService, LicenseGenerationDetails } from "../service/license-key.service";
 import { LicenseKey } from "../model/license-key";
@@ -20,154 +20,46 @@ import * as typeahead from "typeahead.js";
         CustomerService
     ]
 })
-export class LicenseKeyMyGenerateComponent extends EntityEditComponent<LicenseKey> {
-    products: Product[] = [];
-    productVariants: ProductVariant[] = [];
-    licenseTypes = [
-        {id: "lifetime", label: "Lifetime"},
-        {id: "limited", label: "Limited"},
-        {id: "trial", label: "Trial"}
-    ];
+export class LicenseKeyMyGenerateComponent implements OnInit {
+    entity: LicenseKey = new LicenseKey();
+    submitting: boolean = false;
+    success: boolean = false;
+    error: boolean = false;
+    uuid: string = "";
     model = {
-        productVariantId: "",
-        mode: "",
-        licenseType: "",
-        uuid: "",
-        onlineVerification: false,
-        owner: "",
-        validMonths: 0,
-        wildcard: false,
-        domains: "",
-        customerUuid: "",
-        licenseKey: ""
+        domains: []
     };
 
     constructor(
         protected route: ActivatedRoute,
         protected router: Router,
-        protected licenseKeyService: LicenseKeyService,
-        private productService: ProductService,
-        private productVariantService: ProductVariantService,
-        private customerService: CustomerService
-    ) {
-        super(route, router, licenseKeyService);
-    }
+        protected licenseKeyService: LicenseKeyService
+    ) {}
 
-    protected onInit(): void {
-        this.productService.list().then(products => this.products = products);
-        this.productVariantService.list().then(productVariants => this.productVariants = productVariants);
-        this.initTypeahead();
-    }
-
-    protected newTypeInstance(): LicenseKey {
-        return new LicenseKey();
-    }
-
-    protected getListPath(): string {
-        return "/licensekeys";
+    ngOnInit(): void {
+        this.route.params.forEach((params: Params) => {
+            let uuid: string = params["uuid"];
+            if (uuid) {
+                this.uuid = uuid;
+            }
+        });
+        this.licenseKeyService.getMyOne(this.uuid).then(entity => {
+            this.entity = entity;
+            for (let i = 0; i < entity.productVariant.numDomains; i++) {
+                this.model.domains.push("");
+            }
+        });
     }
 
     submit(): void {
         this.submitting = true;
         this.success = false;
-        if (this.model.mode === "assign") {
-            this.assignLicenseKey();
-        } else if (this.model.mode === "generate") {
-            this.generateLicenseKey();
-        }
-    }
-
-    private assignLicenseKey(): void {
-        this.licenseKeyService.assign(this.model.productVariantId, this.model.customerUuid)
-            .then(uuid => {
-                this.submitting = false;
-                this.success = true;
-            });
-    }
-
-    private generateLicenseKey(): void {
-        let details: LicenseGenerationDetails = {
-            productUuid: this.getProductVariantByUuid(this.model.productVariantId).product.uuid,
-            type: this.getLicenseType(),
-            uuid: this.model.uuid,
-            onlineVerification: this.model.onlineVerification,
-            domains: this.getDomainList(),
-            owner: this.model.owner,
-            validMonths: this.model.validMonths,
-            wildcard: this.model.wildcard
-        };
-        this.licenseKeyService.generate(details)
+        this.licenseKeyService.issue(this.uuid, this.model.domains)
             .then(licenseKey => {
-                this.model.licenseKey = licenseKey;
+                this.entity.licenseKey = licenseKey;
                 this.submitting = false;
                 this.success = true;
-            });
-    }
-
-    private getDomainList(): string[] {
-        let tokens: string[] = this.model.domains.split("\n");
-        let result: string[] = [];
-        tokens.forEach(token => {
-            token = token.trim();
-            if (token) {
-                result.push(token);
-            }
-        });
-        return result;
-    }
-
-    private getProductVariantByUuid(uuid: string): ProductVariant {
-        let result: ProductVariant = null;
-        this.productVariants.forEach(variant => {
-            if (variant.uuid === uuid) {
-                result = variant;
-            }
-        });
-        return result;
-    }
-
-    private getLicenseType(): "trial" | "limited" | "lifetime" {
-        if (this.model.licenseType === "lifetime") {
-            return "lifetime";
-        } else if (this.model.licenseType === "limited") {
-            return "limited";
-        } else {
-            return "trial";
-        }
-    }
-
-    public getProductVariantsForProduct(uuid: string): ProductVariant[] {
-        let result: ProductVariant[] = [];
-        this.productVariants.forEach(variant => {
-            if (variant.product && variant.product.uuid === uuid) {
-                result.push(variant);
-            }
-        });
-        return result;
-    }
-
-    public setMode(mode: string): void {
-        this.model.mode = mode;
-    }
-
-    private initTypeahead(): void {
-        let that = this;
-        let options: Twitter.Typeahead.Options = {
-            hint: true,
-            highlight: true,
-            minLength: 1
-        };
-        let dataset: Twitter.Typeahead.Dataset<Object> = {
-            name: "customers",
-            display: "value",
-            source: this.customerService.getCustomerSuggestionBloodhoundSource()
-        };
-        $("input#customer")
-            .typeahead(options, dataset)
-            .on("typeahead:select", function(ev, suggestion): boolean {
-                that.model.customerUuid = suggestion.id;
-                console.log("Selected customer uuid = %s", that.model.customerUuid);
-                return true;
+                this.router.navigate(["/licensekeys/my/view", this.uuid]);
             });
     }
 }

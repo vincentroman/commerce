@@ -4,4 +4,23 @@
     </div>
     <h1>Generate License Key</h1>
 </div>
-TODO
+<form (ngSubmit)="submit()" #form="ngForm">
+    <div class="form-group">
+        <label>Product</label>
+        <p class="form-control-static">{{entity.productVariant.product.title}}</p>
+    </div>
+    <div class="form-group">
+        <label>Variant</label>
+        <p class="form-control-static">{{entity.productVariant.title}}</p>
+    </div>
+    <div class="form-group">
+        <label>Purchased</label>
+        <p class="form-control-static">{{entity.createDate.format('YYYY-MM-DD')}}</p>
+    </div>
+    <div class="form-group" *ngFor="let domain of model.domains; index as i">
+        <label for="domain-{{i}}">Domain {{i + 1}}</label>
+        <input type="text" id="domain-{{i}}" name="domain-{{i}}" placeholder="your-domain-{{i + 1}}.com" class="form-control" [(ngModel)]="model.domains[$i]" required="required" />
+    </div>
+    <a routerLink="/licensekeys/my" class="btn btn-default">Cancel</a>
+    <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Generate</button>
+</form>
