@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute, Params } from "@angular/router";
-import { LicenseKeyService } from "../service/license-key.service";
-import { LicenseKey } from "../model/license-key";
+import { LicenseKeyService } from "../../service/license-key.service";
+import { LicenseKey } from "../../model/license-key";
 
 @Component({
-    templateUrl: "./license-key-my-generate.component.html",
+    templateUrl: "./license-key-generate.component.html",
     providers: [
         LicenseKeyService
     ]
@@ -49,7 +49,7 @@ export class LicenseKeyMyGenerateComponent implements OnInit {
                 this.entity.licenseKey = licenseKey;
                 this.submitting = false;
                 this.success = true;
-                this.router.navigate(["/licensekeys/my/view", this.uuid]);
+                this.router.navigate(["/customer/licensekeys/view", this.uuid]);
             });
     }
 }

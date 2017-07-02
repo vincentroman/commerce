@@ -1,8 +1,8 @@
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
-import { EntityListComponent } from "./entity-list.component";
-import { SystemSettingService } from "../service/systemsetting.service";
-import { SystemSetting } from "../model/systemsetting";
+import { EntityListComponent } from "../entity-list.component";
+import { SystemSettingService } from "../../service/systemsetting.service";
+import { SystemSetting } from "../../model/systemsetting";
 
 @Component({
     templateUrl: "./systemsetting-list.component.html",
@@ -19,6 +19,6 @@ export class SystemSettingListComponent extends EntityListComponent<SystemSettin
     }
 
     protected getEditPath(): string {
-        return "/systemsettings/edit";
+        return "/admin/systemsettings/edit";
     }
 }

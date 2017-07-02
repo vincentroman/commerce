@@ -1,8 +1,8 @@
 <div class="page-header">
     <div class="btn-toolbar pull-right">
         <button type="button" class="btn btn-danger btn-lg" (click)="delete()" [hidden]="!entity.uuid" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>
-        <a routerLink="/products/edit/{{product.uuid}}" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
-        <a routerLink="/products/edit/{{product.uuid}}/variants/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
+        <a routerLink="/admin/products/edit/{{product.uuid}}" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
+        <a routerLink="/admin/products/edit/{{product.uuid}}/variants/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
     </div>
     <h1 [hidden]="entity.uuid">Add Product Variant</h1>
     <h1 [hidden]="!entity.uuid">Edit Product Variant</h1>
@@ -40,6 +40,6 @@
         <label for="price">Price</label>
         <input type="number" id="price" name="price" placeholder="Price" class="form-control" [(ngModel)]="entity.price" min="0" max="99999" step="0.01" required="required" />
     </div>
-    <a routerLink="/products/edit/{{product.uuid}}" class="btn btn-default">Cancel</a>
+    <a routerLink="/admin/products/edit/{{product.uuid}}" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
 </form>

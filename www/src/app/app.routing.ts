@@ -6,24 +6,24 @@ import { LoginComponent } from "./component/login.component";
 import { GuestGuard } from "./guard/guest-guard.service";
 import { AuthGuard } from "./guard/auth-guard.service";
 import { AdminGuard } from "./guard/admin-guard.service";
-import { BrokerListComponent } from "./component/broker-list.component";
-import { BrokerEditComponent } from "./component/broker-edit.component";
-import { CustomerListComponent } from "./component/customer-list.component";
-import { CustomerEditComponent } from "./component/customer-edit.component";
-import { ProductListComponent } from "./component/product-list.component";
-import { ProductEditComponent } from "./component/product-edit.component";
-import { ProductVariantEditComponent } from "./component/product-variant-edit.component";
-import { MailTemplateListComponent } from "./component/mail-template-list.component";
-import { MailTemplateEditComponent } from "./component/mail-template-edit.component";
+import { BrokerListComponent } from "./component/admin/broker-list.component";
+import { BrokerEditComponent } from "./component/admin/broker-edit.component";
+import { CustomerListComponent } from "./component/admin/customer-list.component";
+import { CustomerEditComponent } from "./component/admin/customer-edit.component";
+import { ProductListComponent } from "./component/admin/product-list.component";
+import { ProductEditComponent } from "./component/admin/product-edit.component";
+import { ProductVariantEditComponent } from "./component/admin/product-variant-edit.component";
+import { MailTemplateListComponent } from "./component/admin/mail-template-list.component";
+import { MailTemplateEditComponent } from "./component/admin/mail-template-edit.component";
 import { ResetPasswordComponent } from "./component/reset-password.component";
-import { SystemSettingListComponent } from "./component/systemsetting-list.component";
-import { SystemSettingEditComponent } from "./component/systemsetting-edit.component";
-import { LicenseKeyListComponent } from "./component/license-key-list.component";
-import { LicenseKeyEditComponent } from "./component/license-key-edit.component";
+import { SystemSettingListComponent } from "./component/admin/systemsetting-list.component";
+import { SystemSettingEditComponent } from "./component/admin/systemsetting-edit.component";
+import { LicenseKeyListComponent } from "./component/admin/license-key-list.component";
+import { LicenseKeyEditComponent } from "./component/admin/license-key-edit.component";
 import { CustomerGuard } from "./guard/customer-guard.service";
-import { LicenseKeyMyListComponent } from "./component/license-key-my-list.component";
-import { LicenseKeyMyViewComponent } from "./component/license-key-my-view.component";
-import { LicenseKeyMyGenerateComponent } from "./component/license-key-my-generate.component";
+import { LicenseKeyMyListComponent } from "./component/customer/license-key-list.component";
+import { LicenseKeyMyViewComponent } from "./component/customer/license-key-view.component";
+import { LicenseKeyMyGenerateComponent } from "./component/customer/license-key-generate.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -33,33 +33,35 @@ const appRoutes: Routes = [
     // Authenticated routes
     { path: "home", component: HomeComponent, canActivate: [AuthGuard] },
 
+    // Customer routes
+    { path: "customer/licensekeys", component: LicenseKeyMyListComponent, canActivate: [CustomerGuard] },
+    { path: "customer/licensekeys/generate/:uuid", component: LicenseKeyMyGenerateComponent, canActivate: [CustomerGuard] },
+    { path: "customer/licensekeys/view/:uuid", component: LicenseKeyMyViewComponent, canActivate: [CustomerGuard] },
+
     // Admin routes
-    { path: "brokers", component: BrokerListComponent, canActivate: [AdminGuard] },
-    { path: "brokers/new", component: BrokerEditComponent, canActivate: [AdminGuard] },
-    { path: "brokers/edit/:uuid", component: BrokerEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/brokers", component: BrokerListComponent, canActivate: [AdminGuard] },
+    { path: "admin/brokers/new", component: BrokerEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/brokers/edit/:uuid", component: BrokerEditComponent, canActivate: [AdminGuard] },
 
-    { path: "customers", component: CustomerListComponent, canActivate: [AdminGuard] },
-    { path: "customers/new", component: CustomerEditComponent, canActivate: [AdminGuard] },
-    { path: "customers/edit/:uuid", component: CustomerEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/customers", component: CustomerListComponent, canActivate: [AdminGuard] },
+    { path: "admin/customers/new", component: CustomerEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/customers/edit/:uuid", component: CustomerEditComponent, canActivate: [AdminGuard] },
 
-    { path: "licensekeys", component: LicenseKeyListComponent, canActivate: [AdminGuard] },
-    { path: "licensekeys/new", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
-    { path: "licensekeys/edit/:uuid", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
-    { path: "licensekeys/my", component: LicenseKeyMyListComponent, canActivate: [CustomerGuard] },
-    { path: "licensekeys/my/generate/:uuid", component: LicenseKeyMyGenerateComponent, canActivate: [CustomerGuard] },
-    { path: "licensekeys/my/view/:uuid", component: LicenseKeyMyViewComponent, canActivate: [CustomerGuard] },
+    { path: "admin/licensekeys", component: LicenseKeyListComponent, canActivate: [AdminGuard] },
+    { path: "admin/licensekeys/new", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/licensekeys/edit/:uuid", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
 
-    { path: "mailtemplates", component: MailTemplateListComponent, canActivate: [AdminGuard] },
-    { path: "mailtemplates/edit/:uuid", component: MailTemplateEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/mailtemplates", component: MailTemplateListComponent, canActivate: [AdminGuard] },
+    { path: "admin/mailtemplates/edit/:uuid", component: MailTemplateEditComponent, canActivate: [AdminGuard] },
 
-    { path: "products", component: ProductListComponent, canActivate: [AdminGuard] },
-    { path: "products/new", component: ProductEditComponent, canActivate: [AdminGuard] },
-    { path: "products/edit/:uuid", component: ProductEditComponent, canActivate: [AdminGuard] },
-    { path: "products/edit/:productUuid/variants/new", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
-    { path: "products/edit/:productUuid/variants/edit/:uuid", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/products", component: ProductListComponent, canActivate: [AdminGuard] },
+    { path: "admin/products/new", component: ProductEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/products/edit/:uuid", component: ProductEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/products/edit/:productUuid/variants/new", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/products/edit/:productUuid/variants/edit/:uuid", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
 
-    { path: "systemsettings", component: SystemSettingListComponent, canActivate: [AdminGuard] },
-    { path: "systemsettings/edit/:uuid", component: SystemSettingEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/systemsettings", component: SystemSettingListComponent, canActivate: [AdminGuard] },
+    { path: "admin/systemsettings/edit/:uuid", component: SystemSettingEditComponent, canActivate: [AdminGuard] },
 
     {
         path: "",

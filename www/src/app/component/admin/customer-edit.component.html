@@ -1,8 +1,8 @@
 <div class="page-header">
     <div class="btn-toolbar pull-right">
         <button type="button" class="btn btn-danger btn-lg" (click)="delete()" [hidden]="!entity.uuid" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>
-        <a routerLink="/customers" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
-        <a routerLink="/customers/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
+        <a routerLink="/admin/customers" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
+        <a routerLink="/admin/customers/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
     </div>
     <h1 [hidden]="entity.uuid">Add Customer</h1>
     <h1 [hidden]="!entity.uuid">Edit Customer</h1>
@@ -30,6 +30,6 @@
         <label for="country">Country Code (2 letters)</label>
         <input type="text" id="country" name="country" placeholder="2 letter country code" class="form-control" [(ngModel)]="entity.country" />
     </div>
-    <a routerLink="/customers" class="btn btn-default">Cancel</a>
+    <a routerLink="/admin/customers" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
 </form>

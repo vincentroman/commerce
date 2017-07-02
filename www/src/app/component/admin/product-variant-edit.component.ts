@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute, Params } from "@angular/router";
-import { EntityEditComponent } from "./entity-edit.component";
-import { ProductVariant } from "../model/product-variant";
-import { ProductVariantService } from "../service/product-variant.service";
-import { ProductService } from "../service/product.service";
-import { Product } from "../model/product";
+import { EntityEditComponent } from "../entity-edit.component";
+import { ProductVariant } from "../../model/product-variant";
+import { ProductVariantService } from "../../service/product-variant.service";
+import { ProductService } from "../../service/product.service";
+import { Product } from "../../model/product";
 
 @Component({
     templateUrl: "./product-variant-edit.component.html",
@@ -44,6 +44,6 @@ export class ProductVariantEditComponent extends EntityEditComponent<ProductVari
     }
 
     protected getListPath(): string {
-        return "/products/edit/" + this.product.uuid;
+        return "/admin/products/edit/" + this.product.uuid;
     }
 }

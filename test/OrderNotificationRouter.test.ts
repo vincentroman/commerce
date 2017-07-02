@@ -106,6 +106,7 @@ describe('Router '+endpoint, () => {
             brokerDao.save(broker2).then((broker2) => {
                 let p1: Product = new Product();
                 p1.title = "WP Ajaxify Comments";
+                p1.licenseKeyIdentifier = "WpAjaxifyComments";
                 productDao.save(p1).then((p1) => {
                     let pv1: ProductVariant = new ProductVariant();
                     pv1.product = p1;

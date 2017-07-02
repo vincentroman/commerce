@@ -20,8 +20,15 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
         let dao: TDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
-            res.send(entity.serialize());
-        }).catch(e => this.notFound(res));
+            if (entity) {
+                res.send(entity.serialize());
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => {
+            // TODO Log exception
+            this.internalServerError(res);
+        });
     }
 
     private list(req: Request, res: Response, next: NextFunction): void {

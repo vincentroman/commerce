@@ -2,10 +2,12 @@
     "database": {
         "driver": {
             "type": "sqlite",
-            "storage": ":memory:"
+            "database": ":memory:"
         },
         "logging": {
-            "logQueries": false
+            "logQueries": false,
+            "logOnlyFailedQueries": true,
+            "logFailedQueryError": true
         }
     },
     "session": {

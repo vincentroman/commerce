@@ -1,8 +1,8 @@
 <div class="page-header">
     <div class="btn-toolbar pull-right">
         <button type="button" class="btn btn-danger btn-lg" (click)="delete()" [hidden]="!entity.uuid" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>
-        <a routerLink="/licensekeys" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
-        <a routerLink="/licensekeys/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
+        <a routerLink="/admin/licensekeys" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
+        <a routerLink="/admin/licensekeys/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
     </div>
     <h1 [hidden]="entity.uuid">Add License Key</h1>
     <h1 [hidden]="!entity.uuid">Edit License Key</h1>
@@ -67,7 +67,7 @@
                 </label>
             </div>
         </div>
-        <a routerLink="/licensekeys" class="btn btn-default">Cancel</a>
+        <a routerLink="/admin/licensekeys" class="btn btn-default">Cancel</a>
         <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting" *ngIf="model.mode == 'generate'"><span class="glyphicon glyphicon-ok"></span> Generate</button>
         <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting" *ngIf="model.mode == 'assign'"><span class="glyphicon glyphicon-ok"></span> Save</button>
     </div>

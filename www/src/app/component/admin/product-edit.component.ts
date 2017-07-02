@@ -1,13 +1,13 @@
 import { Component } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import { EntityEditComponent } from "./entity-edit.component";
-import { ProductService } from "../service/product.service";
-import { Product } from "../model/product";
-import { ProductVariant } from "../model/product-variant";
-import { Broker } from "../model/broker";
-import { BrokerService } from "../service/broker.service";
-import { ProductVariantService } from "../service/product-variant.service";
-import { BrokerProductVariant } from "../model/broker-product-variant";
+import { EntityEditComponent } from "../entity-edit.component";
+import { ProductService } from "../../service/product.service";
+import { Product } from "../../model/product";
+import { ProductVariant } from "../../model/product-variant";
+import { Broker } from "../../model/broker";
+import { BrokerService } from "../../service/broker.service";
+import { ProductVariantService } from "../../service/product-variant.service";
+import { BrokerProductVariant } from "../../model/broker-product-variant";
 
 @Component({
     templateUrl: "./product-edit.component.html",
@@ -75,11 +75,16 @@ export class ProductEditComponent extends EntityEditComponent<Product> {
     }
 
     private updateBrokerProductVariant(bpvNew: BrokerProductVariant): void {
+        let updated = false;
         this.brokerProductVariants.forEach((bpv, i) => {
             if (bpv.broker.uuid === bpvNew.broker.uuid && bpv.productVariant.uuid === bpvNew.productVariant.uuid) {
                 this.brokerProductVariants[i] = bpvNew;
+                updated = true;
             }
         });
+        if (!updated) {
+            this.brokerProductVariants.push(bpvNew);
+        }
     }
 
     public saveIdForBroker(brokerUuid: string, productVariantUuid: string, event: any): void {
@@ -112,6 +117,6 @@ export class ProductEditComponent extends EntityEditComponent<Product> {
     }
 
     protected getListPath(): string {
-        return "/products";
+        return "/admin/products";
     }
 }

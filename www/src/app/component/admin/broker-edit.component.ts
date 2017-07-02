@@ -1,8 +1,8 @@
 import { Component } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import { EntityEditComponent } from "./entity-edit.component";
-import { BrokerService } from "../service/broker.service";
-import { Broker } from "../model/broker";
+import { EntityEditComponent } from "../entity-edit.component";
+import { BrokerService } from "../../service/broker.service";
+import { Broker } from "../../model/broker";
 
 @Component({
     templateUrl: "./broker-edit.component.html",
@@ -24,6 +24,6 @@ export class BrokerEditComponent extends EntityEditComponent<Broker> {
     }
 
     protected getListPath(): string {
-        return "/brokers";
+        return "/admin/brokers";
     }
 }

@@ -1,6 +1,6 @@
 <div class="page-header">
     <div class="btn-toolbar pull-right">
-        <a routerLink="/licensekeys/my" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
+        <a routerLink="/customer/licensekeys" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
     </div>
     <h1>Generate License Key</h1>
 </div>
@@ -21,6 +21,6 @@
         <label for="domain-{{i}}">Domain {{i + 1}}</label>
         <input type="text" id="domain-{{i}}" name="domain-{{i}}" placeholder="your-domain-{{i + 1}}.com" class="form-control" [(ngModel)]="model.domains[i].value" required="required" />
     </div>
-    <a routerLink="/licensekeys/my" class="btn btn-default">Cancel</a>
+    <a routerLink="/customer/licensekeys" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Generate</button>
 </form>

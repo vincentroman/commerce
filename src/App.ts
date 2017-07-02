@@ -3,7 +3,7 @@ import * as EventEmitter from "events";
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as path from 'path';
-import { createConnection, Connection } from "typeorm";
+import { createConnection, Connection, ConnectionOptions } from "typeorm";
 import { Config } from './util/Config';
 import { DefaultSettingsCheck } from "./util/DefaultSettingsCheck";
 
@@ -102,7 +102,7 @@ export class App extends EventEmitter {
 
     private async setupOrm(): Promise<Connection> {
         let config = Config.getInstance().get("database");
-        return createConnection({
+        return createConnection(<ConnectionOptions>{
             driver: config.driver,
             entities: [
                 __dirname + "/entity/*.js",

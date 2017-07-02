@@ -33,7 +33,8 @@ describe('Router '+endpoint, () => {
     describe('PUT '+endpoint+'save', () => {
         it('should save a new product', () => {
             let product = {
-                title: "Product A"
+                title: "Product A",
+                licenseKeyIdentifier: "PA"
             };
             return chai.request(App.getInstance().express).put(endpoint+'save')
             .send(product)
@@ -49,7 +50,8 @@ describe('Router '+endpoint, () => {
         it('should should update an existing product', () => {
             let product = {
                 uuid: putId,
-                title: "Product B"
+                title: "Product B",
+                licenseKeyIdentifier: "PB"
             };
             return chai.request(App.getInstance().express).put(endpoint+'save')
             .send(product)

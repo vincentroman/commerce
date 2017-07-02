@@ -1,8 +1,8 @@
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
-import { EntityListComponent } from "./entity-list.component";
-import { Product } from "../model/product";
-import { ProductService } from "../service/product.service";
+import { EntityListComponent } from "../entity-list.component";
+import { Product } from "../../model/product";
+import { ProductService } from "../../service/product.service";
 
 @Component({
     templateUrl: "./product-list.component.html",
@@ -19,6 +19,6 @@ export class ProductListComponent extends EntityListComponent<Product> {
     }
 
     protected getEditPath(): string {
-        return "/products/edit";
+        return "/admin/products/edit";
     }
 }

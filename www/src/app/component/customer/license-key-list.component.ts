@@ -1,11 +1,11 @@
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
-import { EntityListComponent } from "./entity-list.component";
-import { LicenseKeyService } from "../service/license-key.service";
-import { LicenseKey } from "../model/license-key";
+import { EntityListComponent } from "../entity-list.component";
+import { LicenseKeyService } from "../../service/license-key.service";
+import { LicenseKey } from "../../model/license-key";
 
 @Component({
-    templateUrl: "./license-key-my-list.component.html",
+    templateUrl: "./license-key-list.component.html",
     providers: [
         LicenseKeyService
     ]
@@ -23,14 +23,14 @@ export class LicenseKeyMyListComponent extends EntityListComponent<LicenseKey> {
     }
 
     protected getEditPath(): string {
-        return "/licensekeys/view";
+        return "/customer/licensekeys/view";
     }
 
     public viewEditKey(licenseKey: LicenseKey): void {
         if (licenseKey.licenseKey) {
-            this.router.navigate(["/licensekeys/my/view", licenseKey.uuid]);
+            this.router.navigate(["/customer/licensekeys/view", licenseKey.uuid]);
         } else {
-            this.router.navigate(["/licensekeys/my/generate", licenseKey.uuid]);
+            this.router.navigate(["/customer/licensekeys/generate", licenseKey.uuid]);
         }
     }
 }

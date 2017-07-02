@@ -9,7 +9,9 @@
             "database": "commerce"
         },
         "logging": {
-            "logQueries": false
+            "logQueries": false,
+            "logOnlyFailedQueries": true,
+            "logFailedQueryError": true
         }
     },
     "session": {

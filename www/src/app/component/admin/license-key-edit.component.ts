@@ -1,13 +1,13 @@
-import { Component } from "@angular/core";
+import { Component, AfterViewInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import { EntityEditComponent } from "./entity-edit.component";
-import { LicenseKeyService, LicenseGenerationDetails } from "../service/license-key.service";
-import { LicenseKey } from "../model/license-key";
-import { Product } from "../model/product";
-import { ProductVariantService } from "../service/product-variant.service";
-import { ProductService } from "../service/product.service";
-import { ProductVariant, ProductVariantType } from "../model/product-variant";
-import { CustomerService } from "../service/customer.service";
+import { EntityEditComponent } from "../entity-edit.component";
+import { LicenseKeyService, LicenseGenerationDetails } from "../../service/license-key.service";
+import { LicenseKey } from "../../model/license-key";
+import { Product } from "../../model/product";
+import { ProductVariantService } from "../../service/product-variant.service";
+import { ProductService } from "../../service/product.service";
+import { ProductVariant, ProductVariantType } from "../../model/product-variant";
+import { CustomerService } from "../../service/customer.service";
 import * as $ from "jquery";
 import * as typeahead from "typeahead.js";
 
@@ -20,7 +20,7 @@ import * as typeahead from "typeahead.js";
         CustomerService
     ]
 })
-export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> {
+export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> implements AfterViewInit {
     products: Product[] = [];
     productVariants: ProductVariant[] = [];
     licenseTypes = [
@@ -56,6 +56,9 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> {
     protected onInit(): void {
         this.productService.list().then(products => this.products = products);
         this.productVariantService.list().then(productVariants => this.productVariants = productVariants);
+    }
+
+    ngAfterViewInit() {
         this.initTypeahead();
     }
 
@@ -64,7 +67,7 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> {
     }
 
     protected getListPath(): string {
-        return "/licensekeys";
+        return "/admin/licensekeys";
     }
 
     submit(): void {
@@ -166,7 +169,6 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> {
             .typeahead(options, dataset)
             .on("typeahead:select", function(ev, suggestion): boolean {
                 that.model.customerUuid = suggestion.id;
-                console.log("Selected customer uuid = %s", that.model.customerUuid);
                 return true;
             });
     }

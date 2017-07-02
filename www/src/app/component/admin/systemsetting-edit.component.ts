@@ -1,8 +1,8 @@
 import { Component } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import { EntityEditComponent } from "./entity-edit.component";
-import { SystemSettingService } from "../service/systemsetting.service";
-import { SystemSetting } from "../model/systemsetting";
+import { EntityEditComponent } from "../entity-edit.component";
+import { SystemSettingService } from "../../service/systemsetting.service";
+import { SystemSetting } from "../../model/systemsetting";
 
 @Component({
     templateUrl: "./systemsetting-edit.component.html",

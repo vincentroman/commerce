@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute, Params } from "@angular/router";
-import { LicenseKeyService } from "../service/license-key.service";
-import { LicenseKey } from "../model/license-key";
+import { LicenseKeyService } from "../../service/license-key.service";
+import { LicenseKey } from "../../model/license-key";
 
 @Component({
-    templateUrl: "./license-key-my-view.component.html",
+    templateUrl: "./license-key-view.component.html",
     providers: [
         LicenseKeyService
     ]

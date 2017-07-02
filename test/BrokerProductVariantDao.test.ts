@@ -50,6 +50,7 @@ describe("BrokerProductVariantDao", () => {
             broker2.name = "Broker 2";
 
             product.title = "Product 1";
+            product.licenseKeyIdentifier = "P1";
 
             broker1 = await brokerDao.save(broker1);
             broker2 = await brokerDao.save(broker2);

@@ -25,7 +25,7 @@ export class ProductVariant extends DbEntity<ProductVariant> {
     public serialize(): Object {
         return Object.assign(super.serialize(), {
             title: this.title,
-            product: this.product.serialize(),
+            product: (this.product ? this.product.serialize() : null),
             type: this.type,
             numDomains: this.numDomains,
             numSupportYears: this.numSupportYears,

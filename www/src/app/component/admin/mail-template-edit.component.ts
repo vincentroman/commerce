@@ -1,8 +1,8 @@
 import { Component } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
-import { EntityEditComponent } from "./entity-edit.component";
-import { MailTemplate } from "../model/mail-template";
-import { MailTemplateService } from "../service/mail-template.service";
+import { EntityEditComponent } from "../entity-edit.component";
+import { MailTemplate } from "../../model/mail-template";
+import { MailTemplateService } from "../../service/mail-template.service";
 
 @Component({
     templateUrl: "./mail-template-edit.component.html",
@@ -24,6 +24,6 @@ export class MailTemplateEditComponent extends EntityEditComponent<MailTemplate>
     }
 
     protected getListPath(): string {
-        return "/mailtemplates";
+        return "/admin/mailtemplates";
     }
 }
