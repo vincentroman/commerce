@@ -13,6 +13,9 @@ export class LicenseKey extends DbEntity<LicenseKey> {
     @Column("datetime", {nullable: true})
     issueDate: Date;
 
+    @Column("datetime", {nullable: true})
+    expiryDate: Date;
+
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
 
@@ -26,6 +29,7 @@ export class LicenseKey extends DbEntity<LicenseKey> {
         return Object.assign(super.serialize(), {
             licenseKey: this.licenseKey,
             issueDate: (this.issueDate ? moment(this.issueDate).format("YYYY-MM-DD HH:mm:ss") : null),
+            expiryDate: (this.expiryDate ? moment(this.expiryDate).format("YYYY-MM-DD HH:mm:ss") : null),
             productVariant: (this.productVariant ? this.productVariant.serialize() : null),
             customer: (this.customer ? this.customer.serialize() : null),
             purchaseItem: (this.purchaseItem ? this.purchaseItem.serialize() : null)

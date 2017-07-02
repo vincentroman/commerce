@@ -1,23 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute, Params } from "@angular/router";
-import { EntityEditComponent } from "./entity-edit.component";
-import { LicenseKeyService, LicenseGenerationDetails } from "../service/license-key.service";
+import { LicenseKeyService } from "../service/license-key.service";
 import { LicenseKey } from "../model/license-key";
-import { Product } from "../model/product";
-import { ProductVariantService } from "../service/product-variant.service";
-import { ProductService } from "../service/product.service";
-import { ProductVariant, ProductVariantType } from "../model/product-variant";
-import { CustomerService } from "../service/customer.service";
-import * as $ from "jquery";
-import * as typeahead from "typeahead.js";
 
 @Component({
     templateUrl: "./license-key-my-generate.component.html",
     providers: [
-        LicenseKeyService,
-        ProductService,
-        ProductVariantService,
-        CustomerService
+        LicenseKeyService
     ]
 })
 export class LicenseKeyMyGenerateComponent implements OnInit {
@@ -46,7 +35,7 @@ export class LicenseKeyMyGenerateComponent implements OnInit {
         this.licenseKeyService.getMyOne(this.uuid).then(entity => {
             this.entity = entity;
             for (let i = 0; i < entity.productVariant.numDomains; i++) {
-                this.model.domains.push("");
+                this.model.domains.push({value: ""});
             }
         });
     }
@@ -54,7 +43,8 @@ export class LicenseKeyMyGenerateComponent implements OnInit {
     submit(): void {
         this.submitting = true;
         this.success = false;
-        this.licenseKeyService.issue(this.uuid, this.model.domains)
+        let domains = this.model.domains.map(o => o.value);
+        this.licenseKeyService.issue(this.uuid, domains)
             .then(licenseKey => {
                 this.entity.licenseKey = licenseKey;
                 this.submitting = false;

@@ -139,6 +139,8 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                         encoder.type = this.getTypeString(entity.productVariant.type);
                         Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PrivateKey).then(privateKeySetting => {
                             let licenseKey = encoder.toString(privateKeySetting.value);
+                            entity.issueDate = encoder.issueDate;
+                            entity.expiryDate = encoder.expiryDate;
                             entity.licenseKey = licenseKey;
                             dao.save(entity).then(entity => {
                                 res.status(200).send({

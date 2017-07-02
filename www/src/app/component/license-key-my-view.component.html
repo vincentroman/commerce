@@ -4,4 +4,33 @@
     </div>
     <h1>View License Key</h1>
 </div>
-TODO
+<form class="form-horizontal">
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Product</label>
+        <p class="form-control-static">{{entity.productVariant.product.title}}</p>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Variant</label>
+        <p class="form-control-static">{{entity.productVariant.title}}</p>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Purchased</label>
+        <p class="form-control-static" *ngIf="entity.createDate">{{entity.createDate.format('YYYY-MM-DD')}}</p>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Issued</label>
+        <p class="form-control-static" *ngIf="entity.issueDate">{{entity.issueDate.format('YYYY-MM-DD')}}</p>
+        <p class="form-control-static" *ngIf="!entity.issueDate">Not issued yet</p>
+    </div>
+    <div class="form-group" *ngIf="entity.expiryDate">
+        <label class="col-sm-3 control-label">Expiry Date</label>
+        <p class="form-control-static">{{entity.expiryDate.format('YYYY-MM-DD')}}</p>
+    </div>
+    <div class="form-group" *ngIf="entity.licenseKey">
+        <label class="col-sm-3 control-label">License Key</label>
+        <div class="col-sm-9">
+            <textarea class="form-control" rows="30" readonly="readonly" onclick="this.select()">{{entity.licenseKey}}</textarea>
+        </div>
+    </div>
+    <a routerLink="/licensekeys/my" class="btn btn-default">Cancel</a>
+</form>

@@ -3,7 +3,7 @@ import { Product } from "./product";
 
 export class ProductVariant extends RestModel<ProductVariant> {
     title: string;
-    product: Product;
+    product: Product = new Product();
     type: ProductVariantType;
     numDomains: number;
     numSupportYears: number;
