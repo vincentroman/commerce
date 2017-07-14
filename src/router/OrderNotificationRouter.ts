@@ -14,7 +14,7 @@ import { LicenseKeyDao } from "../dao/LicenseKeyDao";
 import { Customer } from "../entity/Customer";
 import { User } from "../entity/User";
 import { UserDao } from "../dao/UserDao";
-import { SupportTicket } from "../entity/SupportTicket";
+import { SupportTicket, SupportRequestStatus } from "../entity/SupportTicket";
 import { SupportTicketDao } from "../dao/SupportTicketDao";
 import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { MailTemplateType } from "../entity/MailTemplate";
@@ -164,6 +164,7 @@ class OrderNotificationRouter extends BaseRouter {
         ticket.purchaseItem = item;
         ticket.customer = item.purchase.customer;
         ticket.productVariant = item.productVariant;
+        ticket.status = SupportRequestStatus.NEW;
         return supportTicketDao.save(ticket);
     }
 }

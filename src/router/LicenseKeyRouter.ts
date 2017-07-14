@@ -73,7 +73,6 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         }).catch((e) => {
             this.badRequest(res);
         });
-
     }
 
     private generate(req: Request, res: Response, next: NextFunction): void {

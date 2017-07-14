@@ -20,6 +20,7 @@ import ProductRouter from './router/ProductRouter';
 import ProductVariantRouter from './router/ProductVariantRouter';
 import UserRouter from './router/UserRouter';
 import BrokerProductVariantRouter from "./router/BrokerProductVariantRouter";
+import SupportTicketRouter from "./router/SupportTicketRouter";
 import SystemSettingRouter from "./router/SystemSettingRouter";
 
 export class App extends EventEmitter {
@@ -70,6 +71,7 @@ export class App extends EventEmitter {
         this.express.use('/api/v1/purchase', PurchaseRouter);
         this.express.use('/api/v1/product', ProductRouter);
         this.express.use('/api/v1/productvariant', ProductVariantRouter);
+        this.express.use('/api/v1/supportticket', SupportTicketRouter);
         this.express.use('/api/v1/systemsetting', SystemSettingRouter);
         this.express.use('/api/v1/user', UserRouter);
         this.addStaticFilesRoutes();
