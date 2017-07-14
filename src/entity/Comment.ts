@@ -23,7 +23,7 @@ export class Comment extends DbEntity<Comment> {
             text: this.text,
             customerUuid: (this.customer ? this.customer.uuid : null),
             supportTicketUuid: (this.supportTicket ? this.supportTicket.uuid : null),
-            customer: (this.customer ? this.customer.serialize() : null)
+            author: (this.author ? this.author.serialize() : null)
         });
     }
 

@@ -1,0 +1,36 @@
+<div class="page-header">
+    <div class="btn-toolbar pull-right">
+        <button type="button" class="btn btn-danger btn-lg" (click)="delete()" [hidden]="!entity.uuid" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>
+        <a routerLink="/admin/supportrequests" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
+        <a routerLink="/admin/supportrequests/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
+    </div>
+    <h1 [hidden]="entity.uuid">Add Support Request</h1>
+    <h1 [hidden]="!entity.uuid">Edit Support Request</h1>
+</div>
+<form (ngSubmit)="submit()" #form="ngForm">
+    <div class="alert alert-success" role="alert" [hidden]="!success">Support Request saved successfully.</div>
+    <div class="alert alert-danger" role="alert" [hidden]="!error">Error saving support request. Please try again.</div>
+    <div *ngIf="!model.supportRequest">
+        <div class="form-group">
+            <label for="productVariant">Product Variant</label>
+            <select id="productVariant" name="productVariant" class="form-control" required="required" autofocus="autofocus" [(ngModel)]="model.productVariantId">
+                <option value="" selected="selected">(please select)</option>
+                <optgroup *ngFor="let product of products" label="{{product.title}}">
+                    <option *ngFor="let variant of getProductVariantsForProduct(product.uuid)" value="{{variant.uuid}}">{{variant.title}}</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="customer">Customer</label>
+            <input type="text" class="form-control typeahead" id="customer" name="customer" autocomplete="off" />
+        </div>
+        <a routerLink="/admin/supportrequests" class="btn btn-default">Cancel</a>
+        <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
+    </div>
+    <div *ngIf="model.licenseKey">
+        <div class="form-group">
+            <label for="licenseKey">License Key</label>
+            <textarea id="licenseKey" name="licenseKey" placeholder="License Key" readonly="readonly" class="form-control" [(ngModel)]="model.licenseKey" rows="20" (click)="this.select()"></textarea>
+        </div>
+    </div>
+</form>

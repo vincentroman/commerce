@@ -37,6 +37,8 @@ import { CustomerGuard } from "./guard/customer-guard.service";
 import { LicenseKeyMyListComponent } from "./component/customer/license-key-list.component";
 import { LicenseKeyMyGenerateComponent } from "./component/customer/license-key-generate.component";
 import { LicenseKeyMyViewComponent } from "./component/customer/license-key-view.component";
+import { SupportRequestListComponent } from "./component/admin/support-request-list.component";
+import { SupportRequestEditComponent } from "./component/admin/support-request-edit.component";
 
 @NgModule({
     imports: [
@@ -66,6 +68,8 @@ import { LicenseKeyMyViewComponent } from "./component/customer/license-key-view
         ProductVariantEditComponent,
         NavComponent,
         ResetPasswordComponent,
+        SupportRequestListComponent,
+        SupportRequestEditComponent,
         SystemSettingListComponent,
         SystemSettingEditComponent
     ],
