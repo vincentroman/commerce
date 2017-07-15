@@ -41,6 +41,7 @@ import { SupportRequestListComponent } from "./component/admin/support-request-l
 import { SupportRequestEditComponent } from "./component/admin/support-request-edit.component";
 import { TicketsMyListComponent } from "./component/customer/tickets-list.component";
 import { TicketsMyViewComponent } from "./component/customer/tickets-view.component";
+import { SupportRequestViewComponent } from "./component/admin/support-request-view.component";
 
 @NgModule({
     imports: [
@@ -72,6 +73,7 @@ import { TicketsMyViewComponent } from "./component/customer/tickets-view.compon
         ResetPasswordComponent,
         SupportRequestListComponent,
         SupportRequestEditComponent,
+        SupportRequestViewComponent,
         SystemSettingListComponent,
         SystemSettingEditComponent,
         TicketsMyListComponent,

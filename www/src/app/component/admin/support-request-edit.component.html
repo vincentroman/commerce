@@ -4,8 +4,7 @@
         <a routerLink="/admin/supportrequests" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
         <a routerLink="/admin/supportrequests/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
     </div>
-    <h1 [hidden]="entity.uuid">Add Support Request</h1>
-    <h1 [hidden]="!entity.uuid">Edit Support Request</h1>
+    <h1>Add Support Request</h1>
 </div>
 <form (ngSubmit)="submit()" #form="ngForm">
     <div class="alert alert-success" role="alert" [hidden]="!success">Support Request saved successfully.</div>

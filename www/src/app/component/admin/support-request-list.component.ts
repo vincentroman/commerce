@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { EntityListComponent } from "../entity-list.component";
 import { SupportTicketService } from "../../service/support-ticket.service";
-import { SupportTicket } from "../../model/support-ticket";
+import { SupportTicket, SupportRequestStatus } from "../../model/support-ticket";
 
 @Component({
     templateUrl: "./support-request-list.component.html",
@@ -19,6 +19,18 @@ export class SupportRequestListComponent extends EntityListComponent<SupportTick
     }
 
     protected getEditPath(): string {
-        return "/admin/supportrequests/edit";
+        return "/admin/supportrequests/view";
+    }
+
+    public getStatus(ticket: SupportTicket): string {
+        if (ticket.status === SupportRequestStatus.NEW) {
+            return "New";
+        } else if (ticket.status === SupportRequestStatus.OPEN) {
+            return "Open";
+        } else if (ticket.status === SupportRequestStatus.CLOSED) {
+            return "Closed";
+        } else {
+            return "Unknown";
+        }
     }
 }

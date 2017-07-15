@@ -7,16 +7,20 @@
 <table class="table table-hover" [hidden]="!entities || !entities.length">
     <thead>
         <tr>
+            <th>Customer</th>
             <th>Product</th>
             <th>Variant</th>
-            <th>Customer</th>
-            <th>Created</th>
-            <th>Issued</th>
+            <th>Purchased</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let ticket of entities" class="clickable" (click)="showEntity(ticket.uuid)">
-            
+            <td><span *ngIf="ticket.customer">{{ticket.customer.printableName()}}</span></td>
+            <td><span *ngIf="ticket.productVariant && ticket.productVariant.product">{{ticket.productVariant.product.title}}</span></td>
+            <td><span *ngIf="ticket.productVariant">{{ticket.productVariant.title}}</span></td>
+            <td>{{ticket.createDate.format('YYYY-MM-DD')}}</td>
+            <td>{{getStatus(ticket)}}</td>
         </tr>
     </tbody>
 </table>
