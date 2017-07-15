@@ -129,6 +129,16 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> imp
         return result;
     }
 
+    public getProductsWithLicenseVariants(): Product[] {
+        let result: Product[] = [];
+        this.products.forEach(product => {
+            if (this.getProductVariantsForProduct(product.uuid).length > 0) {
+                result.push(product);
+            }
+        });
+        return result;
+    }
+
     private getLicenseType(): "trial" | "limited" | "lifetime" {
         if (this.model.licenseType === "lifetime") {
             return "lifetime";
@@ -142,7 +152,7 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> imp
     public getProductVariantsForProduct(uuid: string): ProductVariant[] {
         let result: ProductVariant[] = [];
         this.productVariants.forEach(variant => {
-            if (variant.product && variant.product.uuid === uuid) {
+            if (variant.product && variant.product.uuid === uuid && variant.type !== ProductVariantType.SupportTicket) {
                 result.push(variant);
             }
         });

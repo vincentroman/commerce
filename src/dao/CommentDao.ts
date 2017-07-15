@@ -24,7 +24,7 @@ export class CommentDao extends Dao<Comment> {
             .innerJoinAndSelect("c.author", "author")
             .innerJoinAndSelect("c.supportTicket", "supportTicket")
             .orderBy("c.createDate", "ASC")
-            .where("c.supportTicket.uuid = :supportTicketUuid")
+            .where("supportTicket.uuid = :supportTicketUuid")
             .setParameters({supportTicketUuid: supportTicketUuid})
             .getMany();
     }

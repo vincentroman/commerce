@@ -115,10 +115,11 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
     }
 
     protected close(req: Request, res: Response, next: NextFunction): void {
+        let that = this;
         let doUpdate = function(entity: SupportTicket) {
             entity.status = SupportRequestStatus.CLOSED;
             dao.save(entity).then((entity) => {
-                this.saved(res, entity);
+                that.saved(res, entity);
             });
         };
         let customerUuid = this.getJwtCustomerUuid(req);

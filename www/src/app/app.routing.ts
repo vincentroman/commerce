@@ -26,6 +26,8 @@ import { LicenseKeyMyViewComponent } from "./component/customer/license-key-view
 import { LicenseKeyMyGenerateComponent } from "./component/customer/license-key-generate.component";
 import { SupportRequestListComponent } from "./component/admin/support-request-list.component";
 import { SupportRequestEditComponent } from "./component/admin/support-request-edit.component";
+import { TicketsMyListComponent } from "./component/customer/tickets-list.component";
+import { TicketsMyViewComponent } from "./component/customer/tickets-view.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -39,6 +41,9 @@ const appRoutes: Routes = [
     { path: "customer/licensekeys", component: LicenseKeyMyListComponent, canActivate: [CustomerGuard] },
     { path: "customer/licensekeys/generate/:uuid", component: LicenseKeyMyGenerateComponent, canActivate: [CustomerGuard] },
     { path: "customer/licensekeys/view/:uuid", component: LicenseKeyMyViewComponent, canActivate: [CustomerGuard] },
+
+    { path: "customer/tickets", component: TicketsMyListComponent, canActivate: [CustomerGuard] },
+    { path: "customer/tickets/view/:uuid", component: TicketsMyViewComponent, canActivate: [CustomerGuard] },
 
     // Admin routes
     { path: "admin/brokers", component: BrokerListComponent, canActivate: [AdminGuard] },

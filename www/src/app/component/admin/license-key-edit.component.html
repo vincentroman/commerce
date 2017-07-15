@@ -15,7 +15,7 @@
             <label for="productVariant">Product Variant</label>
             <select id="productVariant" name="productVariant" class="form-control" required="required" autofocus="autofocus" [(ngModel)]="model.productVariantId">
                 <option value="" selected="selected">(please select)</option>
-                <optgroup *ngFor="let product of products" label="{{product.title}}">
+                <optgroup *ngFor="let product of getProductsWithLicenseVariants()" label="{{product.title}}">
                     <option *ngFor="let variant of getProductVariantsForProduct(product.uuid)" value="{{variant.uuid}}">{{variant.title}}</option>
                 </optgroup>
             </select>

@@ -39,6 +39,8 @@ import { LicenseKeyMyGenerateComponent } from "./component/customer/license-key-
 import { LicenseKeyMyViewComponent } from "./component/customer/license-key-view.component";
 import { SupportRequestListComponent } from "./component/admin/support-request-list.component";
 import { SupportRequestEditComponent } from "./component/admin/support-request-edit.component";
+import { TicketsMyListComponent } from "./component/customer/tickets-list.component";
+import { TicketsMyViewComponent } from "./component/customer/tickets-view.component";
 
 @NgModule({
     imports: [
@@ -71,7 +73,9 @@ import { SupportRequestEditComponent } from "./component/admin/support-request-e
         SupportRequestListComponent,
         SupportRequestEditComponent,
         SystemSettingListComponent,
-        SystemSettingEditComponent
+        SystemSettingEditComponent,
+        TicketsMyListComponent,
+        TicketsMyViewComponent
     ],
     providers: [
         AuthService,

@@ -76,10 +76,20 @@ export class SupportRequestEditComponent extends EntityEditComponent<SupportTick
         return result;
     }
 
+    public getProductsWithSupportVariants(): Product[] {
+        let result: Product[] = [];
+        this.products.forEach(product => {
+            if (this.getProductVariantsForProduct(product.uuid).length > 0) {
+                result.push(product);
+            }
+        });
+        return result;
+    }
+
     public getProductVariantsForProduct(uuid: string): ProductVariant[] {
         let result: ProductVariant[] = [];
         this.productVariants.forEach(variant => {
-            if (variant.product && variant.product.uuid === uuid) {
+            if (variant.product && variant.product.uuid === uuid && variant.type === ProductVariantType.SupportTicket) {
                 result.push(variant);
             }
         });

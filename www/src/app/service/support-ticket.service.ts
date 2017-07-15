@@ -92,7 +92,7 @@ export class SupportTicketService extends CrudService<SupportTicket> {
     }
 
     close(id: string): Promise<string> {
-        return this.http.post(this.httpService.getUrl(this.getPath() + "/close/" + id), this.httpService.getOptions())
+        return this.http.post(this.httpService.getUrl(this.getPath() + "/close/" + id), null, this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 return res.json().uuid;
