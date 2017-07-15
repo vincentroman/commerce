@@ -18,6 +18,10 @@
         <label for="mappingTemplate">Mapping Template</label>
         <textarea id="mappingTemplate" name="mappingTemplate" placeholder="Mapping Template" [(ngModel)]="entity.mappingTemplate" required="required" class="form-control" rows="10"></textarea>
     </div>
+    <div class="form-group">
+        <label>Order Notification URL</label>
+        <p class="form-control-static">POST /api/v1/ordernotification/{{entity.uuid}}</p>
+    </div>
     <a routerLink="/admin/brokers" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
 </form>

@@ -42,6 +42,7 @@ import { SupportRequestEditComponent } from "./component/admin/support-request-e
 import { TicketsMyListComponent } from "./component/customer/tickets-list.component";
 import { TicketsMyViewComponent } from "./component/customer/tickets-view.component";
 import { SupportRequestViewComponent } from "./component/admin/support-request-view.component";
+import { OrderListComponent } from "./component/admin/order-list.component";
 
 @NgModule({
     imports: [
@@ -66,6 +67,7 @@ import { SupportRequestViewComponent } from "./component/admin/support-request-v
         LoginComponent,
         MailTemplateEditComponent,
         MailTemplateListComponent,
+        OrderListComponent,
         ProductListComponent,
         ProductEditComponent,
         ProductVariantEditComponent,
