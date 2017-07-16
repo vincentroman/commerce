@@ -19,6 +19,6 @@ export class OrderListComponent extends EntityListComponent<Purchase> {
     }
 
     protected getEditPath(): string {
-        return "/admin/orders/edit";
+        return "/admin/orders/view";
     }
 }

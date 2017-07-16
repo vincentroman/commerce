@@ -12,6 +12,18 @@ export class PurchaseDao extends Dao<Purchase> {
         return this.getEm().getRepository(Purchase);
     }
 
+    public async getAll(): Promise<Purchase[]> {
+        return this.getRepository()
+            .createQueryBuilder("order")
+            .innerJoinAndSelect("order.broker", "broker")
+            .leftJoinAndSelect("order.items", "items")
+            .leftJoinAndSelect("order.customer", "customer")
+            .leftJoinAndSelect("items.productVariant", "productVariant")
+            .leftJoinAndSelect("productVariant.product", "product")
+            .orderBy("order.createDate", "DESC")
+            .getMany();
+    }
+
     public async getByUuid(uuid: string): Promise<Purchase> {
         return this.getRepository()
             .createQueryBuilder("order")

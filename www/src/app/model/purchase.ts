@@ -5,7 +5,7 @@ import { Customer } from "./customer";
 export class Purchase extends RestModel<Purchase> {
     customer: Customer;
     broker: Broker;
-    itemsIds: string[];
+    itemIds: string[];
     referenceId: string;
 
     serialize(): Object {
@@ -18,7 +18,7 @@ export class Purchase extends RestModel<Purchase> {
         this._deserialize(input);
         this.customer = (input.customer ? new Customer().deserialize(input.customer) : null);
         this.broker = (input.broker ? new Broker().deserialize(input.broker) : null);
-        this.itemsIds = (input.itemsIds ? input.itemsIds : []);
+        this.itemIds = (input.itemIds ? input.itemIds : []);
         this.referenceId = input.referenceId;
         return this;
     }
