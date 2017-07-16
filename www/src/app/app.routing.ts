@@ -30,6 +30,7 @@ import { TicketsMyListComponent } from "./component/customer/tickets-list.compon
 import { TicketsMyViewComponent } from "./component/customer/tickets-view.component";
 import { SupportRequestViewComponent } from "./component/admin/support-request-view.component";
 import { OrderListComponent } from "./component/admin/order-list.component";
+import { BrokerTestComponent } from "./component/admin/broker-test.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -51,6 +52,7 @@ const appRoutes: Routes = [
     { path: "admin/brokers", component: BrokerListComponent, canActivate: [AdminGuard] },
     { path: "admin/brokers/new", component: BrokerEditComponent, canActivate: [AdminGuard] },
     { path: "admin/brokers/edit/:uuid", component: BrokerEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/brokers/test/:uuid", component: BrokerTestComponent, canActivate: [AdminGuard] },
 
     { path: "admin/customers", component: CustomerListComponent, canActivate: [AdminGuard] },
     { path: "admin/customers/new", component: CustomerEditComponent, canActivate: [AdminGuard] },

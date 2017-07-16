@@ -43,6 +43,7 @@ import { TicketsMyListComponent } from "./component/customer/tickets-list.compon
 import { TicketsMyViewComponent } from "./component/customer/tickets-view.component";
 import { SupportRequestViewComponent } from "./component/admin/support-request-view.component";
 import { OrderListComponent } from "./component/admin/order-list.component";
+import { BrokerTestComponent } from "./component/admin/broker-test.component";
 
 @NgModule({
     imports: [
@@ -56,6 +57,7 @@ import { OrderListComponent } from "./component/admin/order-list.component";
         AppComponent,
         BrokerEditComponent,
         BrokerListComponent,
+        BrokerTestComponent,
         CustomerEditComponent,
         CustomerListComponent,
         HomeComponent,
