@@ -63,14 +63,12 @@ export class BrokerTestComponent implements OnInit {
                     this.success = false;
                     this.result = "HTTP Response Status = " + res.status + " (" + res.statusText + ")";
                 }
-                console.log(JSON.stringify(res));
             })
             .catch(error => {
                 this.submitting = false;
                 this.error = true;
                 this.success = false;
                 this.result = "HTTP Response Status = " + error.status + " (" + error.statusText + ")";
-                console.log("ERROR: " + JSON.stringify(error));
             });
     }
 }
