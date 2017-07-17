@@ -29,6 +29,7 @@ export class PurchaseDao extends Dao<Purchase> {
             .createQueryBuilder("order")
             .innerJoinAndSelect("order.broker", "broker")
             .leftJoinAndSelect("order.items", "items")
+            .leftJoinAndSelect("order.customer", "customer")
             .leftJoinAndSelect("items.productVariant", "productVariant")
             .leftJoinAndSelect("productVariant.product", "product")
             .where("order.uuid = :uuid")

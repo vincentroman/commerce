@@ -44,6 +44,7 @@ import { TicketsMyViewComponent } from "./component/customer/tickets-view.compon
 import { SupportRequestViewComponent } from "./component/admin/support-request-view.component";
 import { OrderListComponent } from "./component/admin/order-list.component";
 import { BrokerTestComponent } from "./component/admin/broker-test.component";
+import { OrderViewComponent } from "./component/admin/order-view.component";
 
 @NgModule({
     imports: [
@@ -70,6 +71,7 @@ import { BrokerTestComponent } from "./component/admin/broker-test.component";
         MailTemplateEditComponent,
         MailTemplateListComponent,
         OrderListComponent,
+        OrderViewComponent,
         ProductListComponent,
         ProductEditComponent,
         ProductVariantEditComponent,

@@ -1,0 +1,42 @@
+<div class="page-header">
+    <div class="btn-toolbar pull-right">
+        <a routerLink="/admin/orders" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
+    </div>
+    <h1>View Order</h1>
+</div>
+<form (ngSubmit)="submit()" #form="ngForm">
+    <div class="form-group" *ngIf="entity.customer">
+        <label>Customer</label>
+        <p class="form-control-static"><a routerLink="/admin/customers/edit/{{entity.customer.uuid}}">{{entity.customer.printableName()}}</a></p>
+    </div>
+    <div class="form-group" *ngIf="entity.broker">
+        <label>Broker</label>
+        <p class="form-control-static"><a routerLink="/admin/broker/edit/{{entity.broker.uuid}}">{{entity.broker.name}}</a></p>
+    </div>
+    <div class="form-group">
+        <label>Reference ID</label>
+        <p class="form-control-static">{{entity.referenceId}}</p>
+    </div>
+    <div class="form-group">
+        <label>Date</label>
+        <p class="form-control-static" *ngIf="entity.createDate">{{entity.createDate.format('YYYY-MM-DD HH:mm')}}</p>
+    </div>
+    <a routerLink="/admin/orders" class="btn btn-default">Cancel</a>
+</form>
+<h3 style="margin-top:50px">Items</h3>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Qty</th>
+            <th>Product</th>
+            <th>Variant</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of purchaseItems">
+            <td>{{item.quantity}}</td>
+            <td><a routerLink="/admin/products/edit/{{item.productVariant.product.uuid}}">{{item.productVariant.product.title}}</a></td>
+            <td><a routerLink="/admin/products/edit/{{item.productVariant.product.uuid}}/variants/edit/{{item.productVariant.uuid}}">{{item.productVariant.title}}</a></td>
+        </tr>
+    </tbody>
+</table>

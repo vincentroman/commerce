@@ -3,7 +3,7 @@ import { ProductVariant } from "./product-variant";
 import { Purchase } from "./purchase";
 
 export class PurchaseItem extends RestModel<PurchaseItem> {
-    purchase: Purchase;
+    purchaseId: string;
     productVariant: ProductVariant;
     quantity: number;
 
@@ -15,7 +15,7 @@ export class PurchaseItem extends RestModel<PurchaseItem> {
 
     deserialize(input: any): PurchaseItem {
         this._deserialize(input);
-        this.purchase = (input.purchase ? new Purchase().deserialize(input.purchase) : null);
+        this.purchaseId = input.purchaseId;
         this.productVariant = (input.productVariant ? new ProductVariant().deserialize(input.productVariant) : null);
         this.quantity = input.quantity;
         return this;

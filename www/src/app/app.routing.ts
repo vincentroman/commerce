@@ -31,6 +31,7 @@ import { TicketsMyViewComponent } from "./component/customer/tickets-view.compon
 import { SupportRequestViewComponent } from "./component/admin/support-request-view.component";
 import { OrderListComponent } from "./component/admin/order-list.component";
 import { BrokerTestComponent } from "./component/admin/broker-test.component";
+import { OrderViewComponent } from "./component/admin/order-view.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -67,6 +68,7 @@ const appRoutes: Routes = [
     { path: "admin/supportrequests/view/:uuid", component: SupportRequestViewComponent, canActivate: [AdminGuard] },
 
     { path: "admin/orders", component: OrderListComponent, canActivate: [AdminGuard] },
+    { path: "admin/orders/view/:uuid", component: OrderViewComponent, canActivate: [AdminGuard] },
 
     { path: "admin/mailtemplates", component: MailTemplateListComponent, canActivate: [AdminGuard] },
     { path: "admin/mailtemplates/edit/:uuid", component: MailTemplateEditComponent, canActivate: [AdminGuard] },

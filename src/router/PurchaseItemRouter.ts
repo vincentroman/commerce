@@ -1,17 +1,28 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
-import { CrudRouter } from "./CrudRouter";
 import { PurchaseItem } from "../entity/PurchaseItem";
 import { PurchaseItemDao } from "../dao/PurchaseItemDao";
+import { PurchaseDao } from "../dao/PurchaseDao";
+import { BaseRouter } from "./BaseRouter";
 
-class PurchaseItemRouter extends CrudRouter<PurchaseItem, PurchaseItemDao> {
+class PurchaseItemRouter extends BaseRouter {
     protected getDao(): PurchaseItemDao {
         return Container.get(PurchaseItemDao);
     }
-    protected createEntity(requestBody: any): Promise<PurchaseItem> {
-        return new Promise((resolve, reject) => {
-            resolve(new PurchaseItem(requestBody));
-        });
+
+    protected init(): void {
+        this.addRouteGet('/:purchaseId/list', this.list);
+    }
+
+    private list(req: Request, res: Response, next: NextFunction): void {
+        let purchaseDao: PurchaseDao = Container.get(PurchaseDao);
+        let dao: PurchaseItemDao = this.getDao();
+        let purchaseId = req.params.purchaseId;
+        purchaseDao.getByUuid(purchaseId).then(purchase => {
+            dao.getByPurchase(purchase).then(entities => {
+                res.send(entities.map(entity => entity.serialize()));
+            });
+        }).catch(e => this.notFound(res));
     }
 }
 
