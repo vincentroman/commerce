@@ -21,7 +21,16 @@ export abstract class Dao<T extends DbEntity<T>> {
 
     public async save(o: T): Promise<T> {
         if (!o.uuid) {
-            o.uuid = uuid(); // TODO Check if exists
+            let id: string;
+            let item: T;
+            do {
+                id = uuid();
+                item = await this.getByUuid(id);
+                if (item) {
+                    id = null;
+                }
+            } while (!id);
+            o.uuid = id;
         }
         return this.getRepository().persist(o);
     }
