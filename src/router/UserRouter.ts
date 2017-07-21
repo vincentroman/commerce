@@ -4,6 +4,7 @@ import { CrudRouter } from "./CrudRouter";
 
 import { User } from '../entity/User';
 import { UserDao } from '../dao/UserDao';
+import { AuthRole } from "./BaseRouter";
 
 class UserRouter extends CrudRouter<User, UserDao> {
     protected getDao(): UserDao {
@@ -16,9 +17,13 @@ class UserRouter extends CrudRouter<User, UserDao> {
         });
     }
 
+    protected getDefaultAuthRole(): AuthRole {
+        return AuthRole.ADMIN;
+    }
+
     protected init(): void {
         super.init();
-        this.addRouteGet('/me', this.me, true);
+        this.addRouteGet('/me', this.me, AuthRole.USER);
     }
 
     private me(req: Request, res: Response, next: NextFunction): void {

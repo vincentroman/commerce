@@ -1,4 +1,4 @@
-import { Router, Response, Request, NextFunction } from 'express';
+import { Router, Response, Request, NextFunction, RequestHandler } from 'express';
 import { DbEntity } from '../entity/DbEntity';
 import { Config } from '../util/Config';
 import * as jwt from 'jsonwebtoken';
@@ -57,36 +57,68 @@ export abstract class BaseRouter {
         }
     }
 
-    protected addRoutePost(route: string, fn: Function, authRequired?: boolean): void {
-        if (authRequired) {
-            this.router.post(route, this.checkAuth.bind(this), fn.bind(this));
-        } else {
-            this.router.post(route, fn.bind(this));
-        }
+    private getAuthInterceptorFunction(role: AuthRole): RequestHandler {
+        return function(req: Request, res: Response, next: NextFunction): void {
+            if (role === AuthRole.ANY) {
+                next();
+                return;
+            }
+            this.getJwtUser(req).then(user => {
+                if (role === AuthRole.GUEST) {
+                    if (user) {
+                        this.forbidden(res);
+                    } else {
+                        next();
+                    }
+                } else if (role === AuthRole.USER) {
+                    if (user) {
+                        next();
+                    } else {
+                        this.forbidden(res);
+                    }
+                    return;
+                } else if (role === AuthRole.ADMIN) {
+                    if (user && user.roleAdmin) {
+                        next();
+                    } else {
+                        this.forbidden(res);
+                    }
+                    return;
+                } else if (role === AuthRole.CUSTOMER) {
+                    if (user && user.roleCustomer) {
+                        next();
+                    } else {
+                        this.forbidden(res);
+                    }
+                    return;
+                } else {
+                    console.error("getAuthInterceptorFunction() called with unknown role %d", role);
+                    this.internalServerError(res);
+                }
+            }).catch(e => {
+                if (role === AuthRole.GUEST) {
+                    next();
+                } else {
+                    this.forbidden(res);
+                }
+            });
+        }.bind(this);
     }
 
-    protected addRouteGet(route: string, fn: Function, authRequired?: boolean): void {
-        if (authRequired) {
-            this.router.get(route, this.checkAuth.bind(this), fn.bind(this));
-        } else {
-            this.router.get(route, fn.bind(this));
-        }
+    protected addRoutePost(route: string, fn: Function, role: AuthRole): void {
+        this.router.post(route, this.getAuthInterceptorFunction(role).bind(this), fn.bind(this));
     }
 
-    protected addRoutePut(route: string, fn: Function, authRequired?: boolean): void {
-        if (authRequired) {
-            this.router.put(route, this.checkAuth.bind(this), fn.bind(this));
-        } else {
-            this.router.put(route, fn.bind(this));
-        }
+    protected addRouteGet(route: string, fn: Function, role: AuthRole): void {
+        this.router.get(route, this.getAuthInterceptorFunction(role).bind(this), fn.bind(this));
     }
 
-    protected addRouteDelete(route: string, fn: Function, authRequired?: boolean): void {
-        if (authRequired) {
-            this.router.delete(route, this.checkAuth.bind(this), fn.bind(this));
-        } else {
-            this.router.delete(route, fn.bind(this));
-        }
+    protected addRoutePut(route: string, fn: Function, role: AuthRole): void {
+        this.router.put(route, this.getAuthInterceptorFunction(role).bind(this), fn.bind(this));
+    }
+
+    protected addRouteDelete(route: string, fn: Function, role: AuthRole): void {
+        this.router.delete(route, this.getAuthInterceptorFunction(role).bind(this), fn.bind(this));
     }
 
     protected ok(res: Response): void {
@@ -133,4 +165,12 @@ export abstract class BaseRouter {
     }
 
     protected abstract init(): void;
+}
+
+export enum AuthRole {
+    ANY,
+    GUEST,
+    USER,
+    CUSTOMER,
+    ADMIN
 }

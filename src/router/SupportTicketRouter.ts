@@ -7,6 +7,7 @@ import { CustomerDao } from "../dao/CustomerDao";
 import { ProductVariantDao } from "../dao/ProductVariantDao";
 import { Comment } from "../entity/Comment";
 import { CommentDao } from "../dao/CommentDao";
+import { AuthRole } from "./BaseRouter";
 
 class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
     protected getDao(): SupportTicketDao {
@@ -19,15 +20,19 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
         });
     }
 
+    protected getDefaultAuthRole(): AuthRole {
+        return AuthRole.ADMIN;
+    }
+
     protected init(): void {
         super.init();
-        this.addRouteGet('/my', this.my);
-        this.addRouteGet('/getmyone/:id', this.getMyOne);
-        this.addRouteGet('/comments/:id', this.getComments);
-        this.addRoutePut('/assign', this.assign);
-        this.addRoutePost('/open/:id', this.open);
-        this.addRoutePost('/close/:id', this.close);
-        this.addRoutePost('/addcomment/:id', this.addComment);
+        this.addRouteGet('/my', this.my, AuthRole.CUSTOMER);
+        this.addRouteGet('/getmyone/:id', this.getMyOne, AuthRole.CUSTOMER);
+        this.addRouteGet('/comments/:id', this.getComments, AuthRole.USER);
+        this.addRoutePut('/assign', this.assign, AuthRole.ADMIN);
+        this.addRoutePost('/open/:id', this.open, AuthRole.USER);
+        this.addRoutePost('/close/:id', this.close, AuthRole.USER);
+        this.addRoutePost('/addcomment/:id', this.addComment, AuthRole.USER);
     }
 
     protected getMyOne(req: Request, res: Response, next: NextFunction): void {

@@ -13,6 +13,7 @@ import { SystemSetting, SystemSettingId } from "../entity/SystemSetting";
 import * as moment from "moment";
 import { ProductDao } from "../dao/ProductDao";
 import { DomainList } from "../util/DomainList";
+import { AuthRole } from "./BaseRouter";
 
 class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     protected getDao(): LicenseKeyDao {
@@ -25,13 +26,17 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         });
     }
 
+    protected getDefaultAuthRole(): AuthRole {
+        return AuthRole.ADMIN;
+    }
+
     protected init(): void {
         super.init();
-        this.addRouteGet('/my', this.my);
-        this.addRouteGet('/getmyone/:id', this.getMyOne);
-        this.addRoutePut('/assign', this.assign);
-        this.addRoutePost('/generate', this.generate);
-        this.addRoutePost('/issue/:id', this.issue);
+        this.addRouteGet('/my', this.my, AuthRole.CUSTOMER);
+        this.addRouteGet('/getmyone/:id', this.getMyOne, AuthRole.CUSTOMER);
+        this.addRoutePut('/assign', this.assign, AuthRole.ADMIN);
+        this.addRoutePost('/generate', this.generate, AuthRole.ADMIN);
+        this.addRoutePost('/issue/:id', this.issue, AuthRole.ADMIN);
     }
 
     protected getMyOne(req: Request, res: Response, next: NextFunction): void {

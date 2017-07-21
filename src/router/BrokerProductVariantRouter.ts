@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
-import { BaseRouter } from "./BaseRouter";
+import { BaseRouter, AuthRole } from "./BaseRouter";
 
 import { Dao } from '../dao/Dao';
 import { DbEntity } from '../entity/DbEntity';
@@ -11,10 +11,9 @@ import { BrokerDao } from "../dao/BrokerDao";
 import { ProductVariantDao } from "../dao/ProductVariantDao";
 
 class BrokerProductVariantRouter extends BaseRouter {
-
     protected init(): void {
-        this.addRouteGet('/:productId/list', this.list);
-        this.addRoutePut('/:productId/save', this.save);
+        this.addRouteGet('/:productId/list', this.list, AuthRole.ADMIN);
+        this.addRoutePut('/:productId/save', this.save, AuthRole.ADMIN);
     }
 
     private list(req: Request, res: Response, next: NextFunction): void {

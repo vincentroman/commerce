@@ -4,11 +4,12 @@ import { CrudRouter } from "./CrudRouter";
 
 import { Customer } from '../entity/Customer';
 import { CustomerDao } from '../dao/CustomerDao';
+import { AuthRole } from "./BaseRouter";
 
 class CustomerRouter extends CrudRouter<Customer, CustomerDao> {
     protected init(): void {
         super.init();
-        this.addRouteGet('/suggest', this.suggest);
+        this.addRouteGet('/suggest', this.suggest, AuthRole.ADMIN);
     }
 
     protected getDao(): CustomerDao {
@@ -19,6 +20,10 @@ class CustomerRouter extends CrudRouter<Customer, CustomerDao> {
         return new Promise((resolve, reject) => {
             resolve(new Customer(requestBody));
         });
+    }
+
+    protected getDefaultAuthRole(): AuthRole {
+        return AuthRole.ADMIN;
     }
 
     private suggest(req: Request, res: Response, next: NextFunction): void {

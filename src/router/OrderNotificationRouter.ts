@@ -1,7 +1,7 @@
 import * as pwGen from 'generate-password';
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
-import { BaseRouter } from "./BaseRouter";
+import { BaseRouter, AuthRole } from "./BaseRouter";
 import { Broker } from "../entity/Broker";
 import { BrokerDao } from "../dao/BrokerDao";
 import { PurchaseDao } from "../dao/PurchaseDao";
@@ -22,7 +22,7 @@ import { Email, Address } from "../util/Email";
 
 class OrderNotificationRouter extends BaseRouter {
     protected init(): void {
-        this.addRoutePost('/:id', this.notify);
+        this.addRoutePost('/:id', this.notify, AuthRole.ANY);
     }
 
     private notify(req: Request, res: Response, next: NextFunction): void {

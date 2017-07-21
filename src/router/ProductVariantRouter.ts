@@ -5,11 +5,12 @@ import { CrudRouter } from "./CrudRouter";
 import { ProductVariant } from '../entity/ProductVariant';
 import { ProductVariantDao } from '../dao/ProductVariantDao';
 import { ProductDao } from "../dao/ProductDao";
+import { AuthRole } from "./BaseRouter";
 
 class ProductVariantRouter extends CrudRouter<ProductVariant, ProductVariantDao> {
     protected init(): void {
         super.init();
-        this.addRouteGet('/list/:productId', this.listForProduct);
+        this.addRouteGet('/list/:productId', this.listForProduct, AuthRole.ADMIN);
     }
 
     private listForProduct(req: Request, res: Response, next: NextFunction): void {
@@ -38,6 +39,10 @@ class ProductVariantRouter extends CrudRouter<ProductVariant, ProductVariantDao>
                 resolve(pv);
             }
         });
+    }
+
+    protected getDefaultAuthRole(): AuthRole {
+        return AuthRole.ADMIN;
     }
 }
 

@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
-import { BaseRouter } from "./BaseRouter";
+import { BaseRouter, AuthRole } from "./BaseRouter";
 import { Config } from '../util/Config';
 import { User } from '../entity/User';
 import { UserDao } from '../dao/UserDao';
@@ -14,9 +14,9 @@ import { JwtPayload } from "../util/JwtPayload";
 
 class AuthRouter extends BaseRouter {
     protected init(): void {
-        this.addRoutePost('/login', this.login);
-        this.addRoutePost('/pwreset', this.resetPassword);
-        this.addRoutePost('/logout', this.logout, true);
+        this.addRoutePost('/login', this.login, AuthRole.GUEST);
+        this.addRoutePost('/pwreset', this.resetPassword, AuthRole.GUEST);
+        this.addRoutePost('/logout', this.logout, AuthRole.USER);
     }
 
     private login(req: Request, res: Response, next: NextFunction): void {

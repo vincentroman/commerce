@@ -3,7 +3,7 @@ import { Container } from "typedi";
 import { PurchaseItem } from "../entity/PurchaseItem";
 import { PurchaseItemDao } from "../dao/PurchaseItemDao";
 import { PurchaseDao } from "../dao/PurchaseDao";
-import { BaseRouter } from "./BaseRouter";
+import { BaseRouter, AuthRole } from "./BaseRouter";
 
 class PurchaseItemRouter extends BaseRouter {
     protected getDao(): PurchaseItemDao {
@@ -11,7 +11,7 @@ class PurchaseItemRouter extends BaseRouter {
     }
 
     protected init(): void {
-        this.addRouteGet('/:purchaseId/list', this.list);
+        this.addRouteGet('/:purchaseId/list', this.list, AuthRole.ADMIN);
     }
 
     private list(req: Request, res: Response, next: NextFunction): void {
