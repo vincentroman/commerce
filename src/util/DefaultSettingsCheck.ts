@@ -18,7 +18,7 @@ export class DefaultSettingsCheck {
         let users: User[] = await dao.getAdmins();
         if (users.length === 0) {
             let user: User = new User();
-            user.email = "admin";
+            user.email = "admin@admin.local";
             await user.setPlainPassword("admin");
             user.roleAdmin = true;
             user.roleCustomer = false;

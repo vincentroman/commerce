@@ -10,6 +10,7 @@ import { Product } from "../src/entity/Product";
 import { Container } from "typedi";
 import { ProductVariant } from "../src/entity/ProductVariant";
 import { ProductVariantDao } from "../src/dao/ProductVariantDao";
+import { TestUtil } from "./TestUtil";
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -18,11 +19,12 @@ let endpoint = '/api/v1/productvariant/';
 describe('Router '+endpoint, () => {
     let p1uuid: string = "";
     let putId: string = "";
+    let jwt: string;
 
-    before(done => {
-        if (App.getInstance().ready) { done(); }
-        App.getInstance().on("appStarted", () => { done(); });
-    });
+    before(done => TestUtil.waitForAppToStartAndLoginAdmin((result) => {
+        jwt = result;
+        done();
+    }));
 
     before(done => {
         let productDao: ProductDao = Container.get(ProductDao);
@@ -56,6 +58,7 @@ describe('Router '+endpoint, () => {
                 }
             };
             return chai.request(App.getInstance().express).put(endpoint+'save')
+            .set("Authorization", "Bearer " + jwt)
             .send(pv1)
             .then(res => {
                 expect(res.status).to.equal(200);
@@ -70,6 +73,7 @@ describe('Router '+endpoint, () => {
     describe('GET '+endpoint+'get', () => {
         it('should return the previously inserted variant', () => {
             return chai.request(App.getInstance().express).get(endpoint+'get/'+putId)
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;

@@ -7,6 +7,7 @@ Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
 import { CustomerDao } from "../src/dao/CustomerDao";
 import { Container } from "typedi";
+import { TestUtil } from "./TestUtil";
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -14,15 +15,17 @@ let endpoint = '/api/v1/customer/';
 
 describe('Router '+endpoint, () => {
     let putId: string;
+    let jwt: string;
 
-    before(done => {
-        if (App.getInstance().ready) { done(); }
-        App.getInstance().on("appStarted", () => { done(); });
-    });
+    before(done => TestUtil.waitForAppToStartAndLoginAdmin((result) => {
+        jwt = result;
+        done();
+    }));
 
     describe('GET '+endpoint+'list (before inserting any)', () => {
         it('should be an empty json array', () => {
             return chai.request(App.getInstance().express).get(endpoint+'list')
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -42,6 +45,7 @@ describe('Router '+endpoint, () => {
                 country: "DE"
             };
             return chai.request(App.getInstance().express).put(endpoint+'save')
+            .set("Authorization", "Bearer " + jwt)
             .send(customer)
             .then(res => {
                 expect(res.status).to.equal(200);
@@ -62,6 +66,7 @@ describe('Router '+endpoint, () => {
                 country: "US"
             };
             return chai.request(App.getInstance().express).put(endpoint+'save')
+            .set("Authorization", "Bearer " + jwt)
             .send(customer)
             .then(res => {
                 expect(res.status).to.equal(200);
@@ -75,6 +80,7 @@ describe('Router '+endpoint, () => {
     describe('GET '+endpoint+'get', () => {
         it('should return the previously inserted customer', () => {
             return chai.request(App.getInstance().express).get(endpoint+'get/'+putId)
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -94,6 +100,7 @@ describe('Router '+endpoint, () => {
     describe('GET '+endpoint+'list (after inserting one)', () => {
         it('should return the previously inserted customer', () => {
             return chai.request(App.getInstance().express).get(endpoint+'list')
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -108,6 +115,7 @@ describe('Router '+endpoint, () => {
     describe('DELETE '+endpoint+'delete', () => {
         it('should delete the previously inserted customer', () => {
             return chai.request(App.getInstance().express).del(endpoint+'delete/'+putId)
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -118,6 +126,7 @@ describe('Router '+endpoint, () => {
     describe('GET '+endpoint+'list (after deleting)', () => {
         it('should be an empty json array', () => {
             return chai.request(App.getInstance().express).get(endpoint+'list')
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -130,6 +139,7 @@ describe('Router '+endpoint, () => {
     describe('GET '+endpoint+'get (after deleting)', () => {
         it('should return a 404', () => {
             return chai.request(App.getInstance().express).get(endpoint+'get/'+putId)
+            .set("Authorization", "Bearer " + jwt)
             .catch(res => {
                 expect(res.status).to.equal(404);
             });
@@ -148,6 +158,7 @@ describe('Router '+endpoint, () => {
 
         it('should return an empty list without any customers', () => {
             return chai.request(App.getInstance().express).get(endpoint+'suggest')
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -178,11 +189,15 @@ describe('Router '+endpoint, () => {
                 email: "no-reply@mustermann.net",
                 country: "DE"
             };
-            return chai.request(App.getInstance().express).put(endpoint+'save').send(customer1).then((res) => {
+            return chai.request(App.getInstance().express).put(endpoint+'save')
+            .set("Authorization", "Bearer " + jwt).send(customer1).then((res) => {
                 c1uuid = res.body.uuid;
-                return chai.request(App.getInstance().express).put(endpoint+'save').send(customer2).then(() => {
-                    return chai.request(App.getInstance().express).put(endpoint+'save').send(customer3).then(() => {
+                return chai.request(App.getInstance().express).put(endpoint+'save')
+                .set("Authorization", "Bearer " + jwt).send(customer2).then(() => {
+                    return chai.request(App.getInstance().express).put(endpoint+'save')
+                    .set("Authorization", "Bearer " + jwt).send(customer3).then(() => {
                         return chai.request(App.getInstance().express).get(endpoint+'suggest')
+                        .set("Authorization", "Bearer " + jwt)
                             .then(res => {
                                 expect(res.status).to.equal(200);
                                 expect(res).to.be.json;
@@ -200,6 +215,7 @@ describe('Router '+endpoint, () => {
 
         it('should return an ordered list (1) of a subset of customers with keyword provided', () => {
             return chai.request(App.getInstance().express).get(endpoint+'suggest?s=mill')
+                    .set("Authorization", "Bearer " + jwt)
                     .then(res => {
                         expect(res.status).to.equal(200);
                         expect(res).to.be.json;
@@ -212,6 +228,7 @@ describe('Router '+endpoint, () => {
 
         it('should return an ordered list (2) of a subset of customers with keyword provided', () => {
             return chai.request(App.getInstance().express).get(endpoint+'suggest?s=w')
+                    .set("Authorization", "Bearer " + jwt)
                     .then(res => {
                         expect(res.status).to.equal(200);
                         expect(res).to.be.json;
@@ -225,6 +242,7 @@ describe('Router '+endpoint, () => {
 
         it('should return an ordered list of a subset of customers with exclude parameter provided', () => {
             return chai.request(App.getInstance().express).get(endpoint+'suggest?exclude='+c1uuid)
+                    .set("Authorization", "Bearer " + jwt)
                     .then(res => {
                         expect(res.status).to.equal(200);
                         expect(res).to.be.json;

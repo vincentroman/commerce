@@ -5,6 +5,7 @@ import chaiHttp = require('chai-http');
 import { Config } from '../src/util/Config';
 Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
+import { TestUtil } from "./TestUtil";
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -12,15 +13,17 @@ let endpoint = '/api/v1/product/';
 
 describe('Router '+endpoint, () => {
     let putId: string;
+    let jwt: string;
 
-    before(done => {
-        if (App.getInstance().ready) { done(); }
-        App.getInstance().on("appStarted", () => { done(); });
-    });
+    before(done => TestUtil.waitForAppToStartAndLoginAdmin((result) => {
+        jwt = result;
+        done();
+    }));
 
     describe('GET '+endpoint+'list (before inserting any)', () => {
         it('should be an empty json array', () => {
             return chai.request(App.getInstance().express).get(endpoint+'list')
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -37,6 +40,7 @@ describe('Router '+endpoint, () => {
                 licenseKeyIdentifier: "PA"
             };
             return chai.request(App.getInstance().express).put(endpoint+'save')
+            .set("Authorization", "Bearer " + jwt)
             .send(product)
             .then(res => {
                 expect(res.status).to.equal(200);
@@ -54,6 +58,7 @@ describe('Router '+endpoint, () => {
                 licenseKeyIdentifier: "PB"
             };
             return chai.request(App.getInstance().express).put(endpoint+'save')
+            .set("Authorization", "Bearer " + jwt)
             .send(product)
             .then(res => {
                 expect(res.status).to.equal(200);
@@ -67,6 +72,7 @@ describe('Router '+endpoint, () => {
     describe('GET '+endpoint+'get', () => {
         it('should return the previously inserted product', () => {
             return chai.request(App.getInstance().express).get(endpoint+'get/'+putId)
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -80,6 +86,7 @@ describe('Router '+endpoint, () => {
     describe('GET '+endpoint+'list (after inserting one)', () => {
         it('should return the previously inserted product', () => {
             return chai.request(App.getInstance().express).get(endpoint+'list')
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -94,6 +101,7 @@ describe('Router '+endpoint, () => {
     describe('DELETE '+endpoint+'delete', () => {
         it('should delete the previously inserted product', () => {
             return chai.request(App.getInstance().express).del(endpoint+'delete/'+putId)
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -104,6 +112,7 @@ describe('Router '+endpoint, () => {
     describe('GET '+endpoint+'list (after deleting)', () => {
         it('should be an empty json array', () => {
             return chai.request(App.getInstance().express).get(endpoint+'list')
+            .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
@@ -116,6 +125,7 @@ describe('Router '+endpoint, () => {
     describe('GET '+endpoint+'get (after deleting)', () => {
         it('should return a 404', () => {
             return chai.request(App.getInstance().express).get(endpoint+'get/'+putId)
+            .set("Authorization", "Bearer " + jwt)
             .catch(res => {
                 expect(res.status).to.equal(404);
             });

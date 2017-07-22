@@ -32,7 +32,8 @@ describe("DomainList", () => {
             expect(DomainList.getTldFromDomain("test.com")).to.equal("com");
             expect(DomainList.getTldFromDomain("testwebsite.accident-investigation.aero")).to.equal("accident-investigation.aero");
             expect(DomainList.getTldFromDomain("test.co.uk")).to.equal("co.uk");
-            expect(DomainList.getTldFromDomain("test.ap-southeast-2.compute.amazonaws.com")).to.equal("ap-southeast-2.compute.amazonaws.com");
+            expect(DomainList.getTldFromDomain("test.ap-southeast-2.compute.amazonaws.com"))
+                .to.equal("ap-southeast-2.compute.amazonaws.com");
             expect(DomainList.getTldFromDomain(".")).to.equal("");
         });
     });

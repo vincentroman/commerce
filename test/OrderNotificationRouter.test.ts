@@ -22,6 +22,7 @@ import { CustomerDao } from "../src/dao/CustomerDao";
 import { UserDao } from "../src/dao/UserDao";
 import { LicenseKey } from "../src/entity/LicenseKey";
 import { LicenseKeyDao } from "../src/dao/LicenseKeyDao";
+import { DefaultSettingsCheck } from "../src/util/DefaultSettingsCheck";
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -136,7 +137,7 @@ describe('Router '+endpoint, () => {
                             Container.get(ProductVariantDao).removeAll().then(() => {
                                 Container.get(ProductDao).removeAll().then(() => {
                                     Container.get(BrokerDao).removeAll().then(() => {
-                                        done();
+                                        DefaultSettingsCheck.check().then(() => done());
                                     }).catch(e => done(e));
                                 }).catch(e => done(e));
                             }).catch(e => done(e));
