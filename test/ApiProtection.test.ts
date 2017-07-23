@@ -152,7 +152,6 @@ describe('API Protection', () => {
             {url: "/api/v1/licensekey/save", expectForbidden: false, method: "put", jwt: "admin"},
             {url: "/api/v1/licensekey/assign", expectForbidden: false, method: "put", jwt: "admin"},
             {url: "/api/v1/licensekey/generate", expectForbidden: false, method: "post", jwt: "admin"},
-            {url: "/api/v1/licensekey/issue/abcdef", expectForbidden: false, method: "post", jwt: "admin"},
 
             {url: "/api/v1/mailtemplate/get/abcdef", expectForbidden: false, method: "get", jwt: "admin"},
             {url: "/api/v1/mailtemplate/list", expectForbidden: false, method: "get", jwt: "admin"},
@@ -222,7 +221,6 @@ describe('API Protection', () => {
             {url: "/api/v1/licensekey/save", expectForbidden: true, method: "put", jwt: "customer"},
             {url: "/api/v1/licensekey/assign", expectForbidden: true, method: "put", jwt: "customer"},
             {url: "/api/v1/licensekey/generate", expectForbidden: true, method: "post", jwt: "customer"},
-            {url: "/api/v1/licensekey/issue/abcdef", expectForbidden: true, method: "post", jwt: "customer"},
 
             {url: "/api/v1/mailtemplate/get/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
             {url: "/api/v1/mailtemplate/list", expectForbidden: true, method: "get", jwt: "customer"},
@@ -271,6 +269,7 @@ describe('API Protection', () => {
 
             {url: "/api/v1/licensekey/my", expectForbidden: false, method: "get", jwt: "customer"},
             {url: "/api/v1/licensekey/getmyone/abcdef", expectForbidden: false, method: "get", jwt: "customer"},
+            {url: "/api/v1/licensekey/issue/abcdef", expectForbidden: false, method: "post", jwt: "customer"},
 
             {url: "/api/v1/supportticket/my", expectForbidden: false, method: "get", jwt: "customer"},
             {url: "/api/v1/supportticket/getmyone/abcdef", expectForbidden: false, method: "get", jwt: "customer"},

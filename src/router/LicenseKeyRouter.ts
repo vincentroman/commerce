@@ -36,7 +36,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         this.addRouteGet('/getmyone/:id', this.getMyOne, AuthRole.CUSTOMER);
         this.addRoutePut('/assign', this.assign, AuthRole.ADMIN);
         this.addRoutePost('/generate', this.generate, AuthRole.ADMIN);
-        this.addRoutePost('/issue/:id', this.issue, AuthRole.ADMIN);
+        this.addRoutePost('/issue/:id', this.issue, AuthRole.CUSTOMER);
     }
 
     protected getMyOne(req: Request, res: Response, next: NextFunction): void {
