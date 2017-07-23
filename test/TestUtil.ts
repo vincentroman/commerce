@@ -4,6 +4,8 @@ import { UserDao } from "../src/dao/UserDao";
 import { App } from "../src/App";
 import * as chai from 'chai';
 import chaiHttp = require('chai-http');
+import { Customer } from "../src/entity/Customer";
+import { CustomerDao } from "../src/dao/CustomerDao";
 
 chai.use(chaiHttp);
 
@@ -40,10 +42,21 @@ export class TestUtil {
         });
     }
 
-    public static createAdminUser(): Promise<User> {
-        let user: User = new User();
-        //user.email =
-        user.roleAdmin = true;
-        return Container.get(UserDao).save(user);
+    public static createCustomerUser(email: string, password: string): Promise<User> {
+        return new Promise((resolve, reject) => {
+            let customer: Customer = new Customer();
+            customer.email = email;
+            customer.firstname = "Sample";
+            customer.lastname = "Sample";
+            Container.get(CustomerDao).save(customer).then(customer => {
+                let user: User = new User();
+                user.email = email;
+                user.customer = customer;
+                user.roleCustomer = true;
+                user.setPlainPassword(password).then(() => {
+                    Container.get(UserDao).save(user).then(user => resolve(user));
+                });
+            });
+        });
     }
 }

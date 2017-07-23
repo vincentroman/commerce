@@ -44,7 +44,7 @@ class AuthRouter extends BaseRouter {
         let actionDao: PendingActionDao = Container.get(PendingActionDao);
         let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
         userDao.getByEmail(req.body.email).then((user) => {
-            if (user.customer) {
+            if (user && user.customer) {
                 let action: PendingAction = new PendingAction();
                 action.type = ActionType.ResetPassword;
                 action.setPayload({
@@ -62,10 +62,12 @@ class AuthRouter extends BaseRouter {
                         };
                         Email.sendByTemplate(mailTemplate, recipient, params);
                     });
+                    this.ok(res);
                 });
+            } else {
+                this.ok(res);
             }
-        });
-        this.ok(res);
+        }).catch(e => this.ok(res));
     }
 
     private createJwt(user: User): string {

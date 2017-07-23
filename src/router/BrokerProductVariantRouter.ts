@@ -21,21 +21,33 @@ class BrokerProductVariantRouter extends BaseRouter {
         let dao: BrokerProductVariantDao = Container.get(BrokerProductVariantDao);
         let productId = req.params.productId;
         productDao.getByUuid(productId).then(product => {
-            dao.getByProduct(product).then(entities => {
-                res.send(entities.map(entity => entity.serialize()));
-            });
+            if (product) {
+                dao.getByProduct(product).then(entities => {
+                    res.send(entities.map(entity => entity.serialize()));
+                });
+            } else {
+                this.notFound(res);
+            }
         }).catch(e => this.notFound(res));
     }
 
     private save(req: Request, res: Response, next: NextFunction): void {
         Container.get(BrokerDao).getByUuid(req.body.broker.uuid).then(broker => {
-            Container.get(ProductVariantDao).getByUuid(req.body.productVariant.uuid).then(productVariant => {
-                Container.get(BrokerProductVariantDao).addOrReplace(broker, productVariant, req.body.idForBroker).then(bpv => {
-                    this.saved(res, bpv);
+            if (broker) {
+                Container.get(ProductVariantDao).getByUuid(req.body.productVariant.uuid).then(productVariant => {
+                    if (productVariant) {
+                        Container.get(BrokerProductVariantDao).addOrReplace(broker, productVariant, req.body.idForBroker).then(bpv => {
+                            this.saved(res, bpv);
+                        }).catch(e => this.internalServerError(res));
+                    } else {
+                        this.notFound(res);
+                    }
+                }).catch(e => {
+                    this.notFound(res);
                 });
-            }).catch(e => {
+            } else {
                 this.notFound(res);
-            });
+            }
         }).catch(e => {
             this.notFound(res);
         });

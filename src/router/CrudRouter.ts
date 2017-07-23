@@ -43,26 +43,34 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
         let dao: TDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
-            dao.delete(entity).then(entity => {
-                this.ok(res);
-            });
-        }).catch(e => this.notFound(e));
+            if (entity) {
+                dao.delete(entity).then(entity => {
+                    this.ok(res);
+                }).catch(e => this.internalServerError(res));
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => this.notFound(res));
     }
 
     private save(req: Request, res: Response, next: NextFunction): void {
         let dao: TDao = this.getDao();
         if (req.body.uuid) {
             dao.getByUuid(req.body.uuid).then(entity => {
-                entity.deserialize(req.body);
-                dao.save(entity).then(entity => {
-                    this.saved(res, entity);
-                });
+                if (entity) {
+                    entity.deserialize(req.body);
+                    dao.save(entity).then(entity => {
+                        this.saved(res, entity);
+                    }).catch(e => this.internalServerError(res));
+                } else {
+                    this.notFound(res);
+                }
             }).catch(e => this.notFound(res));
         } else {
             this.createEntity(req.body).then(entity => {
                 dao.save(entity).then(entity => {
                     this.saved(res, entity);
-                });
+                }).catch(e => this.badRequest(res));
             }).catch(e => this.badRequest(res));
         }
     }
