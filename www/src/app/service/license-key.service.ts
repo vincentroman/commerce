@@ -23,29 +23,29 @@ export class LicenseKeyService extends CrudService<LicenseKey> {
     }
 
     my(): Promise<LicenseKey[]> {
-        return this.http
+        return new Promise((resolve, reject) => {
+            this.http
             .get(this.httpService.getUrl(this.getPath() + "/my"), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: LicenseKey[] = (<LicenseKey[]>res.json()).map(o => this.newTypeInstance().deserialize(o));
-                return list;
+                resolve(list);
             })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 
     getMyOne(id: string): Promise<LicenseKey> {
-        return this.http
+        return new Promise((resolve, reject) => {
+            this.http
             .get(this.httpService.getUrl(this.getPath() + "/getmyone/" + id), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let entity = this.newTypeInstance().deserialize(<LicenseKey>res.json());
-                return entity;
+                resolve(entity);
             })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 
     assign(productVariantUuid: string, customerUuid: string): Promise<string> {

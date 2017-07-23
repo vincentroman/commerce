@@ -24,42 +24,42 @@ export class SupportTicketService extends CrudService<SupportTicket> {
     }
 
     my(): Promise<SupportTicket[]> {
-        return this.http
+        return new Promise((resolve, reject) => {
+            this.http
             .get(this.httpService.getUrl(this.getPath() + "/my"), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: SupportTicket[] = (<SupportTicket[]>res.json()).map(o => this.newTypeInstance().deserialize(o));
-                return list;
+                resolve(list);
             })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 
     getMyOne(id: string): Promise<SupportTicket> {
-        return this.http
+        return new Promise((resolve, reject) => {
+            this.http
             .get(this.httpService.getUrl(this.getPath() + "/getmyone/" + id), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let entity = this.newTypeInstance().deserialize(<SupportTicket>res.json());
-                return entity;
+                resolve(entity);
             })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 
     getComments(id: string): Promise<Comment[]> {
-        return this.http
+        return new Promise((resolve, reject) => {
+            this.http
             .get(this.httpService.getUrl(this.getPath() + "/comments/" + id), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: Comment[] = (<Comment[]>res.json()).map(o => new Comment().deserialize(o));
-                return list;
+                resolve(list);
             })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 
     assign(productVariantUuid: string, customerUuid: string): Promise<string> {

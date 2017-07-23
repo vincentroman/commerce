@@ -16,51 +16,49 @@ export abstract class CrudService<T extends RestModel<T>> {
     protected abstract newTypeInstance(): T;
 
     list(): Promise<T[]> {
-        return this.http
+        return new Promise((resolve, reject) => {
+            this.http
             .get(this.httpService.getUrl(this.getPath() + "/list"), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: T[] = (<T[]>res.json()).map(o => this.newTypeInstance().deserialize(o));
-                return list;
+                resolve(list);
             })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 
     get(id: string): Promise<T> {
-        return this.http
+        return new Promise((resolve, reject) => {
+            this.http
             .get(this.httpService.getUrl(this.getPath() + "/get/" + id), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let entity = this.newTypeInstance().deserialize(<T>res.json());
-                return entity;
+                resolve(entity);
             })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 
     save(entity: T): Promise<T> {
-        return this.http.put(this.httpService.getUrl(this.getPath() + "/save"), entity.serialize(), this.httpService.getOptions())
+        return new Promise((resolve, reject) => {
+            this.http.put(this.httpService.getUrl(this.getPath() + "/save"), entity.serialize(), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 entity.uuid = res.json().uuid;
-                return entity;
+                resolve(entity);
             })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 
     delete(id: string): Promise<void> {
-        return this.http.delete(this.httpService.getUrl(this.getPath() + "/delete/" + id), this.httpService.getOptions())
+        return new Promise((resolve, reject) => {
+            this.http.delete(this.httpService.getUrl(this.getPath() + "/delete/" + id), this.httpService.getOptions())
             .toPromise()
-            .then(res => {
-                return;
-            })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .then(res => resolve())
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 }

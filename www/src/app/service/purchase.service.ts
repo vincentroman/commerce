@@ -23,15 +23,15 @@ export class PurchaseService extends CrudService<Purchase> {
     }
 
     public getPurchaseItems(uuid: string): Promise<PurchaseItem[]> {
-        return this.http
+        return new Promise((resolve, reject) => {
+            this.http
             .get(this.httpService.getUrl("purchaseitem/" + uuid + "/list"), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: PurchaseItem[] = (<PurchaseItem[]>res.json()).map(o => new PurchaseItem().deserialize(o));
-                return list;
+                resolve(list);
             })
-            .catch(error => {
-                return this.httpService.handleError(error);
-            });
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
     }
 }
