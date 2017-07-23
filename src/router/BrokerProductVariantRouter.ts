@@ -32,25 +32,29 @@ class BrokerProductVariantRouter extends BaseRouter {
     }
 
     private save(req: Request, res: Response, next: NextFunction): void {
-        Container.get(BrokerDao).getByUuid(req.body.broker.uuid).then(broker => {
-            if (broker) {
-                Container.get(ProductVariantDao).getByUuid(req.body.productVariant.uuid).then(productVariant => {
-                    if (productVariant) {
-                        Container.get(BrokerProductVariantDao).addOrReplace(broker, productVariant, req.body.idForBroker).then(bpv => {
-                            this.saved(res, bpv);
-                        }).catch(e => this.internalServerError(res));
-                    } else {
+        if (req.body.broker && req.body.broker.uuid) {
+            Container.get(BrokerDao).getByUuid(req.body.broker.uuid).then(broker => {
+                if (broker) {
+                    Container.get(ProductVariantDao).getByUuid(req.body.productVariant.uuid).then(productVariant => {
+                        if (productVariant) {
+                            Container.get(BrokerProductVariantDao).addOrReplace(broker, productVariant, req.body.idForBroker).then(bpv => {
+                                this.saved(res, bpv);
+                            }).catch(e => this.internalServerError(res));
+                        } else {
+                            this.notFound(res);
+                        }
+                    }).catch(e => {
                         this.notFound(res);
-                    }
-                }).catch(e => {
+                    });
+                } else {
                     this.notFound(res);
-                });
-            } else {
+                }
+            }).catch(e => {
                 this.notFound(res);
-            }
-        }).catch(e => {
-            this.notFound(res);
-        });
+            });
+        } else {
+            this.badRequest(res);
+        }
     }
 }
 

@@ -44,6 +44,15 @@ export class ProductVariant extends DbEntity<ProductVariant> {
         }
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.title &&
+            this.product &&
+            this.type) {
+            return true;
+        }
+        return false;
+    }
 }
 
 export enum ProductVariantType {

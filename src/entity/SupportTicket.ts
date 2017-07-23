@@ -40,6 +40,15 @@ export class SupportTicket extends DbEntity<SupportTicket> {
         // Deserializing not supported
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.productVariant &&
+            this.customer &&
+            this.status) {
+            return true;
+        }
+        return false;
+    }
 }
 
 export enum SupportRequestStatus {

@@ -31,4 +31,11 @@ export class Purchase extends DbEntity<Purchase> {
         // Deserializing not supported
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.customer) {
+            return true;
+        }
+        return false;
+    }
 }

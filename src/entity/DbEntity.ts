@@ -30,4 +30,6 @@ export abstract class DbEntity<T extends DbEntity<T>> {
     }
 
     public abstract deserialize(o: Object): T;
+
+    public abstract isConsistent(): boolean;
 }

@@ -25,4 +25,11 @@ export class Product extends DbEntity<Product> {
         this.licenseKeyIdentifier = o['licenseKeyIdentifier'];
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.title) {
+            return true;
+        }
+        return false;
+    }
 }

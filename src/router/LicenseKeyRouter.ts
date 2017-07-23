@@ -87,6 +87,10 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
             subject = "^.*$";
         } else {
             let domains: string[] = req.body.domains;
+            if (!domains) {
+                this.badRequest(res);
+                return;
+            }
             let dl: DomainList = new DomainList(false);
             domains.forEach(domain => dl.addDomain(domain));
             subject = dl.getRegex().toString();

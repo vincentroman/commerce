@@ -31,6 +31,14 @@ export class SystemSetting extends DbEntity<SystemSetting> {
         this.value = o['value'];
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.settingId &&
+            this.type) {
+            return true;
+        }
+        return false;
+    }
 }
 
 export enum SystemSettingId {

@@ -50,4 +50,11 @@ export class Customer extends DbEntity<Customer> {
         }
         return tokens.join(" ");
     }
+
+    public isConsistent(): boolean {
+        if (this.email) {
+            return true;
+        }
+        return false;
+    }
 }

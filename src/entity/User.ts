@@ -44,4 +44,12 @@ export class User extends DbEntity<User> {
         this.roleCustomer = (o['roleCustomer'] === 1 || o['roleCustomer'] === "true" ? true : false);
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.email &&
+            this.password) {
+            return true;
+        }
+        return false;
+    }
 }

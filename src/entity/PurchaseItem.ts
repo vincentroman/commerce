@@ -26,4 +26,13 @@ export class PurchaseItem extends DbEntity<PurchaseItem> {
         // Deserializing not supported
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.purchase &&
+            this.productVariant &&
+            this.quantity) {
+            return true;
+        }
+        return false;
+    }
 }

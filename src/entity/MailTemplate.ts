@@ -26,6 +26,13 @@ export class MailTemplate extends DbEntity<MailTemplate> {
         this.body = o['body'];
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.type) {
+            return true;
+        }
+        return false;
+    }
 }
 
 export enum MailTemplateType {

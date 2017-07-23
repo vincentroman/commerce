@@ -21,4 +21,11 @@ export class Broker extends DbEntity<Broker> {
         this.mappingTemplate = o['mappingTemplate'];
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.name) {
+            return true;
+        }
+        return false;
+    }
 }

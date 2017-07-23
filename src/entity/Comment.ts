@@ -31,4 +31,13 @@ export class Comment extends DbEntity<Comment> {
         // Deserializing not supported
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.text &&
+            this.author &&
+            (this.customer || this.supportTicket)) {
+            return true;
+        }
+        return false;
+    }
 }

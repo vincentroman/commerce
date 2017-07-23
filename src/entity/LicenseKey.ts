@@ -40,4 +40,12 @@ export class LicenseKey extends DbEntity<LicenseKey> {
         // Deserializing not supported
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.productVariant &&
+            this.customer) {
+            return true;
+        }
+        return false;
+    }
 }

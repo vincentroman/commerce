@@ -25,6 +25,14 @@ export class PendingAction extends DbEntity<PendingAction> {
     public getPayload(): any {
         return JSON.parse(this.payload);
     }
+
+    public isConsistent(): boolean {
+        if (this.type &&
+            this.payload) {
+            return true;
+        }
+        return false;
+    }
 }
 
 export enum ActionType {

@@ -28,4 +28,12 @@ export class BrokerProductVariant extends DbEntity<BrokerProductVariant> {
         this.idForBroker = o['idForBroker'];
         return this;
     }
+
+    public isConsistent(): boolean {
+        if (this.broker &&
+            this.productVariant) {
+            return true;
+        }
+        return false;
+    }
 }
