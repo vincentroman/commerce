@@ -33,6 +33,7 @@ export class App extends EventEmitter {
         if (App.INSTANCE) {
             throw new Error("Call App.getInstance() instead!");
         }
+        process.on("unhandledRejection", this.handleUnknownRejection.bind(this));
         this.express = express();
         this.setupOrm().then(connection => {
             this.setupMiddleware();
@@ -43,6 +44,10 @@ export class App extends EventEmitter {
                 console.log("Server ready");
             });
         }).catch(error => console.log("TypeORM connection error: ", error));
+    }
+
+    private handleUnknownRejection(reason: Error, p: Promise<any>): void {
+        console.error("Unhandled rejection: %s", reason);
     }
 
     private setupMiddleware(): void {
