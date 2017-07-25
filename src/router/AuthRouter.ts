@@ -22,14 +22,12 @@ class AuthRouter extends BaseRouter {
     private login(req: Request, res: Response, next: NextFunction): void {
         let userDao: UserDao = Container.get(UserDao);
         userDao.getByEmail(req.body.email).then((user) => {
-            user.isPasswordValid(req.body.password).then((valid) => {
-                if (!valid) {
-                    this.notFound(res);
-                    return;
-                }
+            if (user.isPasswordValid(req.body.password)) {
                 let jwt: string = this.createJwt(user);
                 res.send(jwt);
-            });
+            } else {
+                this.notFound(res);
+            }
         }).catch((e) => {
             this.notFound(res);
         });

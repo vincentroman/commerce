@@ -53,22 +53,21 @@ class OrderNotificationRouter extends BaseRouter {
                 });
                 user.customer = customer;
                 user.email = customer.email;
-                user.setPlainPassword(plainPassword).then(() => {
-                    userDao.save(user).then((user) => {
-                        mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
-                            let recipient: Address = {
-                                name: customer.firstname + " " + customer.lastname,
-                                email: customer.email
-                            };
-                            let params = {
-                                username: user.email,
-                                password: plainPassword
-                            };
-                            Email.sendByTemplate(template, recipient, params).then(() => {
-                                resolve(user);
-                            });
+                user.setPlainPassword(plainPassword);
+                userDao.save(user).then((user) => {
+                    mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
+                        let recipient: Address = {
+                            name: customer.firstname + " " + customer.lastname,
+                            email: customer.email
+                        };
+                        let params = {
+                            username: user.email,
+                            password: plainPassword
+                        };
+                        Email.sendByTemplate(template, recipient, params).then(() => {
+                            resolve(user);
                         });
-                    }).catch(e => reject(e));
+                    });
                 }).catch(e => reject(e));
             });
         });

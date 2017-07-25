@@ -6,7 +6,7 @@
             "port": 3306,
             "username": "root",
             "password": "root",
-            "database": "commerce"
+            "database": "commerce_docker"
         },
         "logging": {
             "logQueries": false,

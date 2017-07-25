@@ -1,6 +1,6 @@
+import * as bcrypt  from "bcrypt";
 import { Entity, Column, OneToOne, JoinColumn } from "typeorm";
 import { DbEntity } from "./DbEntity";
-import * as hashy  from 'hashy';
 import { Customer } from "./Customer";
 
 @Entity()
@@ -21,13 +21,13 @@ export class User extends DbEntity<User> {
     @JoinColumn()
     customer: Customer;
 
-    public async setPlainPassword(password: string): Promise<void> {
-        let hash: string = await hashy.hash(password, 'bcrypt');
+    public setPlainPassword(password: string): void {
+        let hash: string = bcrypt.hashSync(password, 10);
         this.password = hash;
     }
 
-    public isPasswordValid(password: string): Promise<boolean> {
-        return hashy.verify(password, this.password, 'bcrypt');
+    public isPasswordValid(password: string): boolean {
+        return bcrypt.compareSync(password, this.password);
     }
 
     public serialize(): Object {
