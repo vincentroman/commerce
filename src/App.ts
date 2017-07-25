@@ -27,16 +27,20 @@ export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
     public readonly express: express.Application;
     public ready: boolean = false;
+    private dbConnection: Connection = null;
 
     constructor() {
         super();
         if (App.INSTANCE) {
             throw new Error("Call App.getInstance() instead!");
         }
+        process.on("SIGINT", this.exitOnSignal.bind(this));
+        process.on("SIGTERM", this.exitOnSignal.bind(this));
         process.on("uncaughtException", this.handleUnknownException.bind(this));
         process.on("unhandledRejection", this.handleUnknownRejection.bind(this));
         this.express = express();
         this.setupOrm().then(connection => {
+            this.dbConnection = connection;
             this.setupMiddleware();
             this.setupRoutes();
             DefaultSettingsCheck.check().then(() => {
@@ -45,6 +49,18 @@ export class App extends EventEmitter {
                 console.log("Server ready");
             });
         }).catch(error => console.log("TypeORM connection error: ", error));
+    }
+
+    private exitOnSignal(): void {
+        console.log("Received exit signal...");
+        if (this.dbConnection) {
+            console.log("Closing database connection...");
+            this.dbConnection.close().then(() => {
+                process.exit(0);
+            });
+        } else {
+            process.exit(0);
+        }
     }
 
     private handleUnknownException(e: Error): void {
