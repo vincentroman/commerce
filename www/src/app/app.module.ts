@@ -45,6 +45,8 @@ import { SupportRequestViewComponent } from "./component/admin/support-request-v
 import { OrderListComponent } from "./component/admin/order-list.component";
 import { BrokerTestComponent } from "./component/admin/broker-test.component";
 import { OrderViewComponent } from "./component/admin/order-view.component";
+import { UserListComponent } from "./component/admin/user-list.component";
+import { UserEditComponent } from "./component/admin/user-edit.component";
 
 @NgModule({
     imports: [
@@ -83,7 +85,9 @@ import { OrderViewComponent } from "./component/admin/order-view.component";
         SystemSettingListComponent,
         SystemSettingEditComponent,
         TicketsMyListComponent,
-        TicketsMyViewComponent
+        TicketsMyViewComponent,
+        UserEditComponent,
+        UserListComponent
     ],
     providers: [
         AuthService,

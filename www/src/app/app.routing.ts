@@ -32,6 +32,8 @@ import { SupportRequestViewComponent } from "./component/admin/support-request-v
 import { OrderListComponent } from "./component/admin/order-list.component";
 import { BrokerTestComponent } from "./component/admin/broker-test.component";
 import { OrderViewComponent } from "./component/admin/order-view.component";
+import { UserListComponent } from "./component/admin/user-list.component";
+import { UserEditComponent } from "./component/admin/user-edit.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -81,6 +83,10 @@ const appRoutes: Routes = [
 
     { path: "admin/systemsettings", component: SystemSettingListComponent, canActivate: [AdminGuard] },
     { path: "admin/systemsettings/edit/:uuid", component: SystemSettingEditComponent, canActivate: [AdminGuard] },
+
+    { path: "admin/users", component: UserListComponent, canActivate: [AdminGuard] },
+    { path: "admin/users/new", component: UserEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/users/edit/:uuid", component: UserEditComponent, canActivate: [AdminGuard] },
 
     {
         path: "",

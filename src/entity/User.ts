@@ -34,14 +34,15 @@ export class User extends DbEntity<User> {
         return Object.assign(super.serialize(), {
             email: this.email,
             roleAdmin: this.roleAdmin,
-            roleCustomer: this.roleCustomer
+            roleCustomer: this.roleCustomer,
+            customerId: (this.customer ? this.customer.uuid : null)
         });
     }
 
     public deserialize(o: Object): User {
         this.email = o['email'];
-        this.roleAdmin = (o['roleAdmin'] === 1 || o['roleAdmin'] === "true" ? true : false);
-        this.roleCustomer = (o['roleCustomer'] === 1 || o['roleCustomer'] === "true" ? true : false);
+        this.roleAdmin = (o['roleAdmin'] === 1 || o['roleAdmin'] === "true" || o['roleAdmin'] === true ? true : false);
+        this.roleCustomer = (o['roleCustomer'] === 1 || o['roleCustomer'] === "true" || o['roleCustomer'] === true ? true : false);
         return this;
     }
 
