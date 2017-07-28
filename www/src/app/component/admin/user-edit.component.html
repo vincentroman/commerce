@@ -12,7 +12,16 @@
     <div class="alert alert-danger" role="alert" [hidden]="!error">Error saving user. Please try again.</div>
     <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="Email" class="form-control" [(ngModel)]="entity.email" required="required" autofocus="autofocus" />
+        <input type="email" id="email" name="email" placeholder="Email" class="form-control" [(ngModel)]="entity.email" required="required" autofocus="autofocus" autocomplete="off" />
+    </div>
+    <div class="checkbox" *ngIf="entity.uuid">
+        <label>
+            <input type="checkbox" id="changePassword" name="changePassword" [(ngModel)]="changePassword" /> Change Password
+        </label>
+    </div>
+    <div class="form-group">
+        <label for="password">New Password</label>
+        <input type="password" id="password" name="password" placeholder="Password" class="form-control" [(ngModel)]="entity.password" [required]="changePassword || !entity.uuid" [disabled]="entity.uuid && !changePassword" autocomplete="new-password" />
     </div>
     <div class="checkbox">
         <label>

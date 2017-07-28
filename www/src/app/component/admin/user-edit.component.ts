@@ -11,6 +11,8 @@ import { UserService } from "../../service/user.service";
     ]
 })
 export class UserEditComponent extends EntityEditComponent<User> {
+    changePassword: boolean = false;
+
     constructor(
         protected route: ActivatedRoute,
         protected router: Router,
@@ -25,5 +27,12 @@ export class UserEditComponent extends EntityEditComponent<User> {
 
     protected getListPath(): string {
         return "/admin/users";
+    }
+
+    submit(): void {
+        if (this.uuid && !this.changePassword) {
+            this.entity.password = "";
+        }
+        super.submit();
     }
 }

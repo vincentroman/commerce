@@ -43,6 +43,9 @@ export class User extends DbEntity<User> {
         this.email = o['email'];
         this.roleAdmin = (o['roleAdmin'] === 1 || o['roleAdmin'] === "true" || o['roleAdmin'] === true ? true : false);
         this.roleCustomer = (o['roleCustomer'] === 1 || o['roleCustomer'] === "true" || o['roleCustomer'] === true ? true : false);
+        if (o['password']) {
+            this.setPlainPassword(o['password']);
+        }
         return this;
     }
 
