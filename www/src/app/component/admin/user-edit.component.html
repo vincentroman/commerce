@@ -23,6 +23,20 @@
         <label for="password">New Password</label>
         <input type="password" id="password" name="password" placeholder="Password" class="form-control" [(ngModel)]="entity.password" [required]="changePassword || !entity.uuid" [disabled]="entity.uuid && !changePassword" autocomplete="new-password" />
     </div>
+    <div class="form-group" *ngIf="!assignCustomerMode">
+        <label>Assigned Customer</label>
+        <p *ngIf="entity.customer" class="form-control-static"><a routerLink="/admin/customers/edit/{{entity.customer.uuid}}">{{entity.customer.printableName()}}</a></p>
+        <p *ngIf="!entity.customer" class="form-control-static">None</p>
+        <p><button type="button" class="btn btn-default" (click)="enterAssignCustomerMode()">Change assignment</button></p>
+    </div>
+    <div class="form-group" [hidden]="!assignCustomerMode">
+        <label>Assigned Customer</label>
+        <input type="text" class="form-control typeahead" id="customer" name="customer" autocomplete="off" />
+        <p style="margin-top:5px">
+            <button type="button" class="btn btn-default" (click)="removeCustomerAssignment()" *ngIf="customerUuid">Remove assignment</button>
+            <button type="button" class="btn btn-default" (click)="cancelAssignCustomerMode()">Cancel</button>
+        </p>
+    </div>
     <div class="checkbox">
         <label>
             <input type="checkbox" id="roleAdmin" name="roleAdmin" [(ngModel)]="entity.roleAdmin" /> Role "Admin"

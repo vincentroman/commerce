@@ -5,6 +5,7 @@ import { CrudRouter } from "./CrudRouter";
 import { User } from '../entity/User';
 import { UserDao } from '../dao/UserDao';
 import { AuthRole } from "./BaseRouter";
+import { CustomerDao } from "../dao/CustomerDao";
 
 class UserRouter extends CrudRouter<User, UserDao> {
     protected getDao(): UserDao {
@@ -13,7 +14,28 @@ class UserRouter extends CrudRouter<User, UserDao> {
 
     protected createEntity(requestBody: any): Promise<User> {
         return new Promise((resolve, reject) => {
-            resolve(new User(requestBody));
+            let user: User = new User(requestBody);
+            if (requestBody.customer) {
+                Container.get(CustomerDao).getByUuid(requestBody.customer.uuid).then(customer => {
+                    user.customer = customer;
+                    resolve(user);
+                });
+            } else {
+                resolve(user);
+            }
+        });
+    }
+
+    protected fixRelationsBeforeSave(entity: User): Promise<User> {
+        return new Promise((resolve, reject) => {
+            if (entity.customer && !entity.customer.id && entity.customer.uuid) {
+                Container.get(CustomerDao).getByUuid(entity.customer.uuid).then(customer => {
+                    entity.customer = customer;
+                    resolve(entity);
+                }).catch(e => reject(e));
+            } else {
+                resolve(entity);
+            }
         });
     }
 

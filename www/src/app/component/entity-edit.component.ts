@@ -24,6 +24,10 @@ export abstract class EntityEditComponent<T extends RestModel<T>> implements OnI
         // Overwrite this in child classes if necessary
     }
 
+    protected onEntityLoaded(): void {
+        // Overwrite this in child classes if necessary
+    }
+
     ngOnInit(): void {
         this.route.params.forEach((params: Params) => {
             let uuid: string = params["uuid"];
@@ -33,9 +37,13 @@ export abstract class EntityEditComponent<T extends RestModel<T>> implements OnI
         });
         this.onInit();
         if (this.uuid) {
-            this.crudService.get(this.uuid).then(entity => this.entity = entity);
+            this.crudService.get(this.uuid).then(entity => {
+                this.entity = entity;
+                this.onEntityLoaded();
+            });
         } else {
             this.entity = this.newTypeInstance();
+            this.onEntityLoaded();
         }
     }
 

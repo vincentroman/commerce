@@ -9,6 +9,15 @@ export class UserDao extends Dao<User> {
         return this.getEm().getRepository(User);
     }
 
+    public async getByUuid(uuid: string): Promise<User> {
+        return this.getRepository()
+            .createQueryBuilder("u")
+            .leftJoinAndSelect("u.customer", "customer")
+            .where("u.uuid = :uuid")
+            .setParameters({uuid: uuid})
+            .getOne();
+    }
+
     public async getByEmail(email: string): Promise<User> {
         return this.getRepository()
             .createQueryBuilder("u")

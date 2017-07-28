@@ -10,6 +10,12 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
     protected abstract createEntity(requestBody: any): Promise<TEntity>;
     protected abstract getDefaultAuthRole(): AuthRole;
 
+    protected fixRelationsBeforeSave(entity: TEntity): Promise<TEntity> {
+        return new Promise((resolve, reject) => {
+            resolve(entity);
+        });
+    }
+
     protected init(): void {
         this.addRouteGet('/get/:id', this.getOne, this.getDefaultAuthRole());
         this.addRouteGet('/list', this.list, this.getDefaultAuthRole());
@@ -59,13 +65,15 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
             dao.getByUuid(req.body.uuid).then(entity => {
                 if (entity) {
                     entity.deserialize(req.body);
-                    if (entity.isConsistent()) {
-                        dao.save(entity).then(entity => {
-                            this.saved(res, entity);
-                        }).catch(e => this.internalServerError(res));
-                    } else {
-                        this.badRequest(res);
-                    }
+                    this.fixRelationsBeforeSave(entity).then(entity => {
+                        if (entity.isConsistent()) {
+                            dao.save(entity).then(entity => {
+                                this.saved(res, entity);
+                            }).catch(e => this.internalServerError(res));
+                        } else {
+                            this.badRequest(res);
+                        }
+                    }).catch(e => this.notFound(res));
                 } else {
                     this.notFound(res);
                 }

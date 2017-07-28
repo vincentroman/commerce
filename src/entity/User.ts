@@ -35,7 +35,7 @@ export class User extends DbEntity<User> {
             email: this.email,
             roleAdmin: this.roleAdmin,
             roleCustomer: this.roleCustomer,
-            customerId: (this.customer ? this.customer.uuid : null)
+            customer: (this.customer ? this.customer.serialize() : null)
         });
     }
 
@@ -43,6 +43,13 @@ export class User extends DbEntity<User> {
         this.email = o['email'];
         this.roleAdmin = (o['roleAdmin'] === 1 || o['roleAdmin'] === "true" || o['roleAdmin'] === true ? true : false);
         this.roleCustomer = (o['roleCustomer'] === 1 || o['roleCustomer'] === "true" || o['roleCustomer'] === true ? true : false);
+        if (o['customer']) {
+            this.customer = new Customer();
+            this.customer.uuid = o['customer']['uuid'];
+            this.customer = this.customer.deserialize(o['customer']);
+        } else {
+            this.customer = null;
+        }
         if (o['password']) {
             this.setPlainPassword(o['password']);
         }
