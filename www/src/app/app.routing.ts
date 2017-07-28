@@ -34,6 +34,7 @@ import { BrokerTestComponent } from "./component/admin/broker-test.component";
 import { OrderViewComponent } from "./component/admin/order-view.component";
 import { UserListComponent } from "./component/admin/user-list.component";
 import { UserEditComponent } from "./component/admin/user-edit.component";
+import { LicenseKeyViewComponent } from "./component/admin/license-key-view.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -64,6 +65,7 @@ const appRoutes: Routes = [
     { path: "admin/licensekeys", component: LicenseKeyListComponent, canActivate: [AdminGuard] },
     { path: "admin/licensekeys/new", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
     { path: "admin/licensekeys/edit/:uuid", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/licensekeys/view/:uuid", component: LicenseKeyViewComponent, canActivate: [AdminGuard] },
 
     { path: "admin/supportrequests", component: SupportRequestListComponent, canActivate: [AdminGuard] },
     { path: "admin/supportrequests/new", component: SupportRequestEditComponent, canActivate: [AdminGuard] },

@@ -19,6 +19,6 @@ export class LicenseKeyListComponent extends EntityListComponent<LicenseKey> {
     }
 
     protected getEditPath(): string {
-        return "/admin/licensekeys/edit";
+        return "/admin/licensekeys/view";
     }
 }

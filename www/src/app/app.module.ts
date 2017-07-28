@@ -47,6 +47,7 @@ import { BrokerTestComponent } from "./component/admin/broker-test.component";
 import { OrderViewComponent } from "./component/admin/order-view.component";
 import { UserListComponent } from "./component/admin/user-list.component";
 import { UserEditComponent } from "./component/admin/user-edit.component";
+import { LicenseKeyViewComponent } from "./component/admin/license-key-view.component";
 
 @NgModule({
     imports: [
@@ -66,6 +67,7 @@ import { UserEditComponent } from "./component/admin/user-edit.component";
         HomeComponent,
         LicenseKeyListComponent,
         LicenseKeyEditComponent,
+        LicenseKeyViewComponent,
         LicenseKeyMyListComponent,
         LicenseKeyMyViewComponent,
         LicenseKeyMyGenerateComponent,
