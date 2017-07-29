@@ -3,6 +3,7 @@ import { Http } from "@angular/http";
 import { HttpService } from "./http.service";
 import { CrudService } from "./crud.service";
 import { Customer } from "../model/customer";
+import { Comment } from "../model/comment";
 import { SessionService } from "./session.service";
 import * as Bloodhound from "bloodhound";
 import * as typeahead from "typeahead.js";
@@ -49,5 +50,32 @@ export class CustomerService extends CrudService<Customer> {
                 }
             }
         });
+    }
+
+    getComments(id: string): Promise<Comment[]> {
+        return new Promise((resolve, reject) => {
+            this.http
+            .get(this.httpService.getUrl(this.getPath() + "/comments/" + id), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let list: Comment[] = (<Comment[]>res.json()).map(o => new Comment().deserialize(o));
+                resolve(list);
+            })
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
+
+    addComment(id: string, text: string): Promise<string> {
+        let payload = {
+            text: text
+        };
+        return this.http.post(this.httpService.getUrl(this.getPath() + "/addcomment/" + id), payload, this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                return res.json().uuid;
+            })
+            .catch(error => {
+                return this.httpService.handleError(error);
+            });
     }
 }

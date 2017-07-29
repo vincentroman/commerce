@@ -33,8 +33,7 @@
     <h3>Comments</h3>
     <div class="panel panel-default" *ngFor="let comment of comments">
         <div class="panel-heading">
-            <span *ngIf="comment.author && comment.author.roleCustomer">You</span>
-            <span *ngIf="comment.author && !comment.author.roleCustomer && comment.author.roleAdmin">Support Team</span>
+            {{comment.author.email}}
             at {{comment.createDate.format('YYYY-MM-DD HH:mm')}}
         </div>
         <div class="panel-body" style="white-space:pre-wrap">{{comment.text}}</div>

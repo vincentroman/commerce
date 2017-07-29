@@ -23,7 +23,7 @@ export class CommentDao extends Dao<Comment> {
             .createQueryBuilder("c")
             .innerJoinAndSelect("c.author", "author")
             .innerJoinAndSelect("c.supportTicket", "supportTicket")
-            .orderBy("c.createDate", "ASC")
+            .orderBy("c.createDate", "DESC")
             .where("supportTicket.uuid = :supportTicketUuid")
             .setParameters({supportTicketUuid: supportTicketUuid})
             .getMany();
@@ -34,8 +34,8 @@ export class CommentDao extends Dao<Comment> {
             .createQueryBuilder("c")
             .innerJoinAndSelect("c.author", "author")
             .innerJoinAndSelect("c.customer", "customer")
-            .orderBy("c.createDate", "ASC")
-            .where("c.customer.uuid = :customerUuid")
+            .orderBy("c.createDate", "DESC")
+            .where("customer.uuid = :customerUuid")
             .setParameters({customerUuid: customerUuid})
             .getMany();
     }
