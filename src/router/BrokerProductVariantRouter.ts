@@ -12,8 +12,32 @@ import { ProductVariantDao } from "../dao/ProductVariantDao";
 
 class BrokerProductVariantRouter extends BaseRouter {
     protected init(): void {
+        this.addRouteGet('/:variantId/:brokerId/get', this.getOne, AuthRole.ADMIN);
         this.addRouteGet('/:productId/list', this.list, AuthRole.ADMIN);
         this.addRoutePut('/:productId/save', this.save, AuthRole.ADMIN);
+    }
+
+    private getOne(req: Request, res: Response, next: NextFunction): void {
+        let variantDao: ProductVariantDao = Container.get(ProductVariantDao);
+        let brokerDao: BrokerDao = Container.get(BrokerDao);
+        let dao: BrokerProductVariantDao = Container.get(BrokerProductVariantDao);
+        let brokerId = req.params.brokerId;
+        let variantId = req.params.variantId;
+        variantDao.getByUuid(variantId).then(variant => {
+            brokerDao.getByUuid(brokerId).then(broker => {
+                if (variant && broker) {
+                    dao.getByBrokerProductVariant(broker, variant).then(bpv => {
+                        if (bpv) {
+                            res.send(bpv.serialize());
+                        } else {
+                            this.notFound(res);
+                        }
+                    });
+                } else {
+                    this.notFound(res);
+                }
+            }).catch(e => this.notFound(res));
+        }).catch(e => this.notFound(res));
     }
 
     private list(req: Request, res: Response, next: NextFunction): void {
@@ -38,7 +62,12 @@ class BrokerProductVariantRouter extends BaseRouter {
                     Container.get(ProductVariantDao).getByUuid(req.body.productVariant.uuid).then(productVariant => {
                         if (productVariant) {
                             Container.get(BrokerProductVariantDao).addOrReplace(broker, productVariant, req.body.idForBroker).then(bpv => {
-                                this.saved(res, bpv);
+                                if (bpv) {
+                                    bpv.url = req.body.url;
+                                    Container.get(BrokerProductVariantDao).save(bpv).then(bpv => this.saved(res, bpv));
+                                } else {
+                                    this.saved(res, bpv);
+                                }
                             }).catch(e => this.internalServerError(res));
                         } else {
                             this.notFound(res);

@@ -48,6 +48,7 @@ import { OrderViewComponent } from "./component/admin/order-view.component";
 import { UserListComponent } from "./component/admin/user-list.component";
 import { UserEditComponent } from "./component/admin/user-edit.component";
 import { LicenseKeyViewComponent } from "./component/admin/license-key-view.component";
+import { BrokerProductVariantEditComponent } from "./component/admin/brokerproductvariant.component";
 
 @NgModule({
     imports: [
@@ -62,6 +63,7 @@ import { LicenseKeyViewComponent } from "./component/admin/license-key-view.comp
         BrokerEditComponent,
         BrokerListComponent,
         BrokerTestComponent,
+        BrokerProductVariantEditComponent,
         CustomerEditComponent,
         CustomerListComponent,
         HomeComponent,

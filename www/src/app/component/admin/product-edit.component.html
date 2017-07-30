@@ -34,8 +34,7 @@
             <tr *ngFor="let variant of variants">
                 <td><a routerLink="/admin/products/edit/{{entity.uuid}}/variants/edit/{{variant.uuid}}">{{variant.title}}</a></td>
                 <td *ngFor="let broker of brokers">
-                    <p *ngIf="!isEditModeActive(broker.uuid, variant.uuid)" title="Click to edit" (click)="enableEditMode(broker.uuid, variant.uuid, $event)">{{getIdForBroker(broker.uuid, variant.uuid) ? getIdForBroker(broker.uuid, variant.uuid) : "n/a"}}</p>
-                    <input *ngIf="isEditModeActive(broker.uuid, variant.uuid)" type="text" class="form-control" style="width:150px" placeholder="Broker's Product ID" value="{{getIdForBroker(broker.uuid, variant.uuid)}}" (keyup.enter)="saveIdForBroker(broker.uuid, variant.uuid, $event)" (keyup.esc)="enableEditMode('', '')" id="edit-{{broker.uuid}}-{{variant.uuid}}" />
+                    <a routerLink="/admin/products/edit/{{entity.uuid}}/brokervariant/{{broker.uuid}}/{{variant.uuid}}">{{getIdForBroker(broker.uuid, variant.uuid) ? getIdForBroker(broker.uuid, variant.uuid) : "Not set"}}</a>
                 </td>
             </tr>
         </tbody>

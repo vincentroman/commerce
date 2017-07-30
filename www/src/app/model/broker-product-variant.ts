@@ -6,12 +6,14 @@ export class BrokerProductVariant extends RestModel<BrokerProductVariant> {
     broker: Broker;
     productVariant: ProductVariant;
     idForBroker: string;
+    url: string;
 
     serialize(): Object {
         return Object.assign(super.serialize(), {
             "broker": this.broker.serialize(),
             "productVariant": this.productVariant.serialize(),
-            "idForBroker": this.idForBroker
+            "idForBroker": this.idForBroker,
+            "url": this.url
         });
     }
 
@@ -20,6 +22,7 @@ export class BrokerProductVariant extends RestModel<BrokerProductVariant> {
         this.broker = new Broker().deserialize(input.broker);
         this.productVariant = new ProductVariant().deserialize(input.productVariant);
         this.idForBroker = input.idForBroker;
+        this.url = input.url;
         return this;
     }
 }

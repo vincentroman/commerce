@@ -54,7 +54,7 @@ export class BrokerProductVariantDao extends Dao<BrokerProductVariant> {
             if (bpv) {
                 await this.delete(bpv);
             }
-            return;
+            return null;
         }
         if (!bpv) {
             bpv = new BrokerProductVariant();

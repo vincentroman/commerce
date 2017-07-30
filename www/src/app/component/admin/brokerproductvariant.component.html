@@ -1,0 +1,31 @@
+<div class="page-header">
+    <div class="btn-toolbar pull-right">
+    </div>
+    <h1>Set variant for broker</h1>
+</div>
+<form (ngSubmit)="submit()" #form="ngForm">
+    <div class="alert alert-danger" role="alert" [hidden]="!error">Error saving. Please try again.</div>
+    <div class="form-group">
+        <label>Product</label>
+        <p class="form-control-static">{{product.title}}</p>
+    </div>
+    <div class="form-group">
+        <label>Variant</label>
+        <p class="form-control-static">{{variant.title}}</p>
+    </div>
+    <div class="form-group">
+        <label>Broker</label>
+        <p class="form-control-static">{{broker.name}}</p>
+    </div>
+    <div class="form-group">
+        <label for="idForBroker">ID for Broker</label>
+        <input type="text" id="idForBroker" name="idForBroker" placeholder="ID for Broker" class="form-control" [(ngModel)]="entity.idForBroker" required="required" autofocus="autofocus" />
+    </div>
+    <div class="form-group">
+        <label for="url">Broker's Purchase URL</label>
+        <input type="url" id="url" name="url" placeholder="URL" class="form-control" [(ngModel)]="entity.url" />
+    </div>
+    <a routerLink="/admin/products/edit/{{productUuid}}" class="btn btn-default">Cancel</a>
+    <button (click)="delete()" class="btn btn-default">Delete</button>
+    <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
+</form>

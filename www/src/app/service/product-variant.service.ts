@@ -35,6 +35,19 @@ export class ProductVariantService extends CrudService<ProductVariant> {
         });
     }
 
+    public getBrokerProductVariant(brokerUuid: string, variantUuid: string): Promise<BrokerProductVariant> {
+        return new Promise((resolve, reject) => {
+            this.http
+            .get(this.httpService.getUrl("brokerproductvariant/" + variantUuid + "/" + brokerUuid + "/get"), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let bpv: BrokerProductVariant = new BrokerProductVariant().deserialize(res.json());
+                resolve(bpv);
+            })
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
+
     public getBrokerProductVariants(productUuid: string): Promise<BrokerProductVariant[]> {
         return new Promise((resolve, reject) => {
             this.http

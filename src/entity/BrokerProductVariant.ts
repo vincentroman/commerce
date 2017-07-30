@@ -14,11 +14,15 @@ export class BrokerProductVariant extends DbEntity<BrokerProductVariant> {
     @Column()
     idForBroker: string;
 
+    @Column({nullable: true})
+    url: string;
+
     public serialize(): Object {
         return Object.assign(super.serialize(), {
             broker: this.broker.serialize(),
             productVariant: this.productVariant.serialize(),
-            idForBroker: this.idForBroker
+            idForBroker: this.idForBroker,
+            url: this.url
         });
     }
 
@@ -26,6 +30,7 @@ export class BrokerProductVariant extends DbEntity<BrokerProductVariant> {
         this.broker = (o['broker'] ? new Broker().deserialize(o['broker']) : null);
         this.productVariant = (o['productVariant'] ? new ProductVariant().deserialize(o['productVariant']) : null);
         this.idForBroker = o['idForBroker'];
+        this.url = o['url'];
         return this;
     }
 

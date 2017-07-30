@@ -21,10 +21,6 @@ export class ProductEditComponent extends EntityEditComponent<Product> {
     brokers: Broker[] = [];
     variants: ProductVariant[] = [];
     brokerProductVariants: BrokerProductVariant[] = [];
-    bpvEditMode = {
-        brokerUuid: "",
-        variantUuid: ""
-    };
 
     constructor(
         protected route: ActivatedRoute,
@@ -85,31 +81,6 @@ export class ProductEditComponent extends EntityEditComponent<Product> {
         if (!updated) {
             this.brokerProductVariants.push(bpvNew);
         }
-    }
-
-    public saveIdForBroker(brokerUuid: string, productVariantUuid: string, event: any): void {
-        let idForBroker: string = event.target.value;
-        let bpv: BrokerProductVariant = new BrokerProductVariant();
-        bpv.broker = this.getBrokerByUuid(brokerUuid);
-        bpv.productVariant = this.getProductVariantByUuid(productVariantUuid);
-        bpv.idForBroker = idForBroker.trim();
-        this.productVariantService.saveBrokerProductVariant(this.uuid, bpv).then((bpv) => {
-            this.bpvEditMode.brokerUuid = "";
-            this.bpvEditMode.variantUuid = "";
-            this.updateBrokerProductVariant(bpv);
-        });
-    }
-
-    public isEditModeActive(brokerUuid: string, productVariantUuid: string): boolean {
-        return this.bpvEditMode.brokerUuid === brokerUuid && this.bpvEditMode.variantUuid === productVariantUuid;
-    }
-
-    public enableEditMode(brokerUuid: string, productVariantUuid: string): void {
-        this.bpvEditMode.brokerUuid = brokerUuid;
-        this.bpvEditMode.variantUuid = productVariantUuid;
-        window.setTimeout(function() {
-            document.getElementById("edit-" + brokerUuid + "-" + productVariantUuid).focus();
-        }, 100);
     }
 
     protected newTypeInstance(): Product {

@@ -35,6 +35,7 @@ import { OrderViewComponent } from "./component/admin/order-view.component";
 import { UserListComponent } from "./component/admin/user-list.component";
 import { UserEditComponent } from "./component/admin/user-edit.component";
 import { LicenseKeyViewComponent } from "./component/admin/license-key-view.component";
+import { BrokerProductVariantEditComponent } from "./component/admin/brokerproductvariant.component";
 
 const appRoutes: Routes = [
     // Guest routes
@@ -82,6 +83,8 @@ const appRoutes: Routes = [
     { path: "admin/products/edit/:uuid", component: ProductEditComponent, canActivate: [AdminGuard] },
     { path: "admin/products/edit/:productUuid/variants/new", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
     { path: "admin/products/edit/:productUuid/variants/edit/:uuid", component: ProductVariantEditComponent, canActivate: [AdminGuard] },
+    { path: "admin/products/edit/:productUuid/brokervariant/:brokerUuid/:variantUuid",
+        component: BrokerProductVariantEditComponent, canActivate: [AdminGuard] },
 
     { path: "admin/systemsettings", component: SystemSettingListComponent, canActivate: [AdminGuard] },
     { path: "admin/systemsettings/edit/:uuid", component: SystemSettingEditComponent, canActivate: [AdminGuard] },
