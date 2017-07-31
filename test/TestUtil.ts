@@ -53,9 +53,8 @@ export class TestUtil {
                 user.email = email;
                 user.customer = customer;
                 user.roleCustomer = true;
-                user.setPlainPassword(password).then(() => {
-                    Container.get(UserDao).save(user).then(user => resolve(user));
-                });
+                user.setPlainPassword(password);
+                Container.get(UserDao).save(user).then(user => resolve(user));
             });
         });
     }

@@ -53,6 +53,7 @@ describe('API Protection', () => {
             {url: "/api/v1/broker/delete/abcdef", expectForbidden: true, method: "delete"},
             {url: "/api/v1/broker/save", expectForbidden: true, method: "put"},
 
+            {url: "/api/v1/brokerproductvariant/abcdef/ghijk/get", expectForbidden: true, method: "get"},
             {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: true, method: "get"},
             {url: "/api/v1/brokerproductvariant/abcdef/save", expectForbidden: true, method: "put"},
 
@@ -132,6 +133,7 @@ describe('API Protection', () => {
             {url: "/api/v1/broker/delete/abcdef", expectForbidden: false, method: "delete", jwt: "admin"},
             {url: "/api/v1/broker/save", expectForbidden: false, method: "put", jwt: "admin"},
 
+            {url: "/api/v1/brokerproductvariant/abcdef/ghijk/get", expectForbidden: false, method: "get", jwt: "admin"},
             {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: false, method: "get", jwt: "admin"},
             {url: "/api/v1/brokerproductvariant/abcdef/save", expectForbidden: false, method: "put", jwt: "admin"},
 
@@ -201,6 +203,7 @@ describe('API Protection', () => {
             {url: "/api/v1/broker/delete/abcdef", expectForbidden: true, method: "delete", jwt: "customer"},
             {url: "/api/v1/broker/save", expectForbidden: true, method: "put", jwt: "customer"},
 
+            {url: "/api/v1/brokerproductvariant/abcdef/ghijk/get", expectForbidden: true, method: "get", jwt: "customer"},
             {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: true, method: "get", jwt: "customer"},
             {url: "/api/v1/brokerproductvariant/abcdef/save", expectForbidden: true, method: "put", jwt: "customer"},
 
