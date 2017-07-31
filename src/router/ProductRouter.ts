@@ -20,6 +20,13 @@ class ProductRouter extends CrudRouter<Product, ProductDao> {
     protected getDefaultAuthRole(): AuthRole {
         return AuthRole.ADMIN;
     }
+
+    protected init(): void {
+        this.addRouteGet('/get/:id', this.getOne, AuthRole.ANY);
+        this.addRouteGet('/list', this.list, AuthRole.ANY);
+        this.addRouteDelete('/delete/:id', this.delete, this.getDefaultAuthRole());
+        this.addRoutePut('/save', this.save, this.getDefaultAuthRole());
+    }
 }
 
 export default new ProductRouter().router;

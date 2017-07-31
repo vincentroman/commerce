@@ -10,7 +10,7 @@ import { AuthRole } from "./BaseRouter";
 class ProductVariantRouter extends CrudRouter<ProductVariant, ProductVariantDao> {
     protected init(): void {
         super.init();
-        this.addRouteGet('/list/:productId', this.listForProduct, AuthRole.ADMIN);
+        this.addRouteGet('/list/:productId', this.listForProduct, AuthRole.ANY);
     }
 
     private listForProduct(req: Request, res: Response, next: NextFunction): void {

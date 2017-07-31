@@ -23,7 +23,7 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
         this.addRoutePut('/save', this.save, this.getDefaultAuthRole());
     }
 
-    private getOne(req: Request, res: Response, next: NextFunction): void {
+    protected getOne(req: Request, res: Response, next: NextFunction): void {
         let dao: TDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
@@ -38,14 +38,14 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
         });
     }
 
-    private list(req: Request, res: Response, next: NextFunction): void {
+    protected list(req: Request, res: Response, next: NextFunction): void {
         let dao: TDao = this.getDao();
         dao.getAll().then(entities => {
             res.send(entities.map(entity => entity.serialize()));
         });
     }
 
-    private delete(req: Request, res: Response, next: NextFunction): void {
+    protected delete(req: Request, res: Response, next: NextFunction): void {
         let dao: TDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
@@ -59,7 +59,7 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
         }).catch(e => this.notFound(res));
     }
 
-    private save(req: Request, res: Response, next: NextFunction): void {
+    protected save(req: Request, res: Response, next: NextFunction): void {
         let dao: TDao = this.getDao();
         if (req.body.uuid) {
             dao.getByUuid(req.body.uuid).then(entity => {

@@ -40,7 +40,10 @@ describe('API Protection', () => {
         callUrls([
             {url: "/api/v1/auth/login", expectForbidden: false, method: "post"},
             {url: "/api/v1/auth/pwreset", expectForbidden: false, method: "post"},
-            {url: "/api/v1/ordernotification/abcdef", expectForbidden: false, method: "post"}
+            {url: "/api/v1/ordernotification/abcdef", expectForbidden: false, method: "post"},
+            {url: "/api/v1/product/get/abcdef", expectForbidden: false, method: "get"},
+            {url: "/api/v1/product/list", expectForbidden: false, method: "get"},
+            {url: "/api/v1/productvariant/list/abcdef", expectForbidden: false, method: "get"}
         ]);
     });
 
@@ -90,8 +93,8 @@ describe('API Protection', () => {
             {url: "/api/v1/purchase/delete/abcdef", expectForbidden: true, method: "delete"},
             {url: "/api/v1/purchase/save", expectForbidden: true, method: "put"},
 
-            {url: "/api/v1/product/get/abcdef", expectForbidden: true, method: "get"},
-            {url: "/api/v1/product/list", expectForbidden: true, method: "get"},
+            {url: "/api/v1/product/get/abcdef", expectForbidden: false, method: "get"},
+            {url: "/api/v1/product/list", expectForbidden: false, method: "get"},
             {url: "/api/v1/product/delete/abcdef", expectForbidden: true, method: "delete"},
             {url: "/api/v1/product/save", expectForbidden: true, method: "put"},
 
@@ -99,7 +102,7 @@ describe('API Protection', () => {
             {url: "/api/v1/productvariant/list", expectForbidden: true, method: "get"},
             {url: "/api/v1/productvariant/delete/abcdef", expectForbidden: true, method: "delete"},
             {url: "/api/v1/productvariant/save", expectForbidden: true, method: "put"},
-            {url: "/api/v1/productvariant/list/abcdef", expectForbidden: true, method: "get"},
+            {url: "/api/v1/productvariant/list/abcdef", expectForbidden: false, method: "get"},
 
             {url: "/api/v1/supportticket/get/abcdef", expectForbidden: true, method: "get"},
             {url: "/api/v1/supportticket/list", expectForbidden: true, method: "get"},
@@ -237,8 +240,8 @@ describe('API Protection', () => {
             {url: "/api/v1/purchase/delete/abcdef", expectForbidden: true, method: "delete", jwt: "customer"},
             {url: "/api/v1/purchase/save", expectForbidden: true, method: "put", jwt: "customer"},
 
-            {url: "/api/v1/product/get/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
-            {url: "/api/v1/product/list", expectForbidden: true, method: "get", jwt: "customer"},
+            {url: "/api/v1/product/get/abcdef", expectForbidden: false, method: "get", jwt: "customer"},
+            {url: "/api/v1/product/list", expectForbidden: false, method: "get", jwt: "customer"},
             {url: "/api/v1/product/delete/abcdef", expectForbidden: true, method: "delete", jwt: "customer"},
             {url: "/api/v1/product/save", expectForbidden: true, method: "put", jwt: "customer"},
 
@@ -246,7 +249,7 @@ describe('API Protection', () => {
             {url: "/api/v1/productvariant/list", expectForbidden: true, method: "get", jwt: "customer"},
             {url: "/api/v1/productvariant/delete/abcdef", expectForbidden: true, method: "delete", jwt: "customer"},
             {url: "/api/v1/productvariant/save", expectForbidden: true, method: "put", jwt: "customer"},
-            {url: "/api/v1/productvariant/list/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
+            {url: "/api/v1/productvariant/list/abcdef", expectForbidden: false, method: "get", jwt: "customer"},
 
             {url: "/api/v1/supportticket/get/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
             {url: "/api/v1/supportticket/list", expectForbidden: true, method: "get", jwt: "customer"},

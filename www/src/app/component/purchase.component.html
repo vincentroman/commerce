@@ -1,0 +1,34 @@
+<div class="page-header">
+    <div class="btn-toolbar pull-right">
+        <div class="btn-group">
+        </div>
+    </div>
+    <h1>Purchase Assistant</h1>
+</div>
+<p>Thanks for your interest in our products.</p>
+<div class="panel">
+    <p>What product are you looking for?</p>
+    <p>
+        <button type="button" class="btn btn-default btn-lg btn-block" *ngFor="let product of products" (click)="selectProduct(product)">{{product.title}}</button>
+    </p>
+</div>
+<div class="panel" *ngIf="selectedProduct">
+    <p>What do you need?</p>
+    <p>
+        <button type="button" class="btn btn-default btn-lg btn-block" (click)="selectType([1])">Trial Key</button>
+        <button type="button" class="btn btn-default btn-lg btn-block" (click)="selectType([2,3])">License Key</button>
+        <button type="button" class="btn btn-default btn-lg btn-block" (click)="selectType([5])">Support</button>
+    </p>
+</div>
+<div class="panel" *ngIf="selectedTypes">
+    <p>Which variant matches your requirements best?</p>
+    <p>
+        <button type="button" class="btn btn-default btn-lg btn-block" *ngFor="let variant of matchingVariants()" (click)="selectVariant(variant)">{{variant.title}}</button>
+    </p>
+</div>
+<div class="panel" *ngIf="selectedTypes">
+    <p>Select your preferred broker.</p>
+    <p>
+        <button type="button" class="btn btn-default btn-lg btn-block" *ngFor="let broker of matchingBrokers()" (click)="selectBroker(broker)">{{broker.name}}</button>
+    </p>
+</div>

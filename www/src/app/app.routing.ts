@@ -36,8 +36,12 @@ import { UserListComponent } from "./component/admin/user-list.component";
 import { UserEditComponent } from "./component/admin/user-edit.component";
 import { LicenseKeyViewComponent } from "./component/admin/license-key-view.component";
 import { BrokerProductVariantEditComponent } from "./component/admin/brokerproductvariant.component";
+import { PurchaseComponent } from "./component/purchase.component";
 
 const appRoutes: Routes = [
+    // "Any" routes
+    { path: "purchase", component: PurchaseComponent },
+
     // Guest routes
     { path: "login", component: LoginComponent, canActivate: [GuestGuard] },
     { path: "pwreset", component: ResetPasswordComponent, canActivate: [GuestGuard] },
