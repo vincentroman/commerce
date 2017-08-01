@@ -13,7 +13,7 @@ import { ProductVariantDao } from "../dao/ProductVariantDao";
 class BrokerProductVariantRouter extends BaseRouter {
     protected init(): void {
         this.addRouteGet('/:variantId/:brokerId/get', this.getOne, AuthRole.ADMIN);
-        this.addRouteGet('/:productId/list', this.list, AuthRole.ADMIN);
+        this.addRouteGet('/:productId/list', this.list, AuthRole.ANY);
         this.addRoutePut('/:productId/save', this.save, AuthRole.ADMIN);
     }
 

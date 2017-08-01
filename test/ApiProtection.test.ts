@@ -43,7 +43,8 @@ describe('API Protection', () => {
             {url: "/api/v1/ordernotification/abcdef", expectForbidden: false, method: "post"},
             {url: "/api/v1/product/get/abcdef", expectForbidden: false, method: "get"},
             {url: "/api/v1/product/list", expectForbidden: false, method: "get"},
-            {url: "/api/v1/productvariant/list/abcdef", expectForbidden: false, method: "get"}
+            {url: "/api/v1/productvariant/list/abcdef", expectForbidden: false, method: "get"},
+            {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: false, method: "get"}
         ]);
     });
 
@@ -57,7 +58,7 @@ describe('API Protection', () => {
             {url: "/api/v1/broker/save", expectForbidden: true, method: "put"},
 
             {url: "/api/v1/brokerproductvariant/abcdef/ghijk/get", expectForbidden: true, method: "get"},
-            {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: true, method: "get"},
+            {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: false, method: "get"},
             {url: "/api/v1/brokerproductvariant/abcdef/save", expectForbidden: true, method: "put"},
 
             {url: "/api/v1/customer/get/abcdef", expectForbidden: true, method: "get"},
@@ -207,7 +208,7 @@ describe('API Protection', () => {
             {url: "/api/v1/broker/save", expectForbidden: true, method: "put", jwt: "customer"},
 
             {url: "/api/v1/brokerproductvariant/abcdef/ghijk/get", expectForbidden: true, method: "get", jwt: "customer"},
-            {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: true, method: "get", jwt: "customer"},
+            {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: false, method: "get", jwt: "customer"},
             {url: "/api/v1/brokerproductvariant/abcdef/save", expectForbidden: true, method: "put", jwt: "customer"},
 
             {url: "/api/v1/customer/get/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
