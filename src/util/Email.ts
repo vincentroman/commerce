@@ -1,21 +1,24 @@
 import * as nodemailer from 'nodemailer';
-import { Config } from "../util/Config";
 import { MailTemplate } from "../entity/MailTemplate";
 import { Customer } from "../entity/Customer";
+import { Container } from "typedi";
+import { SystemSettingDao } from "../dao/SystemSettingDao";
+import { SystemSettingId } from "../entity/SystemSetting";
 
 export class Email {
-    public static send(options: EmailOptions): Promise<void> {
-        let mailConfig = Config.getInstance().get("mail");
+    public static async send(options: EmailOptions): Promise<void> {
+        let logAndDiscard = await Container.get(SystemSettingDao).getBoolean(SystemSettingId.MailServer_LogAndDiscard, false);
+        let mailConfig = await Email.getTransportConfig();
+        let transporter = nodemailer.createTransport(mailConfig);
+        let mailOptions = {
+            from: (options.sender.name ? options.sender.name + " <"+options.sender.email+">" : options.sender.email),
+            to:  (options.recipient.name ? options.recipient.name + " <"+options.recipient.email+">" : options.recipient.email),
+            subject: options.subject,
+            text: options.text,
+            html: options.html
+        };
         return new Promise<void>((resolve, reject) => {
-            let transporter = nodemailer.createTransport(mailConfig);
-            let mailOptions = {
-                from: (options.sender.name ? options.sender.name + " <"+options.sender.email+">" : options.sender.email),
-                to:  (options.recipient.name ? options.recipient.name + " <"+options.recipient.email+">" : options.recipient.email),
-                subject: options.subject,
-                text: options.text,
-                html: options.html
-            };
-            if (mailConfig.logAndDiscard) {
+            if (logAndDiscard) {
                 console.log("Would send email: %s", JSON.stringify(mailOptions, undefined, 2));
                 resolve();
                 return;
@@ -30,15 +33,14 @@ export class Email {
         });
     }
 
-    public static sendByTemplate(template: MailTemplate, recipient: Address, params: any): Promise<void> {
-        let mailConfig = Config.getInstance().get("mail");
+    public static async sendByTemplate(template: MailTemplate, recipient: Address, params: any): Promise<void> {
         let renderedSubject: string = Email.renderParamString(template.subject, params);
         let renderedTemplate: string = Email.renderParamString(template.body, params);
         let options: EmailOptions = {
             recipient: recipient,
             sender: {
-                name: mailConfig.sender.name,
-                email: mailConfig.sender.email
+                name: await Container.get(SystemSettingDao).getString(SystemSettingId.MailServer_Sender_Name, ""),
+                email: await Container.get(SystemSettingDao).getString(SystemSettingId.MailServer_Sender_Email, "")
             },
             subject: renderedSubject,
             text: renderedTemplate
@@ -52,6 +54,23 @@ export class Email {
             result = result.replace("{"+key+"}", params[key]);
         });
         return result;
+    }
+
+    private static async getTransportConfig(): Promise<Object> {
+        let dao = Container.get(SystemSettingDao);
+        let config = {
+            host: await dao.getString(SystemSettingId.MailServer_Host, "localhost"),
+            port: await dao.getInteger(SystemSettingId.MailServer_Port, 25),
+            secure: await dao.getBoolean(SystemSettingId.MailServer_Secure, false)
+        };
+        let auth = await dao.getBoolean(SystemSettingId.MailServer_Auth, false);
+        if (auth) {
+            config['auth'] = {
+                user: await dao.getString(SystemSettingId.MailServer_User, ""),
+                pass: await dao.getString(SystemSettingId.MailServer_Pass, "")
+            };
+        }
+        return config;
     }
 }
 

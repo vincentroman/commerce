@@ -43,6 +43,14 @@ export class SystemSetting extends DbEntity<SystemSetting> {
 
 export enum SystemSettingId {
     MailServer_Host = 1,
+    MailServer_Port = 2,
+    MailServer_Secure = 3,
+    MailServer_Auth = 4,
+    MailServer_User = 5,
+    MailServer_Pass = 6,
+    MailServer_LogAndDiscard = 7,
+    MailServer_Sender_Name = 8,
+    MailServer_Sender_Email = 9,
     LicenseKey_PrivateKey = 50,
     LicenseKey_PublicKey = 51
 }
@@ -50,5 +58,6 @@ export enum SystemSettingId {
 export enum SystemSettingType {
     String = 1,
     Integer = 2,
-    MultiLine = 3
+    MultiLine = 3,
+    Boolean = 4
 }

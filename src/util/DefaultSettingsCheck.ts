@@ -89,6 +89,14 @@ export class DefaultSettingsCheck {
     private static async checkSystemSettings(): Promise<void> {
         let dao: SystemSettingDao = Container.get(SystemSettingDao);
         dao.createIfNotExists(SystemSettingId.MailServer_Host, SystemSettingType.String, "localhost", "SMTP Server");
+        dao.createIfNotExists(SystemSettingId.MailServer_Port, SystemSettingType.Integer, "25", "SMTP Port");
+        dao.createIfNotExists(SystemSettingId.MailServer_Secure, SystemSettingType.Boolean, "0", "SMTP Secure");
+        dao.createIfNotExists(SystemSettingId.MailServer_Auth, SystemSettingType.Boolean, "0", "SMTP Auth");
+        dao.createIfNotExists(SystemSettingId.MailServer_User, SystemSettingType.String, "", "SMTP Username");
+        dao.createIfNotExists(SystemSettingId.MailServer_Pass, SystemSettingType.String, "", "SMTP Password");
+        dao.createIfNotExists(SystemSettingId.MailServer_LogAndDiscard, SystemSettingType.Boolean, "1", "SMTP Log and Discard");
+        dao.createIfNotExists(SystemSettingId.MailServer_Sender_Name, SystemSettingType.String, "Your Company Ltd.", "SMTP Sender Name");
+        dao.createIfNotExists(SystemSettingId.MailServer_Sender_Email, SystemSettingType.String, "your@company.local", "SMTP Sender Email");
         dao.createIfNotExists(SystemSettingId.LicenseKey_PrivateKey, SystemSettingType.MultiLine,
             "", "RSA Private Key for License Key Encoding");
         dao.createIfNotExists(SystemSettingId.LicenseKey_PublicKey, SystemSettingType.MultiLine,

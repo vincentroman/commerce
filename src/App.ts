@@ -130,8 +130,8 @@ export class App extends EventEmitter {
 
     private async setupOrm(): Promise<Connection> {
         let config = Config.getInstance().get("database");
-        return createConnection(<ConnectionOptions>{
-            driver: config.driver,
+        let options: Object = {};
+        Object.assign(options, config.driver, {
             entities: [
                 __dirname + "/entity/*.js",
                 __dirname + "/entity/*.ts"
@@ -139,6 +139,7 @@ export class App extends EventEmitter {
             logging: config.logging,
             autoSchemaSync: true
         });
+        return createConnection(<ConnectionOptions>options);
     }
 
     public static getInstance(): App {

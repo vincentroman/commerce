@@ -28,5 +28,6 @@ export class SystemSetting extends RestModel<SystemSetting> {
 export enum SystemSettingType {
     String = 1,
     Integer = 2,
-    MultiLine = 3
+    MultiLine = 3,
+    Boolean = 4
 }
