@@ -51,7 +51,7 @@ export class Email {
     public static renderParamString(s: string, params: any): string {
         let result = s;
         Object.keys(params).map((key) => {
-            result = result.replace("{"+key+"}", params[key]);
+            result = result.replace("{{"+key+"}}", params[key]);
         });
         return result;
     }

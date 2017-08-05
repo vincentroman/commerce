@@ -11,11 +11,14 @@ import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { MailTemplateType } from "../entity/MailTemplate";
 import { Email, Address } from "../util/Email";
 import { JwtPayload } from "../util/JwtPayload";
+import { SystemSettingDao } from "../dao/SystemSettingDao";
+import { SystemSettingId } from "../entity/SystemSetting";
 
 class AuthRouter extends BaseRouter {
     protected init(): void {
         this.addRoutePost('/login', this.login, AuthRole.GUEST);
         this.addRoutePost('/pwreset', this.resetPassword, AuthRole.GUEST);
+        this.addRoutePost('/pwchange', this.changePassword, AuthRole.GUEST);
         this.addRoutePost('/logout', this.logout, AuthRole.USER);
     }
 
@@ -37,9 +40,34 @@ class AuthRouter extends BaseRouter {
         this.ok(res);
     }
 
+    private changePassword(req: Request, res: Response, next: NextFunction): void {
+        let userDao: UserDao = Container.get(UserDao);
+        let actionDao: PendingActionDao = Container.get(PendingActionDao);
+        actionDao.getByUuid(req.body.uuid).then(action => {
+            if (action && action.type === ActionType.ResetPassword) {
+                let userId = action.getPayload().userId;
+                userDao.getById(userId).then(user => {
+                    if (user) {
+                        user.setPlainPassword(req.body.password);
+                        userDao.save(user).then(user => {
+                            actionDao.delete(action).then(action => {
+                                this.ok(res);
+                            });
+                        });
+                    } else {
+                        this.notFound(res);
+                    }
+                }).catch(e => this.internalServerError(res));
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => this.internalServerError(res));
+    }
+
     private resetPassword(req: Request, res: Response, next: NextFunction): void {
         let userDao: UserDao = Container.get(UserDao);
         let actionDao: PendingActionDao = Container.get(PendingActionDao);
+        let settingsDao: SystemSettingDao = Container.get(SystemSettingDao);
         let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
         userDao.getByEmail(req.body.email).then((user) => {
             if (user && user.customer) {
@@ -50,15 +78,18 @@ class AuthRouter extends BaseRouter {
                 });
                 actionDao.save(action).then(action => {
                     mailTemplateDao.getByType(MailTemplateType.ResetPassword).then(mailTemplate => {
-                        let params = {
-                            firstname: user.customer.firstname,
-                            lastname: user.customer.lastname,
-                            uuid: action.uuid
-                        };
-                        let recipient: Address = {
-                            email: user.customer.email
-                        };
-                        Email.sendByTemplate(mailTemplate, recipient, params);
+                        settingsDao.getString(SystemSettingId.Site_Url, "").then(siteUrl => {
+                            let params = {
+                                firstname: (user.customer ? user.customer.firstname : "Unknown"),
+                                lastname: (user.customer ? user.customer.lastname : "Unknown"),
+                                uuid: action.uuid,
+                                siteUrl: siteUrl
+                            };
+                            let recipient: Address = {
+                                email: user.email
+                            };
+                            Email.sendByTemplate(mailTemplate, recipient, params);
+                        });
                     });
                     this.ok(res);
                 });

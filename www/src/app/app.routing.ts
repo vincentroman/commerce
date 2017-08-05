@@ -37,6 +37,7 @@ import { UserEditComponent } from "./component/admin/user-edit.component";
 import { LicenseKeyViewComponent } from "./component/admin/license-key-view.component";
 import { BrokerProductVariantEditComponent } from "./component/admin/brokerproductvariant.component";
 import { PurchaseComponent } from "./component/purchase.component";
+import { ChangePasswordComponent } from "./component/change-password.component";
 
 const appRoutes: Routes = [
     // "Any" routes
@@ -45,6 +46,7 @@ const appRoutes: Routes = [
     // Guest routes
     { path: "login", component: LoginComponent, canActivate: [GuestGuard] },
     { path: "pwreset", component: ResetPasswordComponent, canActivate: [GuestGuard] },
+    { path: "pwchange/:uuid", component: ChangePasswordComponent, canActivate: [GuestGuard] },
 
     // Authenticated routes
     { path: "home", component: HomeComponent, canActivate: [AuthGuard] },

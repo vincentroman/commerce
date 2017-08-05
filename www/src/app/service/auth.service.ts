@@ -51,4 +51,17 @@ export class AuthService {
                     throw this.httpService.handleError(error);
                 });
     }
+
+    changePassword(actionUuid: string, password: string): Promise<void> {
+        let payload: any = {
+            uuid: actionUuid,
+            password: password
+        };
+        return this.http.post(this.httpService.getUrl("auth/pwchange"), payload, this.httpService.getOptions())
+                .toPromise()
+                .then(res => { return; })
+                .catch(error => {
+                    throw this.httpService.handleError(error);
+                });
+    }
 }

@@ -50,6 +50,7 @@ import { UserEditComponent } from "./component/admin/user-edit.component";
 import { LicenseKeyViewComponent } from "./component/admin/license-key-view.component";
 import { BrokerProductVariantEditComponent } from "./component/admin/brokerproductvariant.component";
 import { PurchaseComponent } from "./component/purchase.component";
+import { ChangePasswordComponent } from "./component/change-password.component";
 
 @NgModule({
     imports: [
@@ -65,6 +66,7 @@ import { PurchaseComponent } from "./component/purchase.component";
         BrokerListComponent,
         BrokerTestComponent,
         BrokerProductVariantEditComponent,
+        ChangePasswordComponent,
         CustomerEditComponent,
         CustomerListComponent,
         HomeComponent,

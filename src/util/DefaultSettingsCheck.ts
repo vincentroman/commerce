@@ -79,7 +79,7 @@ export class DefaultSettingsCheck {
             template.body = "Dear {{firstname}} {{lastname}},\n\n" +
                 "you've requested a password reset on our website.\n\n" +
                 "Please follow this link to choose a new password:\n\n" +
-                "https://weweave.net/auth/pwchange/{{uuid}}\n\n" +
+                "{{siteUrl}}/pwchange/{{uuid}}\n\n" +
                 "If you did not initiate this password reset request, don't worry. " +
                 "Your password won't change unless you use the link above.";
             await dao.save(template);
@@ -97,6 +97,7 @@ export class DefaultSettingsCheck {
         dao.createIfNotExists(SystemSettingId.MailServer_LogAndDiscard, SystemSettingType.Boolean, "1", "SMTP Log and Discard");
         dao.createIfNotExists(SystemSettingId.MailServer_Sender_Name, SystemSettingType.String, "Your Company Ltd.", "SMTP Sender Name");
         dao.createIfNotExists(SystemSettingId.MailServer_Sender_Email, SystemSettingType.String, "your@company.local", "SMTP Sender Email");
+        dao.createIfNotExists(SystemSettingId.Site_Url, SystemSettingType.String, "http://localhost:3001", "Site URL");
         dao.createIfNotExists(SystemSettingId.LicenseKey_PrivateKey, SystemSettingType.MultiLine,
             "", "RSA Private Key for License Key Encoding");
         dao.createIfNotExists(SystemSettingId.LicenseKey_PublicKey, SystemSettingType.MultiLine,
