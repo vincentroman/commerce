@@ -3,11 +3,11 @@ import { SupportTicket, SupportRequestStatus } from "../entity/SupportTicket";
 import { SupportTicketDao } from "../dao/SupportTicketDao";
 import { Container } from "typedi";
 import { Request, Response, NextFunction } from "express";
-import { CustomerDao } from "../dao/CustomerDao";
 import { ProductVariantDao } from "../dao/ProductVariantDao";
 import { Comment } from "../entity/Comment";
 import { CommentDao } from "../dao/CommentDao";
 import { AuthRole } from "./BaseRouter";
+import { PersonDao } from "../dao/PersonDao";
 
 class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
     protected getDao(): SupportTicketDao {
@@ -36,7 +36,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
     }
 
     protected getMyOne(req: Request, res: Response, next: NextFunction): void {
-        let customerUuid = this.getJwtCustomerUuid(req);
+        let customerUuid = this.getJwtUserUuid(req);
         let dao: SupportTicketDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
@@ -50,7 +50,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
 
     private my(req: Request, res: Response, next: NextFunction): void {
         let dao: SupportTicketDao = this.getDao();
-        let customerUuid = this.getJwtCustomerUuid(req);
+        let customerUuid = this.getJwtUserUuid(req);
         dao.getAllCustometTickets(customerUuid).then(entities => {
             res.send(entities.map(entity => entity.serialize()));
         });
@@ -63,7 +63,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
                 res.send(comments.map(comment => comment.serialize()));
             });
         };
-        let customerUuid = this.getJwtCustomerUuid(req);
+        let customerUuid = this.getJwtUserUuid(req);
         let dao: SupportTicketDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
@@ -82,10 +82,10 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
     }
 
     private assign(req: Request, res: Response, next: NextFunction): void {
-        let customerDao: CustomerDao = Container.get(CustomerDao);
+        let personDao: PersonDao = Container.get(PersonDao);
         let productVariantDao: ProductVariantDao = Container.get(ProductVariantDao);
         let dao: SupportTicketDao = this.getDao();
-        customerDao.getByUuid(req.body.customerUuid).then(customer => {
+        personDao.getByUuid(req.body.customerUuid).then(customer => {
             productVariantDao.getByUuid(req.body.productVariantUuid).then(productVariant => {
                 let supportRequest: SupportTicket = new SupportTicket();
                 supportRequest.customer = customer;
@@ -103,7 +103,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
     }
 
     protected open(req: Request, res: Response, next: NextFunction): void {
-        let customerUuid = this.getJwtCustomerUuid(req);
+        let customerUuid = this.getJwtUserUuid(req);
         let dao: SupportTicketDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
@@ -127,7 +127,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
                 that.saved(res, entity);
             });
         };
-        let customerUuid = this.getJwtCustomerUuid(req);
+        let customerUuid = this.getJwtUserUuid(req);
         let dao: SupportTicketDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
@@ -146,7 +146,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
     }
 
     protected addComment(req: Request, res: Response, next: NextFunction): void {
-        let customerUuid = this.getJwtCustomerUuid(req);
+        let customerUuid = this.getJwtUserUuid(req);
         let dao: SupportTicketDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {

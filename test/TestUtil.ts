@@ -1,11 +1,9 @@
-import { User } from "../src/entity/User";
 import { Container } from "typedi";
-import { UserDao } from "../src/dao/UserDao";
 import { App } from "../src/App";
 import * as chai from 'chai';
 import chaiHttp = require('chai-http');
-import { Customer } from "../src/entity/Customer";
-import { CustomerDao } from "../src/dao/CustomerDao";
+import { Person } from "../src/entity/Person";
+import { PersonDao } from "../src/dao/PersonDao";
 
 chai.use(chaiHttp);
 
@@ -42,20 +40,15 @@ export class TestUtil {
         });
     }
 
-    public static createCustomerUser(email: string, password: string): Promise<User> {
+    public static createCustomerUser(email: string, password: string): Promise<Person> {
         return new Promise((resolve, reject) => {
-            let customer: Customer = new Customer();
+            let customer: Person = new Person();
             customer.email = email;
             customer.firstname = "Sample";
             customer.lastname = "Sample";
-            Container.get(CustomerDao).save(customer).then(customer => {
-                let user: User = new User();
-                user.email = email;
-                user.customer = customer;
-                user.roleCustomer = true;
-                user.setPlainPassword(password);
-                Container.get(UserDao).save(user).then(user => resolve(user));
-            });
+            customer.roleCustomer = true;
+            customer.setPlainPassword(password);
+            Container.get(PersonDao).save(customer).then(customer => resolve(customer));
         });
     }
 }

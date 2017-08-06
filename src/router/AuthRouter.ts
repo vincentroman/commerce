@@ -3,8 +3,6 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
 import { BaseRouter, AuthRole } from "./BaseRouter";
 import { Config } from '../util/Config';
-import { User } from '../entity/User';
-import { UserDao } from '../dao/UserDao';
 import { PendingActionDao } from "../dao/PendingActionDao";
 import { PendingAction, ActionType } from "../entity/PendingAction";
 import { MailTemplateDao } from "../dao/MailTemplateDao";
@@ -13,6 +11,8 @@ import { Email, Address } from "../util/Email";
 import { JwtPayload } from "../util/JwtPayload";
 import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { SystemSettingId } from "../entity/SystemSetting";
+import { PersonDao } from "../dao/PersonDao";
+import { Person } from "../entity/Person";
 
 class AuthRouter extends BaseRouter {
     protected init(): void {
@@ -23,11 +23,15 @@ class AuthRouter extends BaseRouter {
     }
 
     private login(req: Request, res: Response, next: NextFunction): void {
-        let userDao: UserDao = Container.get(UserDao);
-        userDao.getByEmail(req.body.email).then((user) => {
-            if (user.isPasswordValid(req.body.password)) {
-                let jwt: string = this.createJwt(user);
-                res.send(jwt);
+        let dao: PersonDao = Container.get(PersonDao);
+        dao.getByEmail(req.body.email).then((user) => {
+            if (user) {
+                if (user.isPasswordValid(req.body.password)) {
+                    let jwt: string = this.createJwt(user);
+                    res.send(jwt);
+                } else {
+                    this.notFound(res);
+                }
             } else {
                 this.notFound(res);
             }
@@ -41,15 +45,15 @@ class AuthRouter extends BaseRouter {
     }
 
     private changePassword(req: Request, res: Response, next: NextFunction): void {
-        let userDao: UserDao = Container.get(UserDao);
+        let dao: PersonDao = Container.get(PersonDao);
         let actionDao: PendingActionDao = Container.get(PendingActionDao);
         actionDao.getByUuid(req.body.uuid).then(action => {
             if (action && action.type === ActionType.ResetPassword) {
                 let userId = action.getPayload().userId;
-                userDao.getById(userId).then(user => {
+                dao.getById(userId).then(user => {
                     if (user) {
                         user.setPlainPassword(req.body.password);
-                        userDao.save(user).then(user => {
+                        dao.save(user).then(user => {
                             actionDao.delete(action).then(action => {
                                 this.ok(res);
                             });
@@ -65,12 +69,12 @@ class AuthRouter extends BaseRouter {
     }
 
     private resetPassword(req: Request, res: Response, next: NextFunction): void {
-        let userDao: UserDao = Container.get(UserDao);
+        let dao: PersonDao = Container.get(PersonDao);
         let actionDao: PendingActionDao = Container.get(PendingActionDao);
         let settingsDao: SystemSettingDao = Container.get(SystemSettingDao);
         let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
-        userDao.getByEmail(req.body.email).then((user) => {
-            if (user && user.customer) {
+        dao.getByEmail(req.body.email).then((user) => {
+            if (user) {
                 let action: PendingAction = new PendingAction();
                 action.type = ActionType.ResetPassword;
                 action.setPayload({
@@ -80,8 +84,8 @@ class AuthRouter extends BaseRouter {
                     mailTemplateDao.getByType(MailTemplateType.ResetPassword).then(mailTemplate => {
                         settingsDao.getString(SystemSettingId.Site_Url, "").then(siteUrl => {
                             let params = {
-                                firstname: (user.customer ? user.customer.firstname : "Unknown"),
-                                lastname: (user.customer ? user.customer.lastname : "Unknown"),
+                                firstname: user.firstname,
+                                lastname: user.lastname,
                                 uuid: action.uuid,
                                 siteUrl: siteUrl
                             };
@@ -99,11 +103,10 @@ class AuthRouter extends BaseRouter {
         }).catch(e => this.ok(res));
     }
 
-    private createJwt(user: User): string {
+    private createJwt(user: Person): string {
         let config = Config.getInstance().get("session");
         let payload: JwtPayload = {
             userId: user.uuid,
-            customerId: (user.customer ? user.customer.uuid : ""),
             email: user.email
         };
         let options = {

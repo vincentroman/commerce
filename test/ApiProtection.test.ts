@@ -7,9 +7,8 @@ Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
 import { TestUtil } from "./TestUtil";
 import { Container } from "typedi";
-import { UserDao } from "../src/dao/UserDao";
-import { CustomerDao } from "../src/dao/CustomerDao";
 import { DefaultSettingsCheck } from "../src/util/DefaultSettingsCheck";
+import { PersonDao } from "../src/dao/PersonDao";
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -29,10 +28,8 @@ describe('API Protection', () => {
     }));
 
     after(done => {
-        Container.get(UserDao).removeAll().then(() => {
-            Container.get(CustomerDao).removeAll().then(() => {
-                DefaultSettingsCheck.check().then(() => done());
-            });
+        Container.get(PersonDao).removeAll().then(() => {
+            DefaultSettingsCheck.check().then(() => done());
         });
     });
 
@@ -61,12 +58,6 @@ describe('API Protection', () => {
             {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: false, method: "get"},
             {url: "/api/v1/brokerproductvariant/abcdef/save", expectForbidden: true, method: "put"},
 
-            {url: "/api/v1/customer/get/abcdef", expectForbidden: true, method: "get"},
-            {url: "/api/v1/customer/list", expectForbidden: true, method: "get"},
-            {url: "/api/v1/customer/delete/abcdef", expectForbidden: true, method: "delete"},
-            {url: "/api/v1/customer/save", expectForbidden: true, method: "put"},
-            {url: "/api/v1/customer/suggest", expectForbidden: true, method: "get"},
-
             {url: "/api/v1/comment/get/abcdef", expectForbidden: true, method: "get"},
             {url: "/api/v1/comment/list", expectForbidden: true, method: "get"},
             {url: "/api/v1/comment/delete/abcdef", expectForbidden: true, method: "delete"},
@@ -86,6 +77,13 @@ describe('API Protection', () => {
             {url: "/api/v1/mailtemplate/list", expectForbidden: true, method: "get"},
             {url: "/api/v1/mailtemplate/delete/abcdef", expectForbidden: true, method: "delete"},
             {url: "/api/v1/mailtemplate/save", expectForbidden: true, method: "put"},
+
+            {url: "/api/v1/person/get/abcdef", expectForbidden: true, method: "get"},
+            {url: "/api/v1/person/list", expectForbidden: true, method: "get"},
+            {url: "/api/v1/person/delete/abcdef", expectForbidden: true, method: "delete"},
+            {url: "/api/v1/person/save", expectForbidden: true, method: "put"},
+            {url: "/api/v1/person/suggest", expectForbidden: true, method: "get"},
+            {url: "/api/v1/person/me", expectForbidden: true, method: "get"},
 
             {url: "/api/v1/purchaseitem/abcdef/list", expectForbidden: true, method: "get"},
 
@@ -120,13 +118,7 @@ describe('API Protection', () => {
             {url: "/api/v1/systemsetting/get/abcdef", expectForbidden: true, method: "get"},
             {url: "/api/v1/systemsetting/list", expectForbidden: true, method: "get"},
             {url: "/api/v1/systemsetting/delete/abcdef", expectForbidden: true, method: "delete"},
-            {url: "/api/v1/systemsetting/save", expectForbidden: true, method: "put"},
-
-            {url: "/api/v1/user/get/abcdef", expectForbidden: true, method: "get"},
-            {url: "/api/v1/user/list", expectForbidden: true, method: "get"},
-            {url: "/api/v1/user/delete/abcdef", expectForbidden: true, method: "delete"},
-            {url: "/api/v1/user/save", expectForbidden: true, method: "put"},
-            {url: "/api/v1/user/me", expectForbidden: true, method: "get"}
+            {url: "/api/v1/systemsetting/save", expectForbidden: true, method: "put"}
         ]);
     });
 
@@ -141,11 +133,11 @@ describe('API Protection', () => {
             {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: false, method: "get", jwt: "admin"},
             {url: "/api/v1/brokerproductvariant/abcdef/save", expectForbidden: false, method: "put", jwt: "admin"},
 
-            {url: "/api/v1/customer/get/abcdef", expectForbidden: false, method: "get", jwt: "admin"},
-            {url: "/api/v1/customer/list", expectForbidden: false, method: "get", jwt: "admin"},
-            {url: "/api/v1/customer/delete/abcdef", expectForbidden: false, method: "delete", jwt: "admin"},
-            {url: "/api/v1/customer/save", expectForbidden: false, method: "put", jwt: "admin"},
-            {url: "/api/v1/customer/suggest", expectForbidden: false, method: "get", jwt: "admin"},
+            {url: "/api/v1/person/get/abcdef", expectForbidden: false, method: "get", jwt: "admin"},
+            {url: "/api/v1/person/list", expectForbidden: false, method: "get", jwt: "admin"},
+            {url: "/api/v1/person/delete/abcdef", expectForbidden: false, method: "delete", jwt: "admin"},
+            {url: "/api/v1/person/save", expectForbidden: false, method: "put", jwt: "admin"},
+            {url: "/api/v1/person/suggest", expectForbidden: false, method: "get", jwt: "admin"},
 
             {url: "/api/v1/comment/get/abcdef", expectForbidden: false, method: "get", jwt: "admin"},
             {url: "/api/v1/comment/list", expectForbidden: false, method: "get", jwt: "admin"},
@@ -191,12 +183,7 @@ describe('API Protection', () => {
             {url: "/api/v1/systemsetting/get/abcdef", expectForbidden: false, method: "get", jwt: "admin"},
             {url: "/api/v1/systemsetting/list", expectForbidden: false, method: "get", jwt: "admin"},
             {url: "/api/v1/systemsetting/delete/abcdef", expectForbidden: false, method: "delete", jwt: "admin"},
-            {url: "/api/v1/systemsetting/save", expectForbidden: false, method: "put", jwt: "admin"},
-
-            {url: "/api/v1/user/get/abcdef", expectForbidden: false, method: "get", jwt: "admin"},
-            {url: "/api/v1/user/list", expectForbidden: false, method: "get", jwt: "admin"},
-            {url: "/api/v1/user/delete/abcdef", expectForbidden: false, method: "delete", jwt: "admin"},
-            {url: "/api/v1/user/save", expectForbidden: false, method: "put", jwt: "admin"}
+            {url: "/api/v1/systemsetting/save", expectForbidden: false, method: "put", jwt: "admin"}
         ]);
     });
 
@@ -211,11 +198,11 @@ describe('API Protection', () => {
             {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: false, method: "get", jwt: "customer"},
             {url: "/api/v1/brokerproductvariant/abcdef/save", expectForbidden: true, method: "put", jwt: "customer"},
 
-            {url: "/api/v1/customer/get/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
-            {url: "/api/v1/customer/list", expectForbidden: true, method: "get", jwt: "customer"},
-            {url: "/api/v1/customer/delete/abcdef", expectForbidden: true, method: "delete", jwt: "customer"},
-            {url: "/api/v1/customer/save", expectForbidden: true, method: "put", jwt: "customer"},
-            {url: "/api/v1/customer/suggest", expectForbidden: true, method: "get", jwt: "customer"},
+            {url: "/api/v1/person/get/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
+            {url: "/api/v1/person/list", expectForbidden: true, method: "get", jwt: "customer"},
+            {url: "/api/v1/person/delete/abcdef", expectForbidden: true, method: "delete", jwt: "customer"},
+            {url: "/api/v1/person/save", expectForbidden: true, method: "put", jwt: "customer"},
+            {url: "/api/v1/person/suggest", expectForbidden: true, method: "get", jwt: "customer"},
 
             {url: "/api/v1/comment/get/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
             {url: "/api/v1/comment/list", expectForbidden: true, method: "get", jwt: "customer"},
@@ -261,12 +248,7 @@ describe('API Protection', () => {
             {url: "/api/v1/systemsetting/get/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
             {url: "/api/v1/systemsetting/list", expectForbidden: true, method: "get", jwt: "customer"},
             {url: "/api/v1/systemsetting/delete/abcdef", expectForbidden: true, method: "delete", jwt: "customer"},
-            {url: "/api/v1/systemsetting/save", expectForbidden: true, method: "put", jwt: "customer"},
-
-            {url: "/api/v1/user/get/abcdef", expectForbidden: true, method: "get", jwt: "customer"},
-            {url: "/api/v1/user/list", expectForbidden: true, method: "get", jwt: "customer"},
-            {url: "/api/v1/user/delete/abcdef", expectForbidden: true, method: "delete", jwt: "customer"},
-            {url: "/api/v1/user/save", expectForbidden: true, method: "put", jwt: "customer"}
+            {url: "/api/v1/systemsetting/save", expectForbidden: true, method: "put", jwt: "customer"}
         ]);
     });
 
@@ -285,7 +267,7 @@ describe('API Protection', () => {
             {url: "/api/v1/supportticket/close/abcdef", expectForbidden: false, method: "post", jwt: "customer"},
             {url: "/api/v1/supportticket/addcomment/abcdef", expectForbidden: false, method: "post", jwt: "customer"},
 
-            {url: "/api/v1/user/me", expectForbidden: false, method: "get", jwt: "customer"}
+            {url: "/api/v1/person/me", expectForbidden: false, method: "get", jwt: "customer"}
         ]);
     });
 

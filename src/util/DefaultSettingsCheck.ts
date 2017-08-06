@@ -1,10 +1,10 @@
 import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { Container } from "typedi";
 import { MailTemplate, MailTemplateType } from "../entity/MailTemplate";
-import { UserDao } from "../dao/UserDao";
-import { User } from "../entity/User";
 import { SystemSettingId, SystemSettingType } from "../entity/SystemSetting";
 import { SystemSettingDao } from "../dao/SystemSettingDao";
+import { PersonDao } from "../dao/PersonDao";
+import { Person } from "../entity/Person";
 
 export class DefaultSettingsCheck {
     public static async check(): Promise<void> {
@@ -14,10 +14,12 @@ export class DefaultSettingsCheck {
     }
 
     private static async checkAdminUser(): Promise<void> {
-        let dao: UserDao = Container.get(UserDao);
-        let users: User[] = await dao.getAdmins();
+        let dao: PersonDao = Container.get(PersonDao);
+        let users: Person[] = await dao.getAdmins();
         if (users.length === 0) {
-            let user: User = new User();
+            let user: Person = new Person();
+            user.firstname = "System";
+            user.lastname = "Administrator";
             user.email = "admin@admin.local";
             user.setPlainPassword("admin");
             user.roleAdmin = true;

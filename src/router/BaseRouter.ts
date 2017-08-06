@@ -3,9 +3,9 @@ import { DbEntity } from '../entity/DbEntity';
 import { Config } from '../util/Config';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from "../util/JwtPayload";
-import { User } from "../entity/User";
-import { UserDao } from "../dao/UserDao";
 import { Container } from "typedi";
+import { Person } from "../entity/Person";
+import { PersonDao } from "../dao/PersonDao";
 
 export abstract class BaseRouter {
     router: Router;
@@ -30,15 +30,10 @@ export abstract class BaseRouter {
         return payload.userId;
     }
 
-    protected async getJwtUser(req: Request): Promise<User> {
+    protected async getJwtUser(req: Request): Promise<Person> {
         let uuid = this.getJwtUserUuid(req);
-        let dao: UserDao = Container.get(UserDao);
+        let dao: PersonDao = Container.get(PersonDao);
         return dao.getByUuid(uuid);
-    }
-
-    protected getJwtCustomerUuid(req: Request): string {
-        let payload = this.getJwtPayload(req);
-        return payload.customerId;
     }
 
     protected getJwtPayload(req: Request): JwtPayload {

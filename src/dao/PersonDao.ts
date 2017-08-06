@@ -1,19 +1,27 @@
 import { Repository } from "typeorm";
 import { Service } from "typedi";
 import { Dao } from "./Dao";
-import { Customer } from "../entity/Customer";
+import { Person } from "../entity/Person";
 
 @Service()
-export class CustomerDao extends Dao<Customer> {
-    protected getRepository(): Repository<Customer> {
-        return this.getEm().getRepository(Customer);
+export class PersonDao extends Dao<Person> {
+    protected getRepository(): Repository<Person> {
+        return this.getEm().getRepository(Person);
     }
 
-    public async getByEmail(email: string): Promise<Customer> {
+    public async getByEmail(email: string): Promise<Person> {
         return this.getRepository().findOne({email: email});
     }
 
-    public async getSuggestions(keyword: string): Promise<Customer[]> {
+    public async getAll(): Promise<Person[]> {
+        return this.getRepository()
+            .createQueryBuilder("p")
+            .orderBy("p.firstname")
+            .addOrderBy("p.lastname")
+            .getMany();
+    }
+
+    public async getSuggestions(keyword: string): Promise<Person[]> {
         let query = this.getRepository()
             .createQueryBuilder("c")
             .orderBy("c.firstname", "ASC")
@@ -27,5 +35,9 @@ export class CustomerDao extends Dao<Customer> {
             query = query.setParameters({keyword: "%" + keyword + "%"});
         }
         return query.getMany();
+    }
+
+    public async getAdmins(): Promise<Person[]> {
+        return this.getRepository().find({roleAdmin: true});
     }
 }

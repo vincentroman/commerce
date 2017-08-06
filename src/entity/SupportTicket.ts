@@ -2,8 +2,8 @@ import * as moment from 'moment';
 import { Entity, Column, ManyToOne } from "typeorm";
 import { DbEntity } from "./DbEntity";
 import { ProductVariant } from "./ProductVariant";
-import { Customer } from "./Customer";
 import { PurchaseItem } from "./PurchaseItem";
+import { Person } from "./Person";
 
 @Entity()
 export class SupportTicket extends DbEntity<SupportTicket> {
@@ -16,8 +16,8 @@ export class SupportTicket extends DbEntity<SupportTicket> {
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
 
-    @ManyToOne(type => Customer)
-    customer: Customer;
+    @ManyToOne(type => Person)
+    customer: Person;
 
     @ManyToOne(type => PurchaseItem, {nullable: true})
     purchaseItem: PurchaseItem;

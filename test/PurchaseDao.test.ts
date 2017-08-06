@@ -20,7 +20,7 @@ describe("OrderDao", () => {
         orderDao.removeAll().then(() => {
             brokerDao.removeAll().then(() => {
                 done();
-            })
+            });
         });
     });
 

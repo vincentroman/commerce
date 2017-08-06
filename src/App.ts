@@ -9,16 +9,15 @@ import { DefaultSettingsCheck } from "./util/DefaultSettingsCheck";
 
 import AuthRouter from './router/AuthRouter';
 import BrokerRouter from './router/BrokerRouter';
-import CustomerRouter from './router/CustomerRouter';
 import CommentRouter from './router/CommentRouter';
 import LicenseKeyRouter from './router/LicenseKeyRouter';
 import MailTemplateRouter from './router/MailTemplateRouter';
 import PurchaseItemRouter from './router/PurchaseItemRouter';
 import OrderNotificationRouter from './router/OrderNotificationRouter';
+import PersonRouter from './router/PersonRouter';
 import PurchaseRouter from './router/PurchaseRouter';
 import ProductRouter from './router/ProductRouter';
 import ProductVariantRouter from './router/ProductVariantRouter';
-import UserRouter from './router/UserRouter';
 import BrokerProductVariantRouter from "./router/BrokerProductVariantRouter";
 import SupportTicketRouter from "./router/SupportTicketRouter";
 import SystemSettingRouter from "./router/SystemSettingRouter";
@@ -88,18 +87,17 @@ export class App extends EventEmitter {
         this.express.use('/api/v1/auth', AuthRouter);
         this.express.use('/api/v1/broker', BrokerRouter);
         this.express.use('/api/v1/brokerproductvariant', BrokerProductVariantRouter);
-        this.express.use('/api/v1/customer', CustomerRouter);
         this.express.use('/api/v1/comment', CommentRouter);
         this.express.use('/api/v1/licensekey', LicenseKeyRouter);
         this.express.use('/api/v1/mailtemplate', MailTemplateRouter);
         this.express.use('/api/v1/purchaseitem', PurchaseItemRouter);
         this.express.use('/api/v1/ordernotification', OrderNotificationRouter);
+        this.express.use('/api/v1/person', PersonRouter);
         this.express.use('/api/v1/purchase', PurchaseRouter);
         this.express.use('/api/v1/product', ProductRouter);
         this.express.use('/api/v1/productvariant', ProductVariantRouter);
         this.express.use('/api/v1/supportticket', SupportTicketRouter);
         this.express.use('/api/v1/systemsetting', SystemSettingRouter);
-        this.express.use('/api/v1/user', UserRouter);
         this.addStaticFilesRoutes();
     }
 

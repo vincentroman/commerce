@@ -1,6 +1,5 @@
 import * as nodemailer from 'nodemailer';
 import { MailTemplate } from "../entity/MailTemplate";
-import { Customer } from "../entity/Customer";
 import { Container } from "typedi";
 import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { SystemSettingId } from "../entity/SystemSetting";

@@ -2,27 +2,28 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
 import { CrudRouter } from "./CrudRouter";
 
-import { Customer } from '../entity/Customer';
-import { CustomerDao } from '../dao/CustomerDao';
 import { AuthRole } from "./BaseRouter";
 import { CommentDao } from "../dao/CommentDao";
 import { Comment } from "../entity/Comment";
+import { Person } from "../entity/Person";
+import { PersonDao } from "../dao/PersonDao";
 
-class CustomerRouter extends CrudRouter<Customer, CustomerDao> {
+class CustomerRouter extends CrudRouter<Person, PersonDao> {
     protected init(): void {
         super.init();
         this.addRouteGet('/suggest', this.suggest, AuthRole.ADMIN);
         this.addRouteGet('/comments/:id', this.getComments, AuthRole.ADMIN);
         this.addRoutePost('/addcomment/:id', this.addComment, AuthRole.ADMIN);
+        this.addRouteGet('/me', this.me, AuthRole.USER);
     }
 
-    protected getDao(): CustomerDao {
-        return Container.get(CustomerDao);
+    protected getDao(): PersonDao {
+        return Container.get(PersonDao);
     }
 
-    protected createEntity(requestBody: any): Promise<Customer> {
+    protected createEntity(requestBody: any): Promise<Person> {
         return new Promise((resolve, reject) => {
-            resolve(new Customer(requestBody));
+            resolve(new Person(requestBody));
         });
     }
 
@@ -31,7 +32,7 @@ class CustomerRouter extends CrudRouter<Customer, CustomerDao> {
     }
 
     private suggest(req: Request, res: Response, next: NextFunction): void {
-        let dao: CustomerDao = this.getDao();
+        let dao: PersonDao = this.getDao();
         let keyword: string = req.query.s;
         let excludeCustomerUuid: string = req.query.exclude;
         dao.getSuggestions(keyword).then(customers => {
@@ -46,7 +47,7 @@ class CustomerRouter extends CrudRouter<Customer, CustomerDao> {
     }
 
     protected getComments(req: Request, res: Response, next: NextFunction): void {
-        let dao: CustomerDao = this.getDao();
+        let dao: PersonDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(customer => {
             let commentDao: CommentDao = Container.get(CommentDao);
@@ -57,7 +58,7 @@ class CustomerRouter extends CrudRouter<Customer, CustomerDao> {
     }
 
     protected addComment(req: Request, res: Response, next: NextFunction): void {
-        let dao: CustomerDao = this.getDao();
+        let dao: PersonDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(customer => {
             this.getJwtUser(req).then(user => {
@@ -68,6 +69,14 @@ class CustomerRouter extends CrudRouter<Customer, CustomerDao> {
                 comment.author = user;
                 commentDao.save(comment).then(comment => this.saved(res, comment));
             }).catch(e => this.notFound(res));
+        }).catch(e => this.notFound(res));
+    }
+
+    private me(req: Request, res: Response, next: NextFunction): void {
+        let uuid = this.getJwtUserUuid(req);
+        let dao = this.getDao();
+        dao.getByUuid(uuid).then((user) => {
+            res.send(user.serialize());
         }).catch(e => this.notFound(res));
     }
 }

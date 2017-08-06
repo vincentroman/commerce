@@ -1,13 +1,13 @@
 import { Entity, Column, ManyToOne, OneToMany } from "typeorm";
 import { DbEntity } from "./DbEntity";
-import { Customer } from "./Customer";
 import { Broker } from "./Broker";
 import { PurchaseItem } from "./PurchaseItem";
+import { Person } from "./Person";
 
 @Entity()
 export class Purchase extends DbEntity<Purchase> {
-    @ManyToOne(type => Customer)
-    customer: Customer;
+    @ManyToOne(type => Person)
+    customer: Person;
 
     @ManyToOne(type => Broker)
     broker: Broker;

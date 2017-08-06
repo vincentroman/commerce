@@ -11,14 +11,13 @@ import { PurchaseItem } from "../entity/PurchaseItem";
 import { ProductVariant, ProductVariantType } from "../entity/ProductVariant";
 import { LicenseKey } from "../entity/LicenseKey";
 import { LicenseKeyDao } from "../dao/LicenseKeyDao";
-import { Customer } from "../entity/Customer";
-import { User } from "../entity/User";
-import { UserDao } from "../dao/UserDao";
 import { SupportTicket, SupportRequestStatus } from "../entity/SupportTicket";
 import { SupportTicketDao } from "../dao/SupportTicketDao";
 import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { MailTemplateType } from "../entity/MailTemplate";
 import { Email, Address } from "../util/Email";
+import { Person } from "../entity/Person";
+import { PersonDao } from "../dao/PersonDao";
 
 class OrderNotificationRouter extends BaseRouter {
     protected init(): void {
@@ -29,47 +28,49 @@ class OrderNotificationRouter extends BaseRouter {
         let brokderId = req.params.id;
         let brokerDao: BrokerDao = Container.get(BrokerDao);
         brokerDao.getByUuid(brokderId).then((broker) => {
-            OrderNotificationMapper.map(req.body, broker, true).then((order) => {
-                this.checkCreateUserAccount(order.customer).then(() => {
-                    this.checkOrderTriggers(order).then(() => {
-                        this.saved(res, order);
+            if (broker) {
+                OrderNotificationMapper.map(req.body, broker, true).then((order) => {
+                    this.checkCreateUserAccount(order.customer).then(() => {
+                        this.checkOrderTriggers(order).then(() => {
+                            this.saved(res, order);
+                        });
                     });
-                });
-            }).catch(e => this.badRequest(res));
+                }).catch(e => this.badRequest(res));
+            } else {
+                this.notFound(res);
+            }
         }).catch(e => this.notFound(res));
     }
 
-    private checkCreateUserAccount(customer: Customer): Promise<User> {
-        return new Promise<User>((resolve, reject) => {
-            let userDao: UserDao = Container.get(UserDao);
-            userDao.getByEmail(customer.email)
-            .then(user => resolve(user))
-            .catch(e => {
+    private checkCreateUserAccount(person: Person): Promise<Person> {
+        return new Promise<Person>((resolve, reject) => {
+            if (!person.roleCustomer || !person.password) {
+                let personDao: PersonDao = Container.get(PersonDao);
                 let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
-                let user: User = new User();
                 let plainPassword: string = pwGen.generate({
                     length: 12,
                     numbers: true
                 });
-                user.customer = customer;
-                user.email = customer.email;
-                user.setPlainPassword(plainPassword);
-                userDao.save(user).then((user) => {
+                person.setPlainPassword(plainPassword);
+                person.roleCustomer = true;
+                personDao.save(person).then(person => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let recipient: Address = {
-                            name: customer.firstname + " " + customer.lastname,
-                            email: customer.email
+                            name: person.firstname + " " + person.lastname,
+                            email: person.email
                         };
                         let params = {
-                            username: user.email,
+                            username: person.email,
                             password: plainPassword
                         };
                         Email.sendByTemplate(template, recipient, params).then(() => {
-                            resolve(user);
-                        });
-                    });
+                            resolve(person);
+                        }).catch(e => reject(e));
+                    }).catch(e => reject(e));
                 }).catch(e => reject(e));
-            });
+            } else {
+                resolve(person);
+            }
         });
     }
 

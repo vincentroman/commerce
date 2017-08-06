@@ -5,13 +5,14 @@ import chaiHttp = require('chai-http');
 import { Config } from '../src/util/Config';
 Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
-import { CustomerDao } from "../src/dao/CustomerDao";
 import { Container } from "typedi";
 import { TestUtil } from "./TestUtil";
+import { PersonDao } from "../src/dao/PersonDao";
+import { DefaultSettingsCheck } from "../src/util/DefaultSettingsCheck";
 
 chai.use(chaiHttp);
 const expect = chai.expect;
-let endpoint = '/api/v1/customer/';
+let endpoint = '/api/v1/person/';
 
 describe('Router '+endpoint, () => {
     let putId: string;
@@ -23,14 +24,15 @@ describe('Router '+endpoint, () => {
     }));
 
     describe('GET '+endpoint+'list (before inserting any)', () => {
-        it('should be an empty json array', () => {
+        it('should only contain the default admin', () => {
             return chai.request(App.getInstance().express).get(endpoint+'list')
             .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
                 expect(res.body).to.be.an('array');
-                expect(res.body).to.have.length(0);
+                expect(res.body).to.have.length(1);
+                expect(res.body[0].lastname).to.equal("Administrator");
             });
         });
     });
@@ -105,7 +107,7 @@ describe('Router '+endpoint, () => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
                 expect(res.body).to.be.an('array');
-                expect(res.body).to.have.length(1);
+                expect(res.body).to.have.length(2);
                 expect(res.body[0].uuid).to.equal(putId);
                 expect(res.body[0].company).to.equal("some Company Ltd.");
             });
@@ -124,14 +126,14 @@ describe('Router '+endpoint, () => {
     });
 
     describe('GET '+endpoint+'list (after deleting)', () => {
-        it('should be an empty json array', () => {
+        it('should be a json array with only the default admin', () => {
             return chai.request(App.getInstance().express).get(endpoint+'list')
             .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
                 expect(res.body).to.be.an('array');
-                expect(res.body).to.have.length(0);
+                expect(res.body).to.have.length(1);
             });
         });
     });
@@ -150,20 +152,22 @@ describe('Router '+endpoint, () => {
         let c1uuid = "";
 
         after(done => {
-            let customerDao: CustomerDao = Container.get(CustomerDao);
-            customerDao.removeAll().then(() => {
-                done();
+            let personDao: PersonDao = Container.get(PersonDao);
+            personDao.removeAll().then(() => {
+                DefaultSettingsCheck.check().then(() => {
+                    done();
+                });
             });
         });
 
-        it('should return an empty list without any customers', () => {
+        it('should return a list with only the default admin', () => {
             return chai.request(App.getInstance().express).get(endpoint+'suggest')
             .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res).to.be.json;
                 expect(res.body).to.be.an('object');
-                expect(Object.keys(res.body)).to.have.lengthOf(0);
+                expect(Object.keys(res.body)).to.have.lengthOf(1);
             });
         });
 
@@ -172,21 +176,21 @@ describe('Router '+endpoint, () => {
                 company: "weweave",
                 firstname: "John",
                 lastname: "Doe",
-                email: "no-reply@weweave.net",
+                email: "no-reply1@weweave.net",
                 country: "DE"
             };
             let customer2 = {
                 company: "",
                 firstname: "Andrew",
                 lastname: "Miller",
-                email: "no-reply@weweave.net",
+                email: "no-reply2@weweave.net",
                 country: "DE"
             };
             let customer3 = {
                 company: "",
                 firstname: "Bernd",
                 lastname: "Mustermann",
-                email: "no-reply@mustermann.net",
+                email: "no-reply3@mustermann.net",
                 country: "DE"
             };
             return chai.request(App.getInstance().express).put(endpoint+'save')
@@ -202,11 +206,12 @@ describe('Router '+endpoint, () => {
                                 expect(res.status).to.equal(200);
                                 expect(res).to.be.json;
                                 expect(res.body).to.be.an('object');
-                                expect(Object.keys(res.body)).to.have.lengthOf(3);
+                                expect(Object.keys(res.body)).to.have.lengthOf(4);
                                 let uuids = Object.keys(res.body);
                                 expect(res.body[uuids[0]]).to.equal("Andrew Miller");
                                 expect(res.body[uuids[1]]).to.equal("Bernd Mustermann");
                                 expect(res.body[uuids[2]]).to.equal("John Doe (weweave)");
+                                expect(res.body[uuids[3]]).to.equal("System Administrator");
                             });
                     });
                 });
@@ -247,10 +252,11 @@ describe('Router '+endpoint, () => {
                         expect(res.status).to.equal(200);
                         expect(res).to.be.json;
                         expect(res.body).to.be.an('object');
-                        expect(Object.keys(res.body)).to.have.lengthOf(2);
+                        expect(Object.keys(res.body)).to.have.lengthOf(3);
                         let uuids = Object.keys(res.body);
                         expect(res.body[uuids[0]]).to.equal("Andrew Miller");
                         expect(res.body[uuids[1]]).to.equal("Bernd Mustermann");
+                        expect(res.body[uuids[2]]).to.equal("System Administrator");
                     });
         });
     });

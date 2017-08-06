@@ -29,7 +29,7 @@ describe("Email", () => {
                 firstname: "John",
                 lastname: "Doe"
             };
-            let s = "Hello {firstname} {lastname}!";
+            let s = "Hello {{firstname}} {{lastname}}!";
             let result = Email.renderParamString(s, params);
             expect(result).to.equal("Hello John Doe!");
         });

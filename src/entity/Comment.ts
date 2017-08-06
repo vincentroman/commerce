@@ -1,22 +1,21 @@
 import { Entity, Column, ManyToOne } from "typeorm";
 import { DbEntity } from "./DbEntity";
-import { Customer } from "./Customer";
 import { SupportTicket } from "./SupportTicket";
-import { User } from "./User";
+import { Person } from "./Person";
 
 @Entity()
 export class Comment extends DbEntity<Comment> {
     @Column("text", {nullable: false})
     text: string;
 
-    @ManyToOne(type => Customer, {nullable: true})
-    customer: Customer;
+    @ManyToOne(type => Person, {nullable: true})
+    customer: Person;
 
     @ManyToOne(type => SupportTicket, {nullable: true})
     supportTicket: SupportTicket;
 
-    @ManyToOne(type => User, {nullable: false})
-    author: User;
+    @ManyToOne(type => Person, {nullable: false})
+    author: Person;
 
     public serialize(): Object {
         return Object.assign(super.serialize(), {

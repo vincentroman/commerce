@@ -3,13 +3,13 @@ import * as xmlJs from 'xml-js';
 import { Container } from "typedi";
 import { Broker } from '../entity/Broker';
 import { BrokerProductVariant } from "../entity/BrokerProductVariant";
-import { Customer } from '../entity/Customer';
 import { Purchase } from '../entity/Purchase';
 import { PurchaseItem } from '../entity/PurchaseItem';
-import { CustomerDao } from "../dao/CustomerDao";
 import { PurchaseDao } from "../dao/PurchaseDao";
 import { PurchaseItemDao } from "../dao/PurchaseItemDao";
 import { BrokerProductVariantDao } from "../dao/BrokerProductVariantDao";
+import { Person } from "../entity/Person";
+import { PersonDao } from "../dao/PersonDao";
 
 export class OrderNotificationMapper {
     public static map(input: string|Object, broker: Broker, persist?: boolean): Promise<Purchase> {
@@ -36,12 +36,12 @@ export class OrderNotificationMapper {
         });
     }
 
-    private static async getOrCreateCustomer(json: any, persist?: boolean): Promise<Customer> {
-        let customerDao: CustomerDao = Container.get(CustomerDao);
-        let customer: Customer = await customerDao.getByEmail(json.email);
-        return new Promise<Customer>((resolve, reject) => {
+    private static async getOrCreateCustomer(json: any, persist?: boolean): Promise<Person> {
+        let customerDao: PersonDao = Container.get(PersonDao);
+        let customer: Person = await customerDao.getByEmail(json.email);
+        return new Promise<Person>((resolve, reject) => {
             if (customer === undefined || customer == null) {
-                customer = new Customer();
+                customer = new Person();
                 customer.firstname = json.firstname;
                 customer.lastname = json.lastname;
                 customer.company = json.company;

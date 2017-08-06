@@ -4,7 +4,6 @@ import { CrudRouter } from "./CrudRouter";
 
 import { LicenseKey } from "../entity/LicenseKey";
 import { LicenseKeyDao } from "../dao/LicenseKeyDao";
-import { CustomerDao } from "../dao/CustomerDao";
 import { ProductVariantDao } from "../dao/ProductVariantDao";
 import { ProductVariantType } from "../entity/ProductVariant";
 import { LicenseKeyEncoder } from "../util/LicenseKeyEncoder";
@@ -14,6 +13,7 @@ import * as moment from "moment";
 import { ProductDao } from "../dao/ProductDao";
 import { DomainList } from "../util/DomainList";
 import { AuthRole } from "./BaseRouter";
+import { PersonDao } from "../dao/PersonDao";
 
 class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     protected getDao(): LicenseKeyDao {
@@ -40,7 +40,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     }
 
     protected getMyOne(req: Request, res: Response, next: NextFunction): void {
-        let customerUuid = this.getJwtCustomerUuid(req);
+        let customerUuid = this.getJwtUserUuid(req);
         let dao: LicenseKeyDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
@@ -54,17 +54,17 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
 
     private my(req: Request, res: Response, next: NextFunction): void {
         let dao: LicenseKeyDao = this.getDao();
-        let customerUuid = this.getJwtCustomerUuid(req);
+        let customerUuid = this.getJwtUserUuid(req);
         dao.getAllCustomerLicenses(customerUuid).then(entities => {
             res.send(entities.map(entity => entity.serialize()));
         });
     }
 
     private assign(req: Request, res: Response, next: NextFunction): void {
-        let customerDao: CustomerDao = Container.get(CustomerDao);
+        let personDao: PersonDao = Container.get(PersonDao);
         let productVariantDao: ProductVariantDao = Container.get(ProductVariantDao);
         let dao: LicenseKeyDao = this.getDao();
-        customerDao.getByUuid(req.body.customerUuid).then(customer => {
+        personDao.getByUuid(req.body.customerUuid).then(customer => {
             productVariantDao.getByUuid(req.body.productVariantUuid).then(productVariant => {
                 let licenseKey: LicenseKey = new LicenseKey();
                 licenseKey.customer = customer;
@@ -123,7 +123,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     private issue(req: Request, res: Response, next: NextFunction): void {
         let dao: LicenseKeyDao = this.getDao();
         let id = req.params.id;
-        let customerUuid = this.getJwtCustomerUuid(req);
+        let customerUuid = this.getJwtUserUuid(req);
         dao.getByUuid(id).then(entity => {
             if (entity.customer) {
                 if (entity.customer.uuid === customerUuid) {
