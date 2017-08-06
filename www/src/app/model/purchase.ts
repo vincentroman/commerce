@@ -1,9 +1,9 @@
 import { RestModel } from "./rest-model";
 import { Broker } from "./broker";
-import { Customer } from "./customer";
+import { Person } from "./person";
 
 export class Purchase extends RestModel<Purchase> {
-    customer: Customer;
+    customer: Person;
     broker: Broker;
     itemIds: string[];
     referenceId: string;
@@ -16,7 +16,7 @@ export class Purchase extends RestModel<Purchase> {
 
     deserialize(input: any): Purchase {
         this._deserialize(input);
-        this.customer = (input.customer ? new Customer().deserialize(input.customer) : null);
+        this.customer = (input.customer ? new Person().deserialize(input.customer) : null);
         this.broker = (input.broker ? new Broker().deserialize(input.broker) : null);
         this.itemIds = (input.itemIds ? input.itemIds : []);
         this.referenceId = input.referenceId;

@@ -1,15 +1,15 @@
 import { RestModel } from "./rest-model";
 import { ProductVariant } from "./product-variant";
-import { Customer } from "./customer";
 import * as moment from "moment";
 import { PurchaseItem } from "./purchase-item";
+import { Person } from "./person";
 
 export class LicenseKey extends RestModel<LicenseKey> {
     licenseKey: string;
     issueDate: moment.Moment;
     expiryDate: moment.Moment;
     productVariant: ProductVariant = new ProductVariant();
-    customer: Customer = new Customer();
+    customer: Person = new Person();
     purchaseItem: PurchaseItem = new PurchaseItem();
 
     serialize(): Object {
@@ -24,7 +24,7 @@ export class LicenseKey extends RestModel<LicenseKey> {
         this.issueDate = (input.issueDate ? moment(input.issueDate, "YYYY-MM-DD HH:mm:ss") : null);
         this.expiryDate = (input.expiryDate ? moment(input.expiryDate, "YYYY-MM-DD HH:mm:ss") : null);
         this.productVariant = (input.productVariant ? new ProductVariant().deserialize(input.productVariant) : null);
-        this.customer = (input.customer ? new Customer().deserialize(input.customer) : null);
+        this.customer = (input.customer ? new Person().deserialize(input.customer) : null);
         this.purchaseItem = (input.purchaseItem ? new PurchaseItem().deserialize(input.purchaseItem) : null);
         return this;
     }

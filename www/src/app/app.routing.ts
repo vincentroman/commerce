@@ -8,8 +8,6 @@ import { AuthGuard } from "./guard/auth-guard.service";
 import { AdminGuard } from "./guard/admin-guard.service";
 import { BrokerListComponent } from "./component/admin/broker-list.component";
 import { BrokerEditComponent } from "./component/admin/broker-edit.component";
-import { CustomerListComponent } from "./component/admin/customer-list.component";
-import { CustomerEditComponent } from "./component/admin/customer-edit.component";
 import { ProductListComponent } from "./component/admin/product-list.component";
 import { ProductEditComponent } from "./component/admin/product-edit.component";
 import { ProductVariantEditComponent } from "./component/admin/product-variant-edit.component";
@@ -64,10 +62,6 @@ const appRoutes: Routes = [
     { path: "admin/brokers/new", component: BrokerEditComponent, canActivate: [AdminGuard] },
     { path: "admin/brokers/edit/:uuid", component: BrokerEditComponent, canActivate: [AdminGuard] },
     { path: "admin/brokers/test/:uuid", component: BrokerTestComponent, canActivate: [AdminGuard] },
-
-    { path: "admin/customers", component: CustomerListComponent, canActivate: [AdminGuard] },
-    { path: "admin/customers/new", component: CustomerEditComponent, canActivate: [AdminGuard] },
-    { path: "admin/customers/edit/:uuid", component: CustomerEditComponent, canActivate: [AdminGuard] },
 
     { path: "admin/licensekeys", component: LicenseKeyListComponent, canActivate: [AdminGuard] },
     { path: "admin/licensekeys/new", component: LicenseKeyEditComponent, canActivate: [AdminGuard] },

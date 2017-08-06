@@ -5,11 +5,11 @@ import { Product } from "../../model/product";
 import { ProductVariantService } from "../../service/product-variant.service";
 import { ProductService } from "../../service/product.service";
 import { ProductVariant, ProductVariantType } from "../../model/product-variant";
-import { CustomerService } from "../../service/customer.service";
-import * as $ from "jquery";
-import * as typeahead from "typeahead.js";
+import { PersonService } from "../../service/person.service";
 import { SupportTicket } from "../../model/support-ticket";
 import { SupportTicketService } from "../../service/support-ticket.service";
+import * as $ from "jquery";
+import * as typeahead from "typeahead.js";
 
 @Component({
     templateUrl: "./support-request-edit.component.html",
@@ -17,7 +17,7 @@ import { SupportTicketService } from "../../service/support-ticket.service";
         SupportTicketService,
         ProductService,
         ProductVariantService,
-        CustomerService
+        PersonService
     ]
 })
 export class SupportRequestEditComponent extends EntityEditComponent<SupportTicket> implements AfterViewInit {
@@ -34,7 +34,7 @@ export class SupportRequestEditComponent extends EntityEditComponent<SupportTick
         protected supportTicketService: SupportTicketService,
         private productService: ProductService,
         private productVariantService: ProductVariantService,
-        private customerService: CustomerService
+        private personService: PersonService
     ) {
         super(route, router, supportTicketService);
     }
@@ -106,7 +106,7 @@ export class SupportRequestEditComponent extends EntityEditComponent<SupportTick
         let dataset: Twitter.Typeahead.Dataset<Object> = {
             name: "customers",
             display: "value",
-            source: this.customerService.getCustomerSuggestionBloodhoundSource()
+            source: this.personService.getCustomerSuggestionBloodhoundSource()
         };
         $("input#customer")
             .typeahead(options, dataset)

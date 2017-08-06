@@ -1,11 +1,14 @@
 import { RestModel } from "./rest-model";
 
-export class Customer extends RestModel<Customer> {
+export class Person extends RestModel<Person> {
     company: string;
     firstname: string;
     lastname: string;
     email: string;
     country: string;
+    password: string;
+    roleAdmin: boolean = false;
+    roleCustomer: boolean = false;
 
     serialize(): Object {
         return Object.assign(super.serialize(), {
@@ -14,16 +17,22 @@ export class Customer extends RestModel<Customer> {
             "lastname": this.lastname,
             "email": this.email,
             "country": this.country,
+            "password": this.password,
+            "roleAdmin": this.roleAdmin,
+            "roleCustomer": this.roleCustomer
         });
     }
 
-    deserialize(input: any): Customer {
+    deserialize(input: any): Person {
         this._deserialize(input);
         this.firstname = input.firstname;
         this.lastname = input.lastname;
         this.email = input.email;
         this.company = input.company;
         this.country = input.country;
+        this.password = "";
+        this.roleAdmin = input.roleAdmin;
+        this.roleCustomer = input.roleCustomer;
         return this;
     }
 

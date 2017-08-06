@@ -1,15 +1,14 @@
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 
-import { User } from "../model/user";
-
 import "rxjs/add/operator/toPromise";
+import { Person } from "../model/person";
 
 @Injectable()
 export class SessionService {
     isLoggedIn: boolean = false;
     jwt: string = "";
-    user: User = new User();
+    user: Person = new Person();
 
     constructor(
         private router: Router
@@ -20,7 +19,7 @@ export class SessionService {
             this.isLoggedIn = true;
             let userSerialized = sessionStorage.getItem("user");
             if (userSerialized) {
-                this.user = new User().deserialize(JSON.parse(userSerialized));
+                this.user = new Person().deserialize(JSON.parse(userSerialized));
             }
         }
     }
@@ -31,7 +30,7 @@ export class SessionService {
         this.isLoggedIn = true;
     }
 
-    saveUser(user: User): void {
+    saveUser(user: Person): void {
         sessionStorage.setItem("user", JSON.stringify(user.serialize()));
         this.user = user;
     }
@@ -41,7 +40,7 @@ export class SessionService {
         sessionStorage.removeItem("user");
         this.isLoggedIn = false;
         this.jwt = "";
-        this.user = new User();
+        this.user = new Person();
         this.router.navigate(["/login"]);
         return false;
     }

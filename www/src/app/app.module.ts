@@ -18,11 +18,8 @@ import { AuthGuard } from "./guard/auth-guard.service";
 import { GuestGuard } from "./guard/guest-guard.service";
 import { AdminGuard } from "./guard/admin-guard.service";
 import { BrokerListComponent } from "./component/admin/broker-list.component";
-import { UserService } from "./service/user.service";
 import { BrokerService } from "./service/broker.service";
 import { BrokerEditComponent } from "./component/admin/broker-edit.component";
-import { CustomerListComponent } from "./component/admin/customer-list.component";
-import { CustomerEditComponent } from "./component/admin/customer-edit.component";
 import { ProductEditComponent } from "./component/admin/product-edit.component";
 import { ProductListComponent } from "./component/admin/product-list.component";
 import { ProductVariantEditComponent } from "./component/admin/product-variant-edit.component";
@@ -51,6 +48,7 @@ import { LicenseKeyViewComponent } from "./component/admin/license-key-view.comp
 import { BrokerProductVariantEditComponent } from "./component/admin/brokerproductvariant.component";
 import { PurchaseComponent } from "./component/purchase.component";
 import { ChangePasswordComponent } from "./component/change-password.component";
+import { PersonService } from "./service/person.service";
 
 @NgModule({
     imports: [
@@ -67,8 +65,6 @@ import { ChangePasswordComponent } from "./component/change-password.component";
         BrokerTestComponent,
         BrokerProductVariantEditComponent,
         ChangePasswordComponent,
-        CustomerEditComponent,
-        CustomerListComponent,
         HomeComponent,
         LicenseKeyListComponent,
         LicenseKeyEditComponent,
@@ -101,7 +97,7 @@ import { ChangePasswordComponent } from "./component/change-password.component";
         AuthService,
         HttpService,
         SessionService,
-        UserService,
+        PersonService,
         BrokerService,
         AuthGuard,
         GuestGuard,

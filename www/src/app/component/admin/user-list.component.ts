@@ -1,21 +1,21 @@
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { EntityListComponent } from "../entity-list.component";
-import { UserService } from "../../service/user.service";
-import { User } from "../../model/user";
+import { PersonService } from "../../service/person.service";
+import { Person } from "../../model/person";
 
 @Component({
     templateUrl: "./user-list.component.html",
     providers: [
-        UserService
+        PersonService
     ]
 })
-export class UserListComponent extends EntityListComponent<User> {
+export class UserListComponent extends EntityListComponent<Person> {
     constructor(
         protected router: Router,
-        protected userService: UserService
+        protected personService: PersonService
     ) {
-        super(router, userService);
+        super(router, personService);
     }
 
     protected getEditPath(): string {

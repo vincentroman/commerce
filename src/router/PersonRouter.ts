@@ -35,11 +35,17 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
         let dao: PersonDao = this.getDao();
         let keyword: string = req.query.s;
         let excludeCustomerUuid: string = req.query.exclude;
+        let excludeAdmin: boolean = (req.query.excludeAdmin === "1");
+        let excludeCustomer: boolean = (req.query.excludeCustomer === "1");
         dao.getSuggestions(keyword).then(customers => {
             let result = {};
             customers.forEach(customer => {
                 if (!(excludeCustomerUuid && customer.uuid === excludeCustomerUuid)) {
-                    result[customer.uuid] = customer.printableName();
+                    if (!(customer.roleAdmin && excludeAdmin)) {
+                        if (!(customer.roleCustomer && excludeCustomer)) {
+                            result[customer.uuid] = customer.printableName();
+                        }
+                    }
                 }
             });
             res.send(result);

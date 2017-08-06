@@ -1,12 +1,12 @@
 import { RestModel } from "./rest-model";
 import * as moment from "moment";
-import { User } from "./user";
+import { Person } from "./person";
 
 export class Comment extends RestModel<Comment> {
     text: string;
     customerUuid: string = "";
     supportTicketUuid: string = "";
-    author: User = new User();
+    author: Person = new Person();
 
     serialize(): Object {
         return Object.assign(super.serialize(), {
@@ -19,7 +19,7 @@ export class Comment extends RestModel<Comment> {
         this.text = input.text;
         this.customerUuid = input.customerUuid;
         this.supportTicketUuid = input.supportTicketUuid;
-        this.author = (input.author ? new User().deserialize(input.author) : null);
+        this.author = (input.author ? new Person().deserialize(input.author) : null);
         return this;
     }
 }

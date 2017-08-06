@@ -177,21 +177,24 @@ describe('Router '+endpoint, () => {
                 firstname: "John",
                 lastname: "Doe",
                 email: "no-reply1@weweave.net",
-                country: "DE"
+                country: "DE",
+                roleCustomer: true
             };
             let customer2 = {
                 company: "",
                 firstname: "Andrew",
                 lastname: "Miller",
                 email: "no-reply2@weweave.net",
-                country: "DE"
+                country: "DE",
+                roleCustomer: true
             };
             let customer3 = {
                 company: "",
                 firstname: "Bernd",
                 lastname: "Mustermann",
                 email: "no-reply3@mustermann.net",
-                country: "DE"
+                country: "DE",
+                roleCustomer: true
             };
             return chai.request(App.getInstance().express).put(endpoint+'save')
             .set("Authorization", "Bearer " + jwt).send(customer1).then((res) => {
@@ -257,6 +260,34 @@ describe('Router '+endpoint, () => {
                         expect(res.body[uuids[0]]).to.equal("Andrew Miller");
                         expect(res.body[uuids[1]]).to.equal("Bernd Mustermann");
                         expect(res.body[uuids[2]]).to.equal("System Administrator");
+                    });
+        });
+
+        it('should return an ordered list of a subset of customers with excludeAdmin=1', () => {
+            return chai.request(App.getInstance().express).get(endpoint+'suggest?excludeAdmin=1')
+                    .set("Authorization", "Bearer " + jwt)
+                    .then(res => {
+                        expect(res.status).to.equal(200);
+                        expect(res).to.be.json;
+                        expect(res.body).to.be.an('object');
+                        expect(Object.keys(res.body)).to.have.lengthOf(3);
+                        let uuids = Object.keys(res.body);
+                        expect(res.body[uuids[0]]).to.equal("Andrew Miller");
+                        expect(res.body[uuids[1]]).to.equal("Bernd Mustermann");
+                        expect(res.body[uuids[2]]).to.equal("John Doe (weweave)");
+                    });
+        });
+
+        it('should return an ordered list of a subset of customers with excludeCustomer=1', () => {
+            return chai.request(App.getInstance().express).get(endpoint+'suggest?excludeCustomer=1')
+                    .set("Authorization", "Bearer " + jwt)
+                    .then(res => {
+                        expect(res.status).to.equal(200);
+                        expect(res).to.be.json;
+                        expect(res.body).to.be.an('object');
+                        expect(Object.keys(res.body)).to.have.lengthOf(1);
+                        let uuids = Object.keys(res.body);
+                        expect(res.body[uuids[0]]).to.equal("System Administrator");
                     });
         });
     });

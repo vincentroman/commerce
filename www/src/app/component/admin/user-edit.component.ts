@@ -1,99 +1,64 @@
 import { Component, AfterViewInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { EntityEditComponent } from "../entity-edit.component";
-import { User } from "../../model/user";
-import { UserService } from "../../service/user.service";
-import { CustomerService } from "../../service/customer.service";
-import { Customer } from "../../model/customer";
+import { PersonService } from "../../service/person.service";
+import { Person } from "../../model/person";
+import { Comment } from "../../model/comment";
 
 @Component({
     templateUrl: "./user-edit.component.html",
     providers: [
-        UserService,
-        CustomerService
+        PersonService
     ]
 })
-export class UserEditComponent extends EntityEditComponent<User> implements AfterViewInit {
+export class UserEditComponent extends EntityEditComponent<Person> {
     changePassword: boolean = false;
-    assignCustomerMode: boolean = false;
-    customerUuid: string = "";
+    comments: Comment[] = [];
+    commentAdded: boolean = false;
+    model = {
+        text: ""
+    };
 
     constructor(
         protected route: ActivatedRoute,
         protected router: Router,
-        protected userService: UserService,
-        private customerService: CustomerService
+        protected personService: PersonService
     ) {
-        super(route, router, userService);
+        super(route, router, personService);
     }
 
-    protected newTypeInstance(): User {
-        return new User();
+    protected newTypeInstance(): Person {
+        return new Person();
     }
 
     protected getListPath(): string {
         return "/admin/users";
     }
 
-    private initTypeahead(): void {
-        let that = this;
-        let options: Twitter.Typeahead.Options = {
-            hint: true,
-            highlight: true,
-            minLength: 1
-        };
-        let dataset: Twitter.Typeahead.Dataset<Object> = {
-            name: "customers",
-            display: "value",
-            source: this.customerService.getCustomerSuggestionBloodhoundSource()
-        };
-        $("input#customer")
-            .typeahead(options, dataset)
-            .on("typeahead:select", function(ev, suggestion): boolean {
-                that.customerUuid = suggestion.id;
-                return true;
-            });
-    }
-
-    protected onEntityLoaded(): void {
-        if (this.entity.customer) {
-            this.customerUuid = this.entity.customer.uuid;
-        }
-    }
-
-    ngAfterViewInit() {
-        this.initTypeahead();
-    }
-
     submit(): void {
         if (this.uuid && !this.changePassword) {
             this.entity.password = "";
         }
-        if (this.customerUuid) {
-            if (!this.entity.customer) {
-                this.entity.customer = new Customer();
-            }
-            this.entity.customer.uuid = this.customerUuid;
-        } else {
-            this.entity.customer = null;
-        }
         super.submit();
     }
 
-    enterAssignCustomerMode(): void {
-        this.assignCustomerMode = true;
-        window.setTimeout(function() {
-            $("input#customer").focus();
-        }, 100);
+    protected onInit(): void {
+        if (this.uuid) {
+            this.personService.getComments(this.uuid).then(comments => this.comments = comments);
+        }
     }
 
-    cancelAssignCustomerMode(): void {
-        this.assignCustomerMode = false;
-    }
-
-    removeCustomerAssignment(): void {
-        this.customerUuid = "";
-        this.entity.customer = null;
-        this.cancelAssignCustomerMode();
+    addComment(): void {
+        this.submitting = true;
+        this.commentAdded = false;
+        this.personService.addComment(this.uuid, this.model.text)
+            .then(comment => {
+                this.personService.getComments(this.uuid).then(comments => {
+                    this.comments = comments;
+                    this.model.text = "";
+                    this.commentAdded = true;
+                    this.submitting = false;
+                });
+            });
     }
 }

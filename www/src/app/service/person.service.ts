@@ -2,15 +2,15 @@ import { Injectable } from "@angular/core";
 import { Http } from "@angular/http";
 import { HttpService } from "./http.service";
 import { CrudService } from "./crud.service";
-import { Customer } from "../model/customer";
 import { Comment } from "../model/comment";
 import { SessionService } from "./session.service";
 import * as Bloodhound from "bloodhound";
 import * as typeahead from "typeahead.js";
 import * as $ from "jquery";
+import { Person } from "../model/person";
 
 @Injectable()
-export class CustomerService extends CrudService<Customer> {
+export class PersonService extends CrudService<Person> {
     constructor(
         protected httpService: HttpService,
         protected http: Http,
@@ -19,25 +19,25 @@ export class CustomerService extends CrudService<Customer> {
         super(httpService, http);
     }
 
-    protected newTypeInstance(): Customer {
-        return new Customer();
+    protected newTypeInstance(): Person {
+        return new Person();
     }
 
     protected getPath(): string {
-        return "customer";
+        return "person";
     }
 
     getCustomerSuggestionBloodhoundSource(excludeCustomerId?: string): Bloodhound<Object> {
-        let url = this.httpService.getUrl("customer/suggest");
+        let url = this.httpService.getUrl("person/suggest");
         let jwt = this.sessionService.jwt;
         return new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote: {
-                url: url + "?exclude=" + excludeCustomerId + "&s=%QUERY",
+                url: url + "?excludeAdmin=1&exclude=" + excludeCustomerId + "&s=%QUERY",
                 wildcard: "%QUERY",
                 prepare: function(query, settings) {
-                    settings.url = url + "?exclude=" + excludeCustomerId + "&s=" + query;
+                    settings.url = url + "?excludeAdmin=1&exclude=" + excludeCustomerId + "&s=" + query;
                     settings.headers = {
                         "Authorization": "Bearer " + jwt
                     };
@@ -76,6 +76,19 @@ export class CustomerService extends CrudService<Customer> {
             })
             .catch(error => {
                 return this.httpService.handleError(error);
+            });
+    }
+
+    me(): Promise<Person> {
+        return this.http
+            .get(this.httpService.getUrl(this.getPath() + "/me"), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let user = this.newTypeInstance().deserialize(res.json());
+                return user;
+            })
+            .catch(error => {
+                throw this.httpService.handleError(error);
             });
     }
 }

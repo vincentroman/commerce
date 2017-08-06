@@ -22,11 +22,11 @@ export class Person extends DbEntity<Person> {
     @Column({nullable: true})
     password: string;
 
-    @Column()
-    roleAdmin: boolean = false;
+    @Column({default: false})
+    roleAdmin: boolean;
 
-    @Column()
-    roleCustomer: boolean = false;
+    @Column({default: false})
+    roleCustomer: boolean;
 
     public setPlainPassword(password: string): void {
         let hash: string = bcrypt.hashSync(password, 10);

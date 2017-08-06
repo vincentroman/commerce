@@ -4,12 +4,12 @@
         <a routerLink="/admin/users" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
         <a routerLink="/admin/users/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
     </div>
-    <h1 [hidden]="entity.uuid">Add User</h1>
-    <h1 [hidden]="!entity.uuid">Edit User</h1>
+    <h1 [hidden]="entity.uuid">Add Person</h1>
+    <h1 [hidden]="!entity.uuid">Edit Person</h1>
 </div>
 <form (ngSubmit)="submit()" #form="ngForm">
-    <div class="alert alert-success" role="alert" [hidden]="!success">User saved successfully.</div>
-    <div class="alert alert-danger" role="alert" [hidden]="!error">Error saving user. Please try again.</div>
+    <div class="alert alert-success" role="alert" [hidden]="!success">Person saved successfully.</div>
+    <div class="alert alert-danger" role="alert" [hidden]="!error">Error saving person. Please try again.</div>
     <div class="form-group">
         <label for="email">Email Address</label>
         <input type="email" id="email" name="email" placeholder="Email" class="form-control" [(ngModel)]="entity.email" required="required" autofocus="autofocus" autocomplete="off" />
@@ -20,22 +20,25 @@
         </label>
     </div>
     <div class="form-group">
-        <label for="password">New Password</label>
+        <label for="password" *ngIf="entity.uuid">New Password</label>
+        <label for="password" *ngIf="!entity.uuid">Password</label>
         <input type="password" id="password" name="password" placeholder="Password" class="form-control" [(ngModel)]="entity.password" [required]="changePassword || !entity.uuid" [disabled]="entity.uuid && !changePassword" autocomplete="new-password" />
     </div>
-    <div class="form-group" *ngIf="!assignCustomerMode">
-        <label>Assigned Customer</label>
-        <p *ngIf="entity.customer" class="form-control-static"><a routerLink="/admin/customers/edit/{{entity.customer.uuid}}">{{entity.customer.printableName()}}</a></p>
-        <p *ngIf="!entity.customer" class="form-control-static">None</p>
-        <p><button type="button" class="btn btn-default" (click)="enterAssignCustomerMode()">Change assignment</button></p>
+    <div class="form-group">
+        <label for="firstname">Firstname</label>
+        <input type="text" id="firstname" name="firstname" placeholder="Firstname" class="form-control" [(ngModel)]="entity.firstname" required="required" autofocus="autofocus" />
     </div>
-    <div class="form-group" [hidden]="!assignCustomerMode">
-        <label>Assigned Customer</label>
-        <input type="text" class="form-control typeahead" id="customer" name="customer" autocomplete="off" />
-        <p style="margin-top:5px">
-            <button type="button" class="btn btn-default" (click)="removeCustomerAssignment()" *ngIf="customerUuid">Remove assignment</button>
-            <button type="button" class="btn btn-default" (click)="cancelAssignCustomerMode()">Cancel</button>
-        </p>
+    <div class="form-group">
+        <label for="lastname">Lastname</label>
+        <input type="text" id="lastname" name="lastname" placeholder="Lastname" class="form-control" [(ngModel)]="entity.lastname" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="company">Company</label>
+        <input type="text" id="company" name="company" placeholder="Company" class="form-control" [(ngModel)]="entity.company" />
+    </div>
+    <div class="form-group">
+        <label for="country">Country Code (2 letters)</label>
+        <input type="text" id="country" name="country" placeholder="2 letter country code" class="form-control" [(ngModel)]="entity.country" />
     </div>
     <div class="checkbox">
         <label>
@@ -50,3 +53,24 @@
     <a routerLink="/admin/users" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
 </form>
+<div style="margin-top:50px" *ngIf="entity.uuid">
+    <h3>Comments</h3>
+    <div class="panel panel-default" *ngFor="let comment of comments">
+        <div class="panel-heading">
+            {{comment.author.email}}
+            at {{comment.createDate.format('YYYY-MM-DD HH:mm')}}
+        </div>
+        <div class="panel-body" style="white-space:pre-wrap">{{comment.text}}</div>
+    </div>
+    <p *ngIf="!comments.length">
+        There are no comments yet.
+    </p>
+    <form (ngSubmit)="addComment()" #form="ngForm" style="margin-top:25px">
+        <div class="alert alert-success" role="alert" [hidden]="!commentAdded">Your comment has been saved.</div>
+        <div class="form-group">
+            <label for="comment">Comment on this customer</label>
+            <textarea id="comment" name="comment" placeholder="Enter your comment here" class="form-control" [(ngModel)]="model.text" required="required" rows="10"></textarea>
+        </div>
+        <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Add comment</button>
+    </form>
+</div>

@@ -7,7 +7,7 @@ import { Product } from "../../model/product";
 import { ProductVariantService } from "../../service/product-variant.service";
 import { ProductService } from "../../service/product.service";
 import { ProductVariant, ProductVariantType } from "../../model/product-variant";
-import { CustomerService } from "../../service/customer.service";
+import { PersonService } from "../../service/person.service";
 import * as $ from "jquery";
 import * as typeahead from "typeahead.js";
 
@@ -17,7 +17,7 @@ import * as typeahead from "typeahead.js";
         LicenseKeyService,
         ProductService,
         ProductVariantService,
-        CustomerService
+        PersonService
     ]
 })
 export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> implements AfterViewInit {
@@ -48,7 +48,7 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> imp
         protected licenseKeyService: LicenseKeyService,
         private productService: ProductService,
         private productVariantService: ProductVariantService,
-        private customerService: CustomerService
+        private personService: PersonService
     ) {
         super(route, router, licenseKeyService);
     }
@@ -173,7 +173,7 @@ export class LicenseKeyEditComponent extends EntityEditComponent<LicenseKey> imp
         let dataset: Twitter.Typeahead.Dataset<Object> = {
             name: "customers",
             display: "value",
-            source: this.customerService.getCustomerSuggestionBloodhoundSource()
+            source: this.personService.getCustomerSuggestionBloodhoundSource()
         };
         $("input#customer")
             .typeahead(options, dataset)

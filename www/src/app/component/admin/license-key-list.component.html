@@ -20,7 +20,10 @@
             <td><span *ngIf="licenseKey.productVariant">{{licenseKey.productVariant.title}}</span></td>
             <td><span *ngIf="licenseKey.customer">{{licenseKey.customer.printableName()}}</span></td>
             <td>{{licenseKey.createDate.format('YYYY-MM-DD')}}</td>
-            <td><span *ngIf="licenseKey.issueDate">{{licenseKey.issueDate.format('YYYY-MM-DD')}}</span></td>
+            <td>
+                <span *ngIf="!licenseKey.issueDate">Not yet</span>
+                <span *ngIf="licenseKey.issueDate">{{licenseKey.issueDate.format('YYYY-MM-DD')}}</span>
+            </td>
         </tr>
     </tbody>
 </table>

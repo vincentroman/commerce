@@ -4,10 +4,10 @@ import { Headers, Http, Response, URLSearchParams } from "@angular/http";
 
 import { HttpService } from "./http.service";
 import { SessionService } from "./session.service";
-import { User } from "../model/user";
 
 import "rxjs/add/operator/toPromise";
-import { UserService } from "./user.service";
+import { PersonService } from "./person.service";
+import { Person } from "../model/person";
 
 @Injectable()
 export class AuthService {
@@ -15,11 +15,11 @@ export class AuthService {
         private router: Router,
         private http: Http,
         private sessionService: SessionService,
-        private userService: UserService,
+        private personService: PersonService,
         private httpService: HttpService
     ) {}
 
-    login(email: string, password: string): Promise<User> {
+    login(email: string, password: string): Promise<Person> {
         let payload: any = {
             email: email,
             password: password
@@ -28,7 +28,7 @@ export class AuthService {
                 .toPromise()
                 .then(res => {
                     this.sessionService.saveJwt(res.text());
-                    return this.userService.me()
+                    return this.personService.me()
                     .then(user => {
                         this.sessionService.saveUser(user);
                         return user;
