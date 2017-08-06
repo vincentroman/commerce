@@ -23,7 +23,7 @@
                 <span *ngIf="!licenseKey.issueDate">not issued yet</span>
             </td>
             <td>
-                <span *ngIf="licenseKey.expiryDate">{{licenseKey.expiryDate.format('YYYY-MM-DD')}}</span>
+                <span *ngIf="licenseKey.expiryDate">{{licenseKey.expiryDate.format('YYYY-MM-DD')}} (in {{licenseKey.expiresInDays}} days)</span>
                 <span *ngIf="!licenseKey.expiryDate">–</span>
             </td>
         </tr>

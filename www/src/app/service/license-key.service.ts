@@ -35,6 +35,19 @@ export class LicenseKeyService extends CrudService<LicenseKey> {
         });
     }
 
+    myStats(): Promise<LicenseKeyStats> {
+        return new Promise((resolve, reject) => {
+            this.http
+            .get(this.httpService.getUrl(this.getPath() + "/mystats"), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let entity = <LicenseKeyStats>res.json();
+                resolve(entity);
+            })
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
+
     getMyOne(id: string): Promise<LicenseKey> {
         return new Promise((resolve, reject) => {
             this.http
@@ -99,3 +112,12 @@ export interface LicenseGenerationDetails {
     wildcard: boolean;
     domains: string[];
 }
+
+export declare class LicenseKeyStats {
+    numKeys: number;
+    numNearlyExpired: number;
+    numExpired: number;
+    numNotIssued: number;
+    numIssuedAndOkay: number;
+}
+

@@ -100,6 +100,8 @@ export class DefaultSettingsCheck {
         dao.createIfNotExists(SystemSettingId.MailServer_Sender_Name, SystemSettingType.String, "Your Company Ltd.", "SMTP Sender Name");
         dao.createIfNotExists(SystemSettingId.MailServer_Sender_Email, SystemSettingType.String, "your@company.local", "SMTP Sender Email");
         dao.createIfNotExists(SystemSettingId.Site_Url, SystemSettingType.String, "http://localhost:3001", "Site URL");
+        dao.createIfNotExists(SystemSettingId.NumDays_About_To_Expire, SystemSettingType.Integer, "20",
+            "Days before license key is considered nearly expired");
         dao.createIfNotExists(SystemSettingId.LicenseKey_PrivateKey, SystemSettingType.MultiLine,
             "", "RSA Private Key for License Key Encoding");
         dao.createIfNotExists(SystemSettingId.LicenseKey_PublicKey, SystemSettingType.MultiLine,

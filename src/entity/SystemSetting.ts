@@ -52,6 +52,7 @@ export enum SystemSettingId {
     MailServer_Sender_Name = 8,
     MailServer_Sender_Email = 9,
     Site_Url = 20,
+    NumDays_About_To_Expire = 30,
     LicenseKey_PrivateKey = 50,
     LicenseKey_PublicKey = 51
 }

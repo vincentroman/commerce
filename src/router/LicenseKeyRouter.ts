@@ -33,10 +33,51 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     protected init(): void {
         super.init();
         this.addRouteGet('/my', this.my, AuthRole.CUSTOMER);
+        this.addRouteGet('/mystats', this.myStats, AuthRole.CUSTOMER);
         this.addRouteGet('/getmyone/:id', this.getMyOne, AuthRole.CUSTOMER);
         this.addRoutePut('/assign', this.assign, AuthRole.ADMIN);
         this.addRoutePost('/generate', this.generate, AuthRole.ADMIN);
         this.addRoutePost('/issue/:id', this.issue, AuthRole.CUSTOMER);
+    }
+
+    protected myStats(req: Request, res: Response, next: NextFunction): void {
+        let customerUuid = this.getJwtUserUuid(req);
+        let dao: LicenseKeyDao = this.getDao();
+        dao.getAllCustomerLicenses(customerUuid).then(licenses => {
+            let numKeys = licenses.length;
+            Container.get(SystemSettingDao).getInteger(SystemSettingId.NumDays_About_To_Expire, 0)
+            .then(settingDayOffset => {
+                Promise.all(licenses.map(license => {
+                    return license.getDaysUntilExpiry();
+                })).then(daysUntilExpiryArray => {
+                    let numNearlyExpired = 0;
+                    let numExpired = 0;
+                    let numNotIssued = 0;
+                    let numIssuedAndOkay = 0;
+                    daysUntilExpiryArray.forEach(daysUntilExpiry => {
+                        if (daysUntilExpiry != null) {
+                            if (daysUntilExpiry < 0) {
+                                numExpired++;
+                            } else if (daysUntilExpiry <= settingDayOffset) {
+                                numNearlyExpired++;
+                            } else {
+                                numIssuedAndOkay++;
+                            }
+                        } else {
+                            numNotIssued++;
+                        }
+                    });
+                    let result = {
+                        numKeys: numKeys,
+                        numNearlyExpired: numNearlyExpired,
+                        numExpired: numExpired,
+                        numNotIssued: numNotIssued,
+                        numIssuedAndOkay: numIssuedAndOkay
+                    };
+                    res.send(result);
+                });
+            });
+        });
     }
 
     protected getMyOne(req: Request, res: Response, next: NextFunction): void {

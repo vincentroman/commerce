@@ -25,6 +25,16 @@ export class LicenseKey extends DbEntity<LicenseKey> {
     @ManyToOne(type => PurchaseItem, {nullable: true})
     purchaseItem: PurchaseItem;
 
+    public getDaysUntilExpiry(): number {
+        if (this.expiryDate) {
+            let expiryDate: moment.Moment = moment(this.expiryDate);
+            let days = Number(expiryDate.diff(moment(), "days"));
+            return days;
+        } else {
+            return null;
+        }
+    }
+
     public serialize(): Object {
         return Object.assign(super.serialize(), {
             licenseKey: this.licenseKey,
@@ -32,7 +42,8 @@ export class LicenseKey extends DbEntity<LicenseKey> {
             expiryDate: (this.expiryDate ? moment(this.expiryDate).format("YYYY-MM-DD HH:mm:ss") : null),
             productVariant: (this.productVariant ? this.productVariant.serialize() : null),
             customer: (this.customer ? this.customer.serialize() : null),
-            purchaseItem: (this.purchaseItem ? this.purchaseItem.serialize() : null)
+            purchaseItem: (this.purchaseItem ? this.purchaseItem.serialize() : null),
+            expiresInDays: this.getDaysUntilExpiry()
         });
     }
 

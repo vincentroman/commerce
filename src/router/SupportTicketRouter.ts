@@ -46,7 +46,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
             Promise.all(tickets.map(ticket => {
                 return commentDao.getAllSupportTicketComments(ticket.uuid).then(comments => {
                     if (comments.length > 0) {
-                        let latest = comments.pop();
+                        let latest = comments.shift();
                         return (latest.author.uuid !== customerUuid);
                     } else {
                         return false;

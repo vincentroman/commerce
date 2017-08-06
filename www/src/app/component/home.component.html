@@ -28,8 +28,9 @@
     <div class="col-md-4">
         <div class="well">
             <h3><span class="glyphicon glyphicon-barcode"></span> License Keys</h3>
-            <p>You have n license keys.</p>
-            <p>n of these have expired and n are about to expire soon – you might want to renew them.</p>
+            <p *ngIf="!licenseKeyStats">Loading...</p>
+            <p *ngIf="licenseKeyStats">You have {{licenseKeyStats.numKeys}} license keys of which {{licenseKeyStats.numNotIssued}} have not beed issued yet.</p>
+            <p *ngIf="licenseKeyStats">{{licenseKeyStats.numExpired}} of these have expired and {{licenseKeyStats.numNearlyExpired}} are about to expire soon – you might want to renew them.</p>
             <p><a routerLink="/customer/licensekeys" class="btn btn-default">Show tickets</a></p>
         </div>
     </div>
