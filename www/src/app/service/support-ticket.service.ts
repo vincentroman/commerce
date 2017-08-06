@@ -36,6 +36,19 @@ export class SupportTicketService extends CrudService<SupportTicket> {
         });
     }
 
+    myStats(): Promise<SupportTicketStats> {
+        return new Promise((resolve, reject) => {
+            this.http
+            .get(this.httpService.getUrl(this.getPath() + "/mystats"), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let entity = <SupportTicketStats>res.json();
+                resolve(entity);
+            })
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
+
     getMyOne(id: string): Promise<SupportTicket> {
         return new Promise((resolve, reject) => {
             this.http
@@ -115,4 +128,9 @@ export class SupportTicketService extends CrudService<SupportTicket> {
                 return this.httpService.handleError(error);
             });
     }
+}
+
+export declare class SupportTicketStats {
+    numOpenTickets: number;
+    numTicketsWithUnrespondedComments: number;
 }

@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import { Service } from "typedi";
 import { Dao } from "./Dao";
-import { SupportTicket } from "../entity/SupportTicket";
+import { SupportTicket, SupportRequestStatus } from "../entity/SupportTicket";
 
 @Service()
 export class SupportTicketDao extends Dao<SupportTicket> {
@@ -41,6 +41,21 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .innerJoinAndSelect("productVariant.product", "product")
             .leftJoinAndSelect("st.purchaseItem", "purchaseItem")
             .where("customer.uuid = :customerUuid")
+            .orderBy("st.createDate", "DESC")
+            .addOrderBy("st.sendDate", "DESC")
+            .setParameters({customerUuid: customerUuid})
+            .getMany();
+    }
+
+    public async getAllUnclosedTickets(customerUuid: string): Promise<SupportTicket[]> {
+        return this.getRepository()
+            .createQueryBuilder("st")
+            .innerJoinAndSelect("st.customer", "customer")
+            .innerJoinAndSelect("st.productVariant", "productVariant")
+            .innerJoinAndSelect("productVariant.product", "product")
+            .leftJoinAndSelect("st.purchaseItem", "purchaseItem")
+            .where("customer.uuid = :customerUuid")
+            .andWhere("st.status != " + SupportRequestStatus.CLOSED)
             .orderBy("st.createDate", "DESC")
             .addOrderBy("st.sendDate", "DESC")
             .setParameters({customerUuid: customerUuid})
