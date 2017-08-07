@@ -19,6 +19,7 @@ class AuthRouter extends BaseRouter {
         this.addRoutePost('/login', this.login, AuthRole.GUEST);
         this.addRoutePost('/pwreset', this.resetPassword, AuthRole.GUEST);
         this.addRoutePost('/pwchange', this.changePassword, AuthRole.GUEST);
+        this.addRoutePost('/emailconfirm', this.emailConfirm, AuthRole.ANY);
         this.addRoutePost('/logout', this.logout, AuthRole.USER);
     }
 
@@ -42,6 +43,30 @@ class AuthRouter extends BaseRouter {
 
     private logout(req: Request, res: Response, next: NextFunction): void {
         this.ok(res);
+    }
+
+    private emailConfirm(req: Request, res: Response, next: NextFunction): void {
+        let dao: PersonDao = Container.get(PersonDao);
+        let actionDao: PendingActionDao = Container.get(PendingActionDao);
+        actionDao.getByUuid(req.body.uuid).then(action => {
+            if (action && action.type === ActionType.ResetPassword) {
+                let userId = action.getPayload().userId;
+                dao.getById(userId).then(user => {
+                    if (user) {
+                        user.setPlainPassword(action.getPayload().email);
+                        dao.save(user).then(user => {
+                            actionDao.delete(action).then(action => {
+                                this.ok(res);
+                            });
+                        });
+                    } else {
+                        this.notFound(res);
+                    }
+                }).catch(e => this.internalServerError(res));
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => this.internalServerError(res));
     }
 
     private changePassword(req: Request, res: Response, next: NextFunction): void {

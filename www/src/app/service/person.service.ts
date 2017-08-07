@@ -91,4 +91,16 @@ export class PersonService extends CrudService<Person> {
                 throw this.httpService.handleError(error);
             });
     }
+
+    updateMe(entity: Person): Promise<Person> {
+        return new Promise((resolve, reject) => {
+            this.http.put(this.httpService.getUrl(this.getPath() + "/me/update"), entity.serialize(), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                entity.uuid = res.json().uuid;
+                resolve(entity);
+            })
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
 }

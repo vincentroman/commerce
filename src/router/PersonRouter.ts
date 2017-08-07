@@ -7,6 +7,13 @@ import { CommentDao } from "../dao/CommentDao";
 import { Comment } from "../entity/Comment";
 import { Person } from "../entity/Person";
 import { PersonDao } from "../dao/PersonDao";
+import { PendingActionDao } from "../dao/PendingActionDao";
+import { PendingAction, ActionType } from "../entity/PendingAction";
+import { SystemSettingDao } from "../dao/SystemSettingDao";
+import { MailTemplateDao } from "../dao/MailTemplateDao";
+import { MailTemplateType } from "../entity/MailTemplate";
+import { SystemSettingId } from "../entity/SystemSetting";
+import { Address, Email } from "../util/Email";
 
 class CustomerRouter extends CrudRouter<Person, PersonDao> {
     protected init(): void {
@@ -15,6 +22,7 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
         this.addRouteGet('/comments/:id', this.getComments, AuthRole.ADMIN);
         this.addRoutePost('/addcomment/:id', this.addComment, AuthRole.ADMIN);
         this.addRouteGet('/me', this.me, AuthRole.USER);
+        this.addRoutePut('/me/update', this.updateMe, AuthRole.USER);
     }
 
     protected getDao(): PersonDao {
@@ -84,6 +92,65 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
         dao.getByUuid(uuid).then((user) => {
             res.send(user.serialize());
         }).catch(e => this.notFound(res));
+    }
+
+    private updateMe(req: Request, res: Response, next: NextFunction): void {
+        let uuid = this.getJwtUserUuid(req);
+        let dao = this.getDao();
+        let finishUpdate = function(user: Person) {
+            if (user.isConsistent()) {
+                dao.save(user)
+                    .then(user => this.saved(res, user))
+                    .catch(e => this.internalServerError(res));
+            } else {
+                this.badRequest(res);
+            }
+        };
+        dao.getByUuid(uuid).then((user) => {
+            if (user) {
+                let oldEmail = user.email;
+                user.deserialize(req.body);
+                if (user.email !== oldEmail) {
+                    let newEmail = user.email;
+                    user.email = oldEmail;
+                    this.sendEmailUpdateDoi(user, newEmail).then(() => finishUpdate.call(this, user));
+                } else {
+                    finishUpdate.call(this, user);
+                }
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => this.notFound(res));
+    }
+
+    private sendEmailUpdateDoi(person: Person, newEmail: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            let actionDao: PendingActionDao = Container.get(PendingActionDao);
+            let settingsDao: SystemSettingDao = Container.get(SystemSettingDao);
+            let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
+            let action: PendingAction = new PendingAction();
+            action.type = ActionType.ChangeEmail;
+            action.setPayload({
+                userId: person.id,
+                email: newEmail
+            });
+            actionDao.save(action).then(action => {
+                mailTemplateDao.getByType(MailTemplateType.ChangeEmail).then(mailTemplate => {
+                    settingsDao.getString(SystemSettingId.Site_Url, "").then(siteUrl => {
+                        let params = {
+                            firstname: person.firstname,
+                            lastname: person.lastname,
+                            uuid: action.uuid,
+                            siteUrl: siteUrl
+                        };
+                        let recipient: Address = {
+                            email: newEmail
+                        };
+                        Email.sendByTemplate(mailTemplate, recipient, params).then(() => resolve());
+                    }).catch(e => reject(e));
+                }).catch(e => reject(e));
+            }).catch(e => reject(e));
+        });
     }
 }
 

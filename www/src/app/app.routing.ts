@@ -36,6 +36,7 @@ import { LicenseKeyViewComponent } from "./component/admin/license-key-view.comp
 import { BrokerProductVariantEditComponent } from "./component/admin/brokerproductvariant.component";
 import { PurchaseComponent } from "./component/purchase.component";
 import { ChangePasswordComponent } from "./component/change-password.component";
+import { ProfileComponent } from "./component/profile.component";
 
 const appRoutes: Routes = [
     // "Any" routes
@@ -48,6 +49,7 @@ const appRoutes: Routes = [
 
     // Authenticated routes
     { path: "home", component: HomeComponent, canActivate: [AuthGuard] },
+    { path: "profile", component: ProfileComponent, canActivate: [AuthGuard] },
 
     // Customer routes
     { path: "customer/licensekeys", component: LicenseKeyMyListComponent, canActivate: [CustomerGuard] },

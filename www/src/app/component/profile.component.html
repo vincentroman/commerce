@@ -1,0 +1,47 @@
+<div class="page-header">
+    <h1>Profile</h1>
+</div>
+<form (ngSubmit)="submit()" #form="ngForm">
+    <div class="alert alert-success" role="alert" [hidden]="!success">Profile saved successfully.</div>
+    <div class="alert alert-danger" role="alert" [hidden]="!error">Error saving profile. Please try again.</div>
+    <div class="form-group">
+        <label>Email Address</label>
+        <p class="form-control-static">{{originalEmail}}</p>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" id="changeEmail" name="changeEmail" [(ngModel)]="changeEmail" /> Change Email Address
+        </label>
+    </div>
+    <div class="form-group">
+        <label for="email">New Email Address</label>
+        <input type="email" id="email" name="email" placeholder="Email" class="form-control" [(ngModel)]="entity.email" [required]="changeEmail" [disabled]="!changeEmail" autocomplete="off" />
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" id="changePassword" name="changePassword" [(ngModel)]="changePassword" /> Change Password
+        </label>
+    </div>
+    <div class="form-group">
+        <label for="password">New Password</label>
+        <input type="password" id="password" name="password" placeholder="Password" class="form-control" [(ngModel)]="entity.password" [required]="changePassword" [disabled]="!changePassword" autocomplete="new-password" />
+    </div>
+    <div class="form-group">
+        <label for="firstname">Firstname</label>
+        <input type="text" id="firstname" name="firstname" placeholder="Firstname" class="form-control" [(ngModel)]="entity.firstname" required="required" autofocus="autofocus" />
+    </div>
+    <div class="form-group">
+        <label for="lastname">Lastname</label>
+        <input type="text" id="lastname" name="lastname" placeholder="Lastname" class="form-control" [(ngModel)]="entity.lastname" required="required" />
+    </div>
+    <div class="form-group">
+        <label for="company">Company</label>
+        <input type="text" id="company" name="company" placeholder="Company" class="form-control" [(ngModel)]="entity.company" />
+    </div>
+    <div class="form-group">
+        <label for="country">Country Code (2 letters)</label>
+        <input type="text" id="country" name="country" placeholder="2 letter country code" class="form-control" [(ngModel)]="entity.country" />
+    </div>
+    <a routerLink="/home" class="btn btn-default">Cancel</a>
+    <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
+</form>

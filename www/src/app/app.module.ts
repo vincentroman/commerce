@@ -49,6 +49,7 @@ import { BrokerProductVariantEditComponent } from "./component/admin/brokerprodu
 import { PurchaseComponent } from "./component/purchase.component";
 import { ChangePasswordComponent } from "./component/change-password.component";
 import { PersonService } from "./service/person.service";
+import { ProfileComponent } from "./component/profile.component";
 
 @NgModule({
     imports: [
@@ -81,6 +82,7 @@ import { PersonService } from "./service/person.service";
         ProductListComponent,
         ProductEditComponent,
         ProductVariantEditComponent,
+        ProfileComponent,
         NavComponent,
         ResetPasswordComponent,
         SupportRequestListComponent,

@@ -64,4 +64,16 @@ export class AuthService {
                     throw this.httpService.handleError(error);
                 });
     }
+
+    emailConfirm(actionUuid: string): Promise<void> {
+        let payload: any = {
+            uuid: actionUuid
+        };
+        return this.http.post(this.httpService.getUrl("auth/emailconfirm"), payload, this.httpService.getOptions())
+                .toPromise()
+                .then(res => { return; })
+                .catch(error => {
+                    throw this.httpService.handleError(error);
+                });
+    }
 }

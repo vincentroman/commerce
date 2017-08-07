@@ -86,6 +86,21 @@ export class DefaultSettingsCheck {
                 "Your password won't change unless you use the link above.";
             await dao.save(template);
         }
+
+        // Change Email
+        template = await dao.getByType(MailTemplateType.ChangeEmail);
+        if (template === undefined || template == null) {
+            template = new MailTemplate();
+            template.type = MailTemplateType.ChangeEmail;
+            template.subject = "Confirm your email address";
+            template.body = "Dear {{firstname}} {{lastname}},\n\n" +
+                "you've requested a change of your email address on our website.\n\n" +
+                "Please follow this link to confirm this address:\n\n" +
+                "{{siteUrl}}/emailconfirm/{{uuid}}\n\n" +
+                "If you did not initiate this email change request, don't worry. " +
+                "Your email address won't change unless you use the link above.";
+            await dao.save(template);
+        }
     }
 
     private static async checkSystemSettings(): Promise<void> {

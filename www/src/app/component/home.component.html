@@ -8,12 +8,12 @@
 <div class="row" *ngIf="session.user.roleCustomer">
     <div class="col-md-4">
         <div class="well">
-            <h3><span class="glyphicon glyphicon-user"></span> Your Details</h3>
+            <h3><span class="glyphicon glyphicon-user"></span> Your Profile</h3>
             <p>Keep your details up to date, so that we can contact you regarding your license keys and support cases.</p>
             <p>{{session.user.firstname}} {{session.user.lastname}}</p>
             <p *ngIf="session.user.company">{{session.user.company}}</p>
             <p>{{session.user.email}}</p>
-            <p><a routerLink="/me" class="btn btn-default">Change details</a></p>
+            <p><a routerLink="/profile" class="btn btn-default">Update profile</a></p>
         </div>
     </div>
     <div class="col-md-4">
