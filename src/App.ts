@@ -21,6 +21,7 @@ import ProductVariantRouter from './router/ProductVariantRouter';
 import BrokerProductVariantRouter from "./router/BrokerProductVariantRouter";
 import SupportTicketRouter from "./router/SupportTicketRouter";
 import SystemSettingRouter from "./router/SystemSettingRouter";
+import TopLevelDomainRouter from "./router/TopLevelDomainRouter";
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
@@ -98,6 +99,7 @@ export class App extends EventEmitter {
         this.express.use('/api/v1/productvariant', ProductVariantRouter);
         this.express.use('/api/v1/supportticket', SupportTicketRouter);
         this.express.use('/api/v1/systemsetting', SystemSettingRouter);
+        this.express.use('/api/v1/topleveldomain', TopLevelDomainRouter);
         this.addStaticFilesRoutes();
     }
 

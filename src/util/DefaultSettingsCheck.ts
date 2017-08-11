@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { Container } from "typedi";
 import { MailTemplate, MailTemplateType } from "../entity/MailTemplate";
@@ -5,12 +6,14 @@ import { SystemSettingId, SystemSettingType } from "../entity/SystemSetting";
 import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { PersonDao } from "../dao/PersonDao";
 import { Person } from "../entity/Person";
+import { TopLevelDomainDao } from "../dao/TopLevelDomainDao";
 
 export class DefaultSettingsCheck {
     public static async check(): Promise<void> {
         await DefaultSettingsCheck.checkAdminUser();
         await DefaultSettingsCheck.checkMailTemplates();
         await DefaultSettingsCheck.checkSystemSettings();
+        await DefaultSettingsCheck.checkTopLevelDomains();
     }
 
     private static async checkAdminUser(): Promise<void> {
@@ -121,5 +124,16 @@ export class DefaultSettingsCheck {
             "", "RSA Private Key for License Key Encoding");
         dao.createIfNotExists(SystemSettingId.LicenseKey_PublicKey, SystemSettingType.MultiLine,
             "", "RSA Public Key for License Key Encoding");
+    }
+
+    private static async checkTopLevelDomains(): Promise<void> {
+        console.log("Updating top level domain list (this might take a while)...");
+        let dao: TopLevelDomainDao = Container.get(TopLevelDomainDao);
+        let data: string = fs.readFileSync(__dirname + "/../../res/tld.json", "utf8");
+        let tldList: Object[] = JSON.parse(data);
+        for (let item of tldList) {
+            let tld = item['tld'];
+            await dao.insertIfNotExists(tld);
+        }
     }
 }

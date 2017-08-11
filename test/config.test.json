@@ -4,11 +4,7 @@
             "type": "sqlite",
             "database": ":memory:"
         },
-        "logging": {
-            "logQueries": false,
-            "logOnlyFailedQueries": true,
-            "logFailedQueryError": true
-        }
+        "logging": ["error", "warn"]
     },
     "session": {
         "secret": "fkj49l7WwjUtqcfLZKlLA269J28kC4uL",
