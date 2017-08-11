@@ -7,6 +7,7 @@ import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { PersonDao } from "../dao/PersonDao";
 import { Person } from "../entity/Person";
 import { TopLevelDomainDao } from "../dao/TopLevelDomainDao";
+import { Config } from "./Config";
 
 export class DefaultSettingsCheck {
     public static async check(): Promise<void> {
@@ -127,6 +128,11 @@ export class DefaultSettingsCheck {
     }
 
     private static async checkTopLevelDomains(): Promise<void> {
+        let importTldListOnStart: boolean = Boolean(Config.getInstance().get("importTldListOnStart"));
+        if (!importTldListOnStart) {
+            console.log("Skipping to import top level domain list.");
+            return;
+        }
         console.log("Updating top level domain list (this might take a while)...");
         let dao: TopLevelDomainDao = Container.get(TopLevelDomainDao);
         let data: string = fs.readFileSync(__dirname + "/../../res/tld.json", "utf8");

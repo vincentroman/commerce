@@ -24,6 +24,18 @@ export class TopLevelDomainDao extends Dao<TopLevelDomain> {
             .getOne();
     }
 
+    public async isValidTld(tld: string): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            this.getByTld(tld).then(e => {
+                if (e) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            }).catch(e => reject());
+        });
+    }
+
     public async insertIfNotExists(tld: string): Promise<TopLevelDomain> {
         return new Promise<TopLevelDomain>((resolve, reject) => {
             this.getByTld(tld).then(e => {

@@ -12,8 +12,9 @@ import { SystemSetting, SystemSettingId } from "../entity/SystemSetting";
 import * as moment from "moment";
 import { ProductDao } from "../dao/ProductDao";
 import { DomainList } from "../util/DomainList";
-import { AuthRole } from "./BaseRouter";
+import { AuthRole, RestError } from "./BaseRouter";
 import { PersonDao } from "../dao/PersonDao";
+import { TopLevelDomainDao } from "../dao/TopLevelDomainDao";
 
 class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     protected getDao(): LicenseKeyDao {
@@ -170,35 +171,37 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                 if (entity.customer.uuid === customerUuid) {
                     let domains: string[] = req.body.domains;
                     if (domains.length === entity.productVariant.numDomains) {
-                        let encoder: LicenseKeyEncoder = new LicenseKeyEncoder();
-                        let dl: DomainList = new DomainList(false);
-                        domains.forEach(domain => dl.addDomain(domain));
-                        encoder.issueDate = new Date();
-                        if (entity.productVariant.type === ProductVariantType.TrialLicense) {
-                            encoder.expiryDate = moment().add(1, "months").toDate();
-                        } else {
-                            encoder.expiryDate = moment().add(entity.productVariant.numSupportYears, "years").toDate();
-                        }
-                        encoder.description = entity.productVariant.product.title + " (" + entity.productVariant.numDomains + " domains)";
-                        encoder.onlineVerification = false;
-                        encoder.uuid = "";
-                        encoder.owner = entity.customer.printableName();
-                        encoder.product = entity.productVariant.product.licenseKeyIdentifier;
-                        encoder.subject = dl.getRegex().toString();
-                        encoder.type = this.getTypeString(entity.productVariant.type);
-                        Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PrivateKey).then(privateKeySetting => {
-                            let licenseKey = encoder.toString(privateKeySetting.value);
-                            entity.issueDate = encoder.issueDate;
-                            entity.expiryDate = encoder.expiryDate;
-                            entity.licenseKey = licenseKey;
-                            dao.save(entity).then(entity => {
-                                res.status(200).send({
-                                    message: "Operation successful",
-                                    status: res.status,
-                                    licenseKey: licenseKey
+                        this.buildDomainList(domains).then(dl => {
+                            let encoder: LicenseKeyEncoder = new LicenseKeyEncoder();
+                            encoder.issueDate = new Date();
+                            if (entity.productVariant.type === ProductVariantType.TrialLicense) {
+                                encoder.expiryDate = moment().add(1, "months").toDate();
+                            } else {
+                                encoder.expiryDate = moment().add(entity.productVariant.numSupportYears, "years").toDate();
+                            }
+                            encoder.description = entity.productVariant.product.title +
+                                " (" + entity.productVariant.numDomains + " domains)";
+                            encoder.onlineVerification = false;
+                            encoder.uuid = "";
+                            encoder.owner = entity.customer.printableName();
+                            encoder.product = entity.productVariant.product.licenseKeyIdentifier;
+                            encoder.subject = dl.getRegex().toString();
+                            encoder.type = this.getTypeString(entity.productVariant.type);
+                            Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PrivateKey)
+                            .then(privateKeySetting => {
+                                let licenseKey = encoder.toString(privateKeySetting.value);
+                                entity.issueDate = encoder.issueDate;
+                                entity.expiryDate = encoder.expiryDate;
+                                entity.licenseKey = licenseKey;
+                                dao.save(entity).then(entity => {
+                                    res.status(200).send({
+                                        message: "Operation successful",
+                                        status: res.status,
+                                        licenseKey: licenseKey
+                                    });
                                 });
                             });
-                        });
+                        }).catch(e => this.badRequest(res, RestError.INVALID_TLD));
                     } else {
                         this.badRequest(res);
                     }
@@ -209,6 +212,45 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                 this.forbidden(res);
             }
         }).catch(e => this.notFound(res));
+    }
+
+    private buildDomainList(domains: string[]): Promise<DomainList> {
+        let dao: TopLevelDomainDao = Container.get(TopLevelDomainDao);
+        return new Promise<DomainList>((resolve, reject) => {
+            Promise.all(domains.map(domain => {
+                return new Promise<string>((resolve, reject) => {
+                    if (domain) {
+                        domain = domain.trim();
+                        dao.isValidTld(domain).then(valid => {
+                            if (!valid) {
+                                let tld: string = DomainList.getTldFromDomain(domain);
+                                if (tld) {
+                                    dao.isValidTld(tld).then(valid => {
+                                        if (valid) {
+                                            resolve(domain);
+                                        } else {
+                                            reject(new Error("TLD '"+ tld +"' is not valid"));
+                                        }
+                                    });
+                                } else {
+                                    reject(new Error("TLD must not be empty"));
+                                }
+                            } else {
+                                reject(new Error("Domain must not equal a TLD"));
+                            }
+                        });
+                    } else {
+                        reject(new Error("Domain must not be empty"));
+                    }
+                });
+            })).then(domains => {
+                let dl: DomainList = new DomainList(false);
+                for (let domain of domains) {
+                    dl.addDomain(domain);
+                }
+                resolve(dl);
+            }).catch(e => reject(e));
+        });
     }
 
     private getTypeString(type: ProductVariantType): string {

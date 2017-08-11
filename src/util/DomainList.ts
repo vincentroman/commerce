@@ -6,10 +6,10 @@ export class DomainList {
     strict: boolean = true;
 
     constructor(strict?: boolean, regex?: RegExp|string) {
-        if (strict) {
+        if (strict !== undefined) {
             this.strict = strict;
         }
-        if (regex) {
+        if (regex !== undefined) {
             if (regex instanceof RegExp) {
                 this.domains = this.extractDomains(regex.source);
             } else {
