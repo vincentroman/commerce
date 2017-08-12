@@ -50,6 +50,7 @@ import { PurchaseComponent } from "./component/purchase.component";
 import { ChangePasswordComponent } from "./component/change-password.component";
 import { PersonService } from "./service/person.service";
 import { ProfileComponent } from "./component/profile.component";
+import { ConfirmEmailComponent } from "./component/confirm-email.component";
 
 @NgModule({
     imports: [
@@ -66,6 +67,7 @@ import { ProfileComponent } from "./component/profile.component";
         BrokerTestComponent,
         BrokerProductVariantEditComponent,
         ChangePasswordComponent,
+        ConfirmEmailComponent,
         HomeComponent,
         LicenseKeyListComponent,
         LicenseKeyEditComponent,

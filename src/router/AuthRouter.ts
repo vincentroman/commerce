@@ -49,11 +49,11 @@ class AuthRouter extends BaseRouter {
         let dao: PersonDao = Container.get(PersonDao);
         let actionDao: PendingActionDao = Container.get(PendingActionDao);
         actionDao.getByUuid(req.body.uuid).then(action => {
-            if (action && action.type === ActionType.ResetPassword) {
+            if (action && action.type === ActionType.ChangeEmail) {
                 let userId = action.getPayload().userId;
                 dao.getById(userId).then(user => {
                     if (user) {
-                        user.setPlainPassword(action.getPayload().email);
+                        user.email = action.getPayload().email;
                         dao.save(user).then(user => {
                             actionDao.delete(action).then(action => {
                                 this.ok(res);

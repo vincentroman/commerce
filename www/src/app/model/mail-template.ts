@@ -33,6 +33,8 @@ export class MailTemplate extends RestModel<MailTemplate> {
                 return "Download Evaluation";
             case MailTemplateType.ResetPassword:
                 return "Reset Password";
+            case MailTemplateType.ChangeEmail:
+                return "Confirm Email Address";
             default:
                 return "Unknown";
         }
@@ -44,5 +46,6 @@ export enum MailTemplateType {
     PurchaseLicenseKey = 2,
     PurchaseSupportTicket = 3,
     DownloadEval = 4,
-    ResetPassword = 5
+    ResetPassword = 5,
+    ChangeEmail = 6
 }

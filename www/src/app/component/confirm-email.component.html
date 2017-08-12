@@ -1,0 +1,16 @@
+<div class="page-header">
+    <div class="btn-toolbar pull-right">
+        <div class="btn-group">
+        </div>
+    </div>
+    <h1>Confirm your Email Address</h1>
+</div>
+<form (ngSubmit)="submit()" #form="ngForm">
+    <div *ngIf="loading">
+        <p>Loading...</p>
+    </div>
+    <div *ngIf="!loading">
+        <div class="alert alert-danger" role="alert" [hidden]="!error">Error confirming your email address. Is your link valid?</div>
+        <div class="alert alert-success" role="alert" [hidden]="error">Your email address has been confirmed. <a routerLink="/login">Proceed to login</a>.</div>
+    </div>
+</form>
