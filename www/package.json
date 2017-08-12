@@ -7,7 +7,9 @@
     "build:watch": "tsc -p src/ -w",
     "css": "grunt css",
     "clean": "rm -rf dist/",
-    "grunt": "grunt"
+    "grunt": "grunt",
+    "webpack": "webpack --config webpack.prod.js --progress --profile --bail",
+    "build": "npm run grunt && npm run webpack && cp src/index.prod.html dist/index.html"
   },
   "license": "UNLICENSED",
   "dependencies": {
@@ -33,15 +35,20 @@
     "zone.js": "0.8.16"
   },
   "devDependencies": {
+    "angular2-template-loader": "0.6.2",
+    "awesome-typescript-loader": "3.2.2",
+    "babili-webpack-plugin": "0.1.2",
     "concurrently": "3.5.0",
     "grunt": "1.0.1",
     "grunt-bootlint": "0.10.2",
     "grunt-cli": "1.2.0",
     "grunt-sass": "2.0.0",
-    "grunt-ts": "^6.0.0-beta.16",
+    "grunt-ts": "6.0.0-beta.16",
     "grunt-tslint": "5.0.1",
+    "html-loader": "0.5.1",
     "lite-server": "2.3.0",
     "tslint": "5.6.0",
-    "typescript": "2.4.2"
+    "typescript": "2.4.2",
+    "webpack": "3.5.4"
   }
 }

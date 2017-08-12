@@ -12,7 +12,7 @@ RUN ls /usr/src/app/
 
 RUN cd www && \
     npm install && \
-    npm run grunt && \
+    npm run build && \
     cd ..
 
 RUN npm install && \
