@@ -35,7 +35,7 @@ export class LicenseKey extends DbEntity<LicenseKey> {
         }
     }
 
-    public serialize(): Object {
+    public serialize(domains?: string[]): Object {
         return Object.assign(super.serialize(), {
             licenseKey: this.licenseKey,
             issueDate: (this.issueDate ? moment(this.issueDate).format("YYYY-MM-DD HH:mm:ss") : null),
@@ -43,7 +43,8 @@ export class LicenseKey extends DbEntity<LicenseKey> {
             productVariant: (this.productVariant ? this.productVariant.serialize() : null),
             customer: (this.customer ? this.customer.serialize() : null),
             purchaseItem: (this.purchaseItem ? this.purchaseItem.serialize() : null),
-            expiresInDays: this.getDaysUntilExpiry()
+            expiresInDays: this.getDaysUntilExpiry(),
+            domains: (domains !== undefined ? domains : [])
         });
     }
 

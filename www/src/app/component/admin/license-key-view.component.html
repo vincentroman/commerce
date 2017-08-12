@@ -31,6 +31,12 @@
         <label class="col-sm-3 control-label">Expiry Date</label>
         <p class="form-control-static">{{entity.expiryDate.format('YYYY-MM-DD')}}</p>
     </div>
+    <div class="form-group" *ngIf="entity.domains && entity.domains.length > 0">
+        <label class="col-sm-3 control-label">Domains</label>
+        <p class="form-control-static col-sm-5">
+            <span *ngFor="let domain of entity.domains">{{domain}}<br /></span>
+        </p>
+    </div>
     <div class="form-group" *ngIf="entity.licenseKey">
         <label class="col-sm-3 control-label">License Key</label>
         <div class="col-sm-9">

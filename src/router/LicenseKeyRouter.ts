@@ -81,17 +81,54 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         });
     }
 
+    protected getOne(req: Request, res: Response, next: NextFunction): void {
+        let dao: LicenseKeyDao = this.getDao();
+        let id = req.params.id;
+        dao.getByUuid(id).then(entity => {
+            if (entity) {
+                this.sendOneItem(res, entity);
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => {
+            // TODO Log exception
+            this.internalServerError(res);
+        });
+    }
+
     protected getMyOne(req: Request, res: Response, next: NextFunction): void {
         let customerUuid = this.getJwtUserUuid(req);
         let dao: LicenseKeyDao = this.getDao();
         let id = req.params.id;
         dao.getByUuid(id).then(entity => {
-            if (entity.customer && entity.customer.uuid === customerUuid) {
-                res.send(entity.serialize());
+            if (entity) {
+                if (entity.customer && entity.customer.uuid === customerUuid) {
+                    this.sendOneItem(res, entity);
+                } else {
+                    this.forbidden(res);
+                }
             } else {
-                this.forbidden(res);
+                this.notFound(res);
             }
         }).catch(e => this.notFound(res));
+    }
+
+    private sendOneItem(res: Response, entity: LicenseKey): void {
+        if (entity.licenseKey) {
+            this.getDomainRegexFromLicenseKey(entity.licenseKey).then(regex => {
+                let dl: DomainList = new DomainList(true, regex);
+                res.send(entity.serialize(dl.domains));
+            });
+        } else {
+            res.send(entity.serialize());
+        }
+    }
+
+    private getDomainRegexFromLicenseKey(licenseKey: string): Promise<string> {
+        return Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PublicKey).then(publicKeySetting => {
+            let encoder: LicenseKeyEncoder = LicenseKeyEncoder.factory(licenseKey, publicKeySetting.value);
+            return encoder.subject;
+        });
     }
 
     private my(req: Request, res: Response, next: NextFunction): void {
@@ -135,7 +172,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
             }
             let dl: DomainList = new DomainList(false);
             domains.forEach(domain => dl.addDomain(domain));
-            subject = dl.getRegex().toString();
+            subject = dl.getRegex().source;
         }
         Container.get(ProductDao).getByUuid(req.body.productUuid).then(product => {
             Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PrivateKey).then(privateKeySetting => {
@@ -185,7 +222,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                             encoder.uuid = "";
                             encoder.owner = entity.customer.printableName();
                             encoder.product = entity.productVariant.product.licenseKeyIdentifier;
-                            encoder.subject = dl.getRegex().toString();
+                            encoder.subject = dl.getRegex().source;
                             encoder.type = this.getTypeString(entity.productVariant.type);
                             Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PrivateKey)
                             .then(privateKeySetting => {

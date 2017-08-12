@@ -12,6 +12,7 @@ export class LicenseKey extends RestModel<LicenseKey> {
     customer: Person = new Person();
     purchaseItem: PurchaseItem = new PurchaseItem();
     expiresInDays: number;
+    domains: string[];
 
     serialize(): Object {
         return Object.assign(super.serialize(), {
@@ -28,6 +29,7 @@ export class LicenseKey extends RestModel<LicenseKey> {
         this.customer = (input.customer ? new Person().deserialize(input.customer) : null);
         this.purchaseItem = (input.purchaseItem ? new PurchaseItem().deserialize(input.purchaseItem) : null);
         this.expiresInDays = input.expiresInDays;
+        this.domains = (input.domains ? input.domains : []);
         return this;
     }
 }
