@@ -45,7 +45,6 @@ export class DomainList {
     }
 
     private extractDomains(regex: string): string[] {
-        console.log("in = %s ", regex);
         let result: string[] = [];
         if (regex.startsWith("^")) {
             regex = regex.substr(1);

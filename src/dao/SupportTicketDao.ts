@@ -47,18 +47,21 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .getMany();
     }
 
-    public async getAllUnclosedTickets(customerUuid: string): Promise<SupportTicket[]> {
-        return this.getRepository()
+    public async getAllUnclosedTickets(customerUuid?: string): Promise<SupportTicket[]> {
+        let query = this.getRepository()
             .createQueryBuilder("st")
             .innerJoinAndSelect("st.customer", "customer")
             .innerJoinAndSelect("st.productVariant", "productVariant")
             .innerJoinAndSelect("productVariant.product", "product")
             .leftJoinAndSelect("st.purchaseItem", "purchaseItem")
-            .where("customer.uuid = :customerUuid")
-            .andWhere("st.status != " + SupportRequestStatus.CLOSED)
+            .where("st.status != " + SupportRequestStatus.CLOSED);
+        if (customerUuid !== undefined) {
+            query = query.andWhere("customer.uuid = :customerUuid")
+                .setParameters({customerUuid: customerUuid});
+        }
+        return query.andWhere("st.status != " + SupportRequestStatus.CLOSED)
             .orderBy("st.createDate", "DESC")
             .addOrderBy("st.sendDate", "DESC")
-            .setParameters({customerUuid: customerUuid})
             .getMany();
     }
 }

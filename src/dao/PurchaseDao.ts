@@ -12,16 +12,19 @@ export class PurchaseDao extends Dao<Purchase> {
         return this.getEm().getRepository(Purchase);
     }
 
-    public async getAll(): Promise<Purchase[]> {
-        return this.getRepository()
+    public async getAll(limit?: number): Promise<Purchase[]> {
+        let query = this.getRepository()
             .createQueryBuilder("order")
             .innerJoinAndSelect("order.broker", "broker")
             .leftJoinAndSelect("order.items", "items")
             .leftJoinAndSelect("order.customer", "customer")
             .leftJoinAndSelect("items.productVariant", "productVariant")
             .leftJoinAndSelect("productVariant.product", "product")
-            .orderBy("order.createDate", "DESC")
-            .getMany();
+            .orderBy("order.createDate", "DESC");
+        if (limit !== undefined) {
+            query = query.setMaxResults(limit);
+        }
+        return query.getMany();
     }
 
     public async getByUuid(uuid: string): Promise<Purchase> {

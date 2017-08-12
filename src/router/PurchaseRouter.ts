@@ -19,6 +19,19 @@ class PurchaseRouter extends CrudRouter<Purchase, PurchaseDao> {
     protected getDefaultAuthRole(): AuthRole {
         return AuthRole.ADMIN;
     }
+
+    protected init(): void {
+        super.init();
+        this.addRouteGet('/latest/:limit', this.getLatest, AuthRole.ADMIN);
+    }
+
+    private getLatest(req: Request, res: Response, next: NextFunction): void {
+        let dao: PurchaseDao = this.getDao();
+        let limit: number = Number(req.params.limit);
+        dao.getAll(limit).then(entities => {
+            res.send(entities.map(entity => entity.serialize()));
+        });
+    }
 }
 
 export default new PurchaseRouter().router;

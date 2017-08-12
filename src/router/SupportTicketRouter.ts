@@ -31,9 +31,45 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
         this.addRouteGet('/getmyone/:id', this.getMyOne, AuthRole.CUSTOMER);
         this.addRouteGet('/comments/:id', this.getComments, AuthRole.USER);
         this.addRoutePut('/assign', this.assign, AuthRole.ADMIN);
+        this.addRouteGet('/stats', this.adminStats, AuthRole.ADMIN);
         this.addRoutePost('/open/:id', this.open, AuthRole.USER);
         this.addRoutePost('/close/:id', this.close, AuthRole.USER);
         this.addRoutePost('/addcomment/:id', this.addComment, AuthRole.USER);
+    }
+
+    protected adminStats(req: Request, res: Response, next: NextFunction): void {
+        let dao: SupportTicketDao = this.getDao();
+        let commentDao: CommentDao = Container.get(CommentDao);
+        let result = {};
+        dao.getAllUnclosedTickets().then(tickets => {
+            let numOpenTickets = tickets.length;
+            Promise.all(tickets.map(ticket => {
+                if (ticket.status === SupportRequestStatus.NEW) {
+                    return false;
+                } else {
+                    return commentDao.getAllSupportTicketComments(ticket.uuid).then(comments => {
+                        if (comments.length > 0) {
+                            let latest = comments.shift();
+                            return (latest.author.id === ticket.customer.id);
+                        } else {
+                            return true;
+                        }
+                    });
+                }
+            })).then(values => {
+                let numTicketsWithUnrespondedComments = 0;
+                values.forEach(value => {
+                    if (value) {
+                        numTicketsWithUnrespondedComments++;
+                    }
+                });
+                let result = {
+                    numOpenTickets: numOpenTickets,
+                    numTicketsWithUnrespondedComments: numTicketsWithUnrespondedComments
+                };
+                res.send(result);
+            });
+        });
     }
 
     protected myStats(req: Request, res: Response, next: NextFunction): void {

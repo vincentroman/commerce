@@ -34,4 +34,17 @@ export class PurchaseService extends CrudService<Purchase> {
             .catch(error => reject(this.httpService.handleError(error)));
         });
     }
+
+    public latestOrders(limit: number): Promise<Purchase[]> {
+        return new Promise((resolve, reject) => {
+            this.http
+            .get(this.httpService.getUrl(this.getPath() + "/latest/" + limit), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let list: Purchase[] = (<Purchase[]>res.json()).map(o => new Purchase().deserialize(o));
+                resolve(list);
+            })
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
 }
