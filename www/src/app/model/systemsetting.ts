@@ -5,6 +5,7 @@ export class SystemSetting extends RestModel<SystemSetting> {
     description: string;
     type: SystemSettingType;
     value: string;
+    internal: boolean;
 
     serialize(): Object {
         return Object.assign(super.serialize(), {
@@ -21,6 +22,7 @@ export class SystemSetting extends RestModel<SystemSetting> {
         this.type = input.type;
         this.description = input.description;
         this.value = input.value;
+        this.internal = input.internal;
         return this;
     }
 }

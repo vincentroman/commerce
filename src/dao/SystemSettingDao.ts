@@ -63,7 +63,8 @@ export class SystemSettingDao extends Dao<SystemSetting> {
     public async createIfNotExists(id: SystemSettingId,
             type: SystemSettingType,
             value: string,
-            description: string): Promise<SystemSetting> {
+            description: string,
+            internal?: boolean): Promise<SystemSetting> {
         return new Promise<SystemSetting>((resolve, reject) => {
             this.getBySettingId(id).then(setting => {
                 if (setting) {
@@ -74,11 +75,19 @@ export class SystemSettingDao extends Dao<SystemSetting> {
                     setting.type = type;
                     setting.value = value;
                     setting.description = description;
+                    setting.internal = (internal === undefined ? false : internal);
                     this.save(setting).then(setting => {
                         resolve(setting);
                     });
                 }
             });
+        });
+    }
+
+    public async updateSetting(id: SystemSettingId, value: string): Promise<SystemSetting> {
+        return this.getBySettingId(id).then(setting => {
+            setting.value = value;
+            return this.save(setting);
         });
     }
 }

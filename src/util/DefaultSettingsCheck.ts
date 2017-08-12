@@ -125,6 +125,7 @@ export class DefaultSettingsCheck {
             "", "RSA Private Key for License Key Encoding");
         dao.createIfNotExists(SystemSettingId.LicenseKey_PublicKey, SystemSettingType.MultiLine,
             "", "RSA Public Key for License Key Encoding");
+        dao.createIfNotExists(SystemSettingId.Tld_List_Version, SystemSettingType.Integer, "0", "TLD List Version", true);
     }
 
     private static async checkTopLevelDomains(): Promise<void> {
@@ -133,13 +134,28 @@ export class DefaultSettingsCheck {
             console.log("Skipping to import top level domain list.");
             return;
         }
-        console.log("Updating top level domain list (this might take a while)...");
-        let dao: TopLevelDomainDao = Container.get(TopLevelDomainDao);
-        let data: string = fs.readFileSync(__dirname + "/../../res/tld.json", "utf8");
-        let tldList: Object[] = JSON.parse(data);
-        for (let item of tldList) {
-            let tld = item['tld'];
-            await dao.insertIfNotExists(tld);
+        let systemSettingDao: SystemSettingDao = Container.get(SystemSettingDao);
+        let data: TldData = JSON.parse(fs.readFileSync(__dirname + "/../../res/tld.json", "utf8"));
+        let currentListVersion = await systemSettingDao.getInteger(SystemSettingId.Tld_List_Version, 0);
+        if (data.version > currentListVersion) {
+            console.log("Updating top level domain list to version %d (this might take a while)...", data.version);
+            let dao: TopLevelDomainDao = Container.get(TopLevelDomainDao);
+            for (let item of data.items) {
+                await dao.insertIfNotExists(item.tld);
+            }
+            await systemSettingDao.updateSetting(SystemSettingId.Tld_List_Version, String(data.version));
+        } else {
+            console.log("Not updating top level domain list (source is version %d, already at version %d)",
+                data.version, currentListVersion);
         }
     }
+}
+
+declare class TldData {
+    version: number;
+    items: TldItem[];
+}
+
+declare class TldItem {
+    tld: string;
 }

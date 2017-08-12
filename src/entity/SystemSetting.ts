@@ -15,12 +15,16 @@ export class SystemSetting extends DbEntity<SystemSetting> {
     @Column("text")
     value: string;
 
+    @Column()
+    internal: boolean = false;
+
     public serialize(): Object {
         return Object.assign(super.serialize(), {
             id: this.settingId,
             description: this.description,
             type: this.type,
-            value: this.value
+            value: this.value,
+            internal: this.internal
         });
     }
 
@@ -54,7 +58,8 @@ export enum SystemSettingId {
     Site_Url = 20,
     NumDays_About_To_Expire = 30,
     LicenseKey_PrivateKey = 50,
-    LicenseKey_PublicKey = 51
+    LicenseKey_PublicKey = 51,
+    Tld_List_Version = 901
 }
 
 export enum SystemSettingType {

@@ -11,17 +11,26 @@
         <label>Setting</label>
         <p class="form-control-static">{{entity.description}}</p>
     </div>
-    <div class="form-group" *ngIf="entity.type != 4">
-        <label for="subject">Value</label>
-        <input type="text" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" autofocus="autofocus" *ngIf="entity.type == 1" />
-        <input type="number" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" autofocus="autofocus" *ngIf="entity.type == 2" />
-        <textarea rows="10" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" autofocus="autofocus" *ngIf="entity.type == 3"></textarea>
+    <div *ngIf="!entity.internal">
+        <div class="form-group" *ngIf="entity.type != 4">
+            <label for="subject">Value</label>
+            <input type="text" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" autofocus="autofocus" *ngIf="entity.type == 1" />
+            <input type="number" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" autofocus="autofocus" *ngIf="entity.type == 2" />
+            <textarea rows="10" id="value" name="value" placeholder="Value" class="form-control" [(ngModel)]="entity.value" autofocus="autofocus" *ngIf="entity.type == 3"></textarea>
+        </div>
+        <div class="checkbox" *ngIf="entity.type == 4">
+            <label>
+                <input type="checkbox" id="value" name="value" [ngModel]="(entity.value == '1' || entity.value == 'true') ? true : false" (ngModelChange)="entity.value = $event ? 1 : 0" /> {{entity.description}}
+            </label>
+        </div>
+        <a routerLink="/admin/systemsettings" class="btn btn-default">Cancel</a>
+        <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
     </div>
-    <div class="checkbox" *ngIf="entity.type == 4">
-        <label>
-            <input type="checkbox" id="value" name="value" [ngModel]="(entity.value == '1' || entity.value == 'true') ? true : false" (ngModelChange)="entity.value = $event ? 1 : 0" /> {{entity.description}}
-        </label>
+    <div *ngIf="entity.internal">
+        <div class="form-group">
+            <label>Value (read-only)</label>
+            <p class="form-control-static">{{entity.value}}</p>
+        </div>
+        <a routerLink="/admin/systemsettings" class="btn btn-default">Cancel</a>
     </div>
-    <a routerLink="/admin/systemsettings" class="btn btn-default">Cancel</a>
-    <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
 </form>
