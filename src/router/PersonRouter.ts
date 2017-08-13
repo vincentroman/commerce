@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
 import { CrudRouter } from "./CrudRouter";
 
-import { AuthRole } from "./BaseRouter";
+import { AuthRole, RestError } from "./BaseRouter";
 import { CommentDao } from "../dao/CommentDao";
 import { Comment } from "../entity/Comment";
 import { Person } from "../entity/Person";
@@ -37,6 +37,19 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
 
     protected getDefaultAuthRole(): AuthRole {
         return AuthRole.ADMIN;
+    }
+
+    protected save(req: Request, res: Response, next: NextFunction): void {
+        let dao: PersonDao = this.getDao();
+        let email: string = req.body.email;
+        let uuid: string = req.body.uuid;
+        dao.getByEmail(email).then(person => {
+            if (!person || person.uuid === uuid) {
+                super.save(req, res, next);
+            } else {
+                this.badRequest(res, RestError.EMAIL_ALREADY_EXISTS);
+            }
+        });
     }
 
     private suggest(req: Request, res: Response, next: NextFunction): void {
