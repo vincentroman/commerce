@@ -28,12 +28,15 @@ export class App extends EventEmitter {
     public readonly express: express.Application;
     public ready: boolean = false;
     private dbConnection: Connection = null;
+    private devEnvironment: boolean = false;
 
     constructor() {
         super();
         if (App.INSTANCE) {
             throw new Error("Call App.getInstance() instead!");
         }
+        this.devEnvironment = (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() === "dev");
+        console.log("Dev mode = %s", this.devEnvironment);
         process.on("SIGINT", this.exitOnSignal.bind(this));
         process.on("SIGTERM", this.exitOnSignal.bind(this));
         process.on("uncaughtException", this.handleUnknownException.bind(this));
@@ -121,7 +124,10 @@ export class App extends EventEmitter {
         this.express.use('/node_modules', express.static(nodePath));
 
         // HTML5 Push State
-        let fallbackPath = path.join(__dirname, "../www/src/index.html");
+        let fallbackPath = path.join(__dirname, "../www/dist/index.html");
+        if (this.devEnvironment) {
+            fallbackPath = path.join(__dirname, "../www/src/index.html");
+        }
         console.log("Adding fallback route to index.html as %s", fallbackPath);
         this.express.get('*', function(request, response) {
             response.sendFile(fallbackPath);

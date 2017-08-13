@@ -53,6 +53,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-bootlint');
 
     grunt.registerTask('css', ['sass']);
-    grunt.registerTask('build', ['bootlint', 'tslint', 'sass', 'ts']);
+    grunt.registerTask('build', ['bootlint', 'tslint', 'sass']);
     grunt.registerTask('default', ['build']);
 }
