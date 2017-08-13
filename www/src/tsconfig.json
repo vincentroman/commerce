@@ -12,7 +12,8 @@
         "lib": [
            "es6",
            "dom"
-        ]
+        ],
+        "types": ["node", "jquery", "typeahead"]
     },
     "compileOnSave": true,
     "exclude": [
