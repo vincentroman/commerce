@@ -9,9 +9,14 @@ export class TopLevelDomainDao extends Dao<TopLevelDomain> {
         return this.getEm().getRepository(TopLevelDomain);
     }
 
+    protected allowPhysicalDelete(o: TopLevelDomain): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(true));
+    }
+
     public async getAll(): Promise<TopLevelDomain[]> {
         return this.getRepository()
             .createQueryBuilder("t")
+            .where("t.deleted != 1")
             .orderBy("t.tld")
             .getMany();
     }
@@ -20,6 +25,7 @@ export class TopLevelDomainDao extends Dao<TopLevelDomain> {
         return this.getRepository()
             .createQueryBuilder("t")
             .where("t.tld = :tld")
+            .andWhere("t.deleted != 1")
             .setParameters({tld: tld})
             .getOne();
     }

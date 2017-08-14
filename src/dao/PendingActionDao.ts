@@ -8,4 +8,8 @@ export class PendingActionDao extends Dao<PendingAction> {
     protected getRepository(): Repository<PendingAction> {
         return this.getEm().getRepository(PendingAction);
     }
+
+    protected allowPhysicalDelete(o: PendingAction): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(true));
+    }
 }

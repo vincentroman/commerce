@@ -12,6 +12,10 @@ export class PurchaseDao extends Dao<Purchase> {
         return this.getEm().getRepository(Purchase);
     }
 
+    protected allowPhysicalDelete(o: Purchase): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(false));
+    }
+
     public async getAll(limit?: number): Promise<Purchase[]> {
         let query = this.getRepository()
             .createQueryBuilder("order")
@@ -20,6 +24,7 @@ export class PurchaseDao extends Dao<Purchase> {
             .leftJoinAndSelect("order.customer", "customer")
             .leftJoinAndSelect("items.productVariant", "productVariant")
             .leftJoinAndSelect("productVariant.product", "product")
+            .where("order.deleted != 1")
             .orderBy("order.createDate", "DESC");
         if (limit !== undefined) {
             query = query.setMaxResults(limit);
@@ -36,6 +41,7 @@ export class PurchaseDao extends Dao<Purchase> {
             .leftJoinAndSelect("items.productVariant", "productVariant")
             .leftJoinAndSelect("productVariant.product", "product")
             .where("order.uuid = :uuid")
+            .andWhere("order.deleted != 1")
             .setParameters({uuid: uuid})
             .getOne();
     }

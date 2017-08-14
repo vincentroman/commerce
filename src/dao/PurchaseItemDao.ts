@@ -10,6 +10,10 @@ export class PurchaseItemDao extends Dao<PurchaseItem> {
         return this.getEm().getRepository(PurchaseItem);
     }
 
+    protected allowPhysicalDelete(o: PurchaseItem): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(false));
+    }
+
     public getByPurchase(purchase: Purchase): Promise<PurchaseItem[]> {
         return this.getRepository()
             .createQueryBuilder("pi")
@@ -17,6 +21,7 @@ export class PurchaseItemDao extends Dao<PurchaseItem> {
             .innerJoinAndSelect("pi.productVariant", "productVariant")
             .innerJoinAndSelect("productVariant.product", "product")
             .where("purchase.id = :id")
+            .andWhere("pi.deleted != 1")
             .orderBy("product.title", "ASC")
             .addOrderBy("productVariant.title", "ASC")
             .setParameters({id: purchase.id})

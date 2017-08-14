@@ -9,9 +9,14 @@ export class SystemSettingDao extends Dao<SystemSetting> {
         return this.getEm().getRepository(SystemSetting);
     }
 
+    protected allowPhysicalDelete(o: SystemSetting): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(true));
+    }
+
     public async getAll(): Promise<SystemSetting[]> {
         return this.getRepository()
             .createQueryBuilder("ss")
+            .where("ss.deleted != 1")
             .orderBy("ss.settingId", "ASC")
             .getMany();
     }

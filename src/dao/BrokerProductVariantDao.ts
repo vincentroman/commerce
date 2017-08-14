@@ -12,6 +12,10 @@ export class BrokerProductVariantDao extends Dao<BrokerProductVariant> {
         return this.getEm().getRepository(BrokerProductVariant);
     }
 
+    protected allowPhysicalDelete(o: BrokerProductVariant): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(false));
+    }
+
     public async getByBrokerProductVariant(broker: Broker, productVariant: ProductVariant): Promise<BrokerProductVariant> {
         return this.getRepository()
             .createQueryBuilder("bpv")
@@ -19,6 +23,7 @@ export class BrokerProductVariantDao extends Dao<BrokerProductVariant> {
             .innerJoinAndSelect("bpv.productVariant", "productVariant")
             .where("broker.id = :brokerId")
             .andWhere("productVariant.id = :productVariantId")
+            .andWhere("bpv.deleted != 1")
             .setParameters({brokerId: broker.id, productVariantId: productVariant.id})
             .getOne();
     }
@@ -31,6 +36,7 @@ export class BrokerProductVariantDao extends Dao<BrokerProductVariant> {
             .innerJoinAndSelect("productVariant.product", "product")
             .where("bpv.idForBroker = :id")
             .andWhere("broker.id = :brokerId")
+            .andWhere("bpv.deleted != 1")
             .setParameters({id: id, brokerId: broker.id})
             .getOne();
     }
@@ -42,6 +48,7 @@ export class BrokerProductVariantDao extends Dao<BrokerProductVariant> {
             .innerJoinAndSelect("bpv.productVariant", "productVariant")
             .innerJoinAndSelect("productVariant.product", "product")
             .where("product.id = :id")
+            .andWhere("bpv.deleted != 1")
             .orderBy("productVariant.title", "ASC")
             .addOrderBy("broker.name", "ASC")
             .setParameters({id: product.id})

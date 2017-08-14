@@ -16,7 +16,7 @@ describe('GET '+endpoint, () => {
         App.getInstance().on("appStarted", () => { done(); });
     });
 
-    it('should be html', () => {
+    xit('should be html', () => {
         return chai.request(App.getInstance().express).get(endpoint)
         .then(res => {
             expect(res).to.have.header('content-type', /^text\/html/);

@@ -55,6 +55,10 @@ export abstract class EntityEditComponent<T extends RestModel<T>> implements OnI
                 this.entity = entity;
                 this.submitting = false;
                 this.success = true;
+            }).catch(e => {
+                this.submitting = false;
+                this.success = false;
+                this.error = true;
             });
     }
 

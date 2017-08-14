@@ -9,9 +9,14 @@ export class ProductDao extends Dao<Product> {
         return this.getEm().getRepository(Product);
     }
 
+    protected allowPhysicalDelete(o: Product): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(false));
+    }
+
     public async getAll(): Promise<Product[]> {
         return this.getRepository()
             .createQueryBuilder("p")
+            .where("p.deleted != 1")
             .orderBy("p.title", "ASC")
             .getMany();
     }

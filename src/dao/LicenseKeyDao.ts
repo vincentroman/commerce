@@ -9,6 +9,10 @@ export class LicenseKeyDao extends Dao<LicenseKey> {
         return this.getEm().getRepository(LicenseKey);
     }
 
+    protected allowPhysicalDelete(o: LicenseKey): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(true));
+    }
+
     public async getByUuid(uuid: string): Promise<LicenseKey> {
         return this.getRepository()
             .createQueryBuilder("lk")
@@ -18,6 +22,7 @@ export class LicenseKeyDao extends Dao<LicenseKey> {
             .orderBy("lk.createDate", "DESC")
             .addOrderBy("lk.issueDate", "DESC")
             .where("lk.uuid = :uuid")
+            .andWhere("lk.deleted != 1")
             .setParameters({uuid: uuid})
             .getOne();
     }
@@ -28,6 +33,7 @@ export class LicenseKeyDao extends Dao<LicenseKey> {
             .innerJoinAndSelect("lk.customer", "customer")
             .innerJoinAndSelect("lk.productVariant", "productVariant")
             .innerJoinAndSelect("productVariant.product", "product")
+            .where("lk.deleted != 1")
             .orderBy("lk.createDate", "DESC")
             .addOrderBy("lk.issueDate", "DESC")
             .getMany();
@@ -40,6 +46,7 @@ export class LicenseKeyDao extends Dao<LicenseKey> {
             .innerJoinAndSelect("lk.productVariant", "productVariant")
             .innerJoinAndSelect("productVariant.product", "product")
             .where("customer.uuid = :customerUuid")
+            .andWhere("lk.deleted != 1")
             .orderBy("lk.createDate", "DESC")
             .addOrderBy("lk.issueDate", "DESC")
             .setParameters({customerUuid: customerUuid})

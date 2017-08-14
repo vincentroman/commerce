@@ -4,19 +4,28 @@ import { DbEntity } from "../entity/DbEntity";
 
 export abstract class Dao<T extends DbEntity<T>> {
     public async getById(id: number): Promise<T> {
-        return this.getRepository().findOneById(id);
+        return this.getRepository()
+            .createQueryBuilder("e")
+            .where("e.id = :id")
+            .andWhere("e.deleted != 1")
+            .setParameters({id: id})
+            .getOne();
     }
 
     public async getByUuid(uuid: string): Promise<T> {
         return this.getRepository()
             .createQueryBuilder("e")
             .where("e.uuid = :uuid")
+            .andWhere("e.deleted != 1")
             .setParameters({uuid: uuid})
             .getOne();
     }
 
     public async getAll(): Promise<T[]> {
-        return this.getRepository().find();
+        return this.getRepository()
+            .createQueryBuilder("e")
+            .where("e.deleted != 1")
+            .getMany();
     }
 
     public async save(o: T): Promise<T> {
@@ -36,7 +45,14 @@ export abstract class Dao<T extends DbEntity<T>> {
     }
 
     public async delete(o: T): Promise<T> {
-        return this.getRepository().remove(o);
+        return this.allowPhysicalDelete(o).then(allowDelete => {
+            if (allowDelete) {
+                return this.getRepository().remove(o);
+            } else {
+                o.deleted = true;
+                return this.save(o);
+            }
+        });
     }
 
     protected getEm(): EntityManager {
@@ -48,4 +64,6 @@ export abstract class Dao<T extends DbEntity<T>> {
     }
 
     protected abstract getRepository(): Repository<T>;
+
+    protected abstract allowPhysicalDelete(o: T): Promise<boolean>;
 }

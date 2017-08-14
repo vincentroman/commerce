@@ -9,6 +9,10 @@ export class SupportTicketDao extends Dao<SupportTicket> {
         return this.getEm().getRepository(SupportTicket);
     }
 
+    protected allowPhysicalDelete(o: SupportTicket): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(true));
+    }
+
     public async getByUuid(uuid: string): Promise<SupportTicket> {
         return this.getRepository()
             .createQueryBuilder("st")
@@ -17,6 +21,7 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .innerJoinAndSelect("productVariant.product", "product")
             .leftJoinAndSelect("st.purchaseItem", "purchaseItem")
             .where("st.uuid = :uuid")
+            .andWhere("st.deleted != 1")
             .setParameters({uuid: uuid})
             .getOne();
     }
@@ -28,6 +33,7 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .innerJoinAndSelect("st.productVariant", "productVariant")
             .innerJoinAndSelect("productVariant.product", "product")
             .leftJoinAndSelect("st.purchaseItem", "purchaseItem")
+            .where("st.deleted != 1")
             .orderBy("st.createDate", "DESC")
             .addOrderBy("st.sendDate", "DESC")
             .getMany();
@@ -41,6 +47,7 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .innerJoinAndSelect("productVariant.product", "product")
             .leftJoinAndSelect("st.purchaseItem", "purchaseItem")
             .where("customer.uuid = :customerUuid")
+            .andWhere("st.deleted != 1")
             .orderBy("st.createDate", "DESC")
             .addOrderBy("st.sendDate", "DESC")
             .setParameters({customerUuid: customerUuid})
@@ -54,7 +61,8 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .innerJoinAndSelect("st.productVariant", "productVariant")
             .innerJoinAndSelect("productVariant.product", "product")
             .leftJoinAndSelect("st.purchaseItem", "purchaseItem")
-            .where("st.status != " + SupportRequestStatus.CLOSED);
+            .where("st.status != " + SupportRequestStatus.CLOSED)
+            .andWhere("st.deleted != 1");
         if (customerUuid !== undefined) {
             query = query.andWhere("customer.uuid = :customerUuid")
                 .setParameters({customerUuid: customerUuid});

@@ -15,6 +15,9 @@ export abstract class DbEntity<T extends DbEntity<T>> {
     @UpdateDateColumn()
     lastUpdate: Date;
 
+    @Column({default: false})
+    deleted: boolean;
+
     constructor(o?: Object) {
         if (o) {
             this.deserialize(o);
@@ -22,6 +25,9 @@ export abstract class DbEntity<T extends DbEntity<T>> {
     }
 
     public serialize(): Object {
+        if (this.deleted) {
+            throw new Error("Must not serialize a deleted entity");
+        }
         return {
             uuid:       this.uuid,
             createDate: moment(this.createDate).format("YYYY-MM-DD HH:mm:ss"),

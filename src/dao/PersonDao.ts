@@ -9,6 +9,10 @@ export class PersonDao extends Dao<Person> {
         return this.getEm().getRepository(Person);
     }
 
+    protected allowPhysicalDelete(o: Person): Promise<boolean> {
+        return new Promise((resolve, reject) => resolve(false));
+    }
+
     public async getByEmail(email: string): Promise<Person> {
         return this.getRepository().findOne({email: email});
     }
@@ -16,6 +20,7 @@ export class PersonDao extends Dao<Person> {
     public async getAll(): Promise<Person[]> {
         return this.getRepository()
             .createQueryBuilder("p")
+            .where("p.deleted != 1")
             .orderBy("p.firstname")
             .addOrderBy("p.lastname")
             .getMany();
@@ -24,20 +29,25 @@ export class PersonDao extends Dao<Person> {
     public async getSuggestions(keyword: string): Promise<Person[]> {
         let query = this.getRepository()
             .createQueryBuilder("c")
+            .where("c.deleted != 1")
             .orderBy("c.firstname", "ASC")
             .addOrderBy("c.lastname", "ASC")
             .addOrderBy("c.company", "ASC");
         if (keyword) {
-            query = query.where("c.firstname LIKE :keyword");
-            query = query.orWhere("c.lastname LIKE :keyword");
-            query = query.orWhere("c.company LIKE :keyword");
-            query = query.orWhere("c.email LIKE :keyword");
+            query = query.andWhere("(c.firstname LIKE :keyword OR " +
+                "c.lastname LIKE :keyword OR " +
+                "c.company LIKE :keyword OR " +
+                "c.email LIKE :keyword)");
             query = query.setParameters({keyword: "%" + keyword + "%"});
         }
         return query.getMany();
     }
 
     public async getAdmins(): Promise<Person[]> {
-        return this.getRepository().find({roleAdmin: true});
+        return this.getRepository()
+            .createQueryBuilder("p")
+            .where("p.deleted != 1")
+            .andWhere("p.roleAdmin = 1")
+            .getMany();
     }
 }
