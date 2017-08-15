@@ -41,8 +41,16 @@ export class DefaultSettingsCheck {
         if (template === undefined || template == null) {
             template = new MailTemplate();
             template.type = MailTemplateType.NewAccount;
-            template.subject = "";
-            template.body = "";
+            template.subject = "Your new account";
+            template.body = "Dear {{firstname}} {{lastname}},\n\n" +
+            "thanks for using our products!\n\n" +
+            "We have set up an account for you in our customer portal, where you\n" +
+            "can manage your products and support requests. Please use your email\n" +
+            "address and the following password to log in at:\n\n" +
+            "{{siteUrl}}\n\n" +
+            "Password: {{password}}\n\n" +
+            "Please change your password shortly.\n\n" +
+            "If you have any questions, please do not hesitate to contact us.";
             await dao.save(template);
         }
 
@@ -51,8 +59,13 @@ export class DefaultSettingsCheck {
         if (template === undefined || template == null) {
             template = new MailTemplate();
             template.type = MailTemplateType.PurchaseLicenseKey;
-            template.subject = "";
-            template.body = "";
+            template.subject = "Your license key for {{product}}";
+            template.body = "Dear {{firstname}} {{lastname}},\n\n" +
+            "thanks for buying a license key for {{product}}!\n\n" +
+            "You can access and manage your license keys in our customer portal:\n" +
+            "{{siteUrl}}\n\n" +
+            "If you haven't received a password yet, you'll receive it shortly.\n\n" +
+            "If you have any questions, please do not hesitate to contact us.";
             await dao.save(template);
         }
 
@@ -61,8 +74,13 @@ export class DefaultSettingsCheck {
         if (template === undefined || template == null) {
             template = new MailTemplate();
             template.type = MailTemplateType.PurchaseSupportTicket;
-            template.subject = "";
-            template.body = "";
+            template.subject = "Your support ticket for {{product}}";
+            template.body = "Dear {{firstname}} {{lastname}},\n\n" +
+            "thanks for buying a support ticket for {{product}}!\n\n" +
+            "You can access and manage your support tickets in our customer portal:\n" +
+            "{{siteUrl}}\n\n" +
+            "If you haven't received a password yet, you'll receive it shortly.\n\n" +
+            "If you have any questions, please do not hesitate to contact us.";
             await dao.save(template);
         }
 
@@ -71,8 +89,13 @@ export class DefaultSettingsCheck {
         if (template === undefined || template == null) {
             template = new MailTemplate();
             template.type = MailTemplateType.DownloadEval;
-            template.subject = "";
-            template.body = "";
+            template.subject = "Your evaluation of {{product}}";
+            template.body = "Dear {{firstname}} {{lastname}},\n\n" +
+            "thanks for evaluating {{product}}!\n\n" +
+            "You can access and manage your license keys in our customer portal:\n" +
+            "{{siteUrl}}\n\n" +
+            "If you haven't received a password yet, you'll receive it shortly.\n\n" +
+            "If you have any questions, please do not hesitate to contact us.";
             await dao.save(template);
         }
 
@@ -103,6 +126,38 @@ export class DefaultSettingsCheck {
                 "{{siteUrl}}/emailconfirm/{{uuid}}\n\n" +
                 "If you did not initiate this email change request, don't worry. " +
                 "Your email address won't change unless you use the link above.";
+            await dao.save(template);
+        }
+
+        // Eval Buy Reminder
+        template = await dao.getByType(MailTemplateType.EvalBuyReminder);
+        if (template === undefined || template == null) {
+            template = new MailTemplate();
+            template.type = MailTemplateType.EvalBuyReminder;
+            template.subject = "Can we help you with {{product}}?";
+            template.body = "Dear {{firstname}} {{lastname}},\n\n" +
+            "thanks again for downloading the evaluation version of {{product}}!\n\n" +
+            "Do you have any questions we can help you with?\n\n" +
+            "If you're happy with the chosen product, you can easily buy a license\n" +
+            "key here:\n\n" +
+            "{{siteUrl}}\n\n" +
+            "Again, thanks for evaluating our software!";
+            await dao.save(template);
+        }
+
+        // License Expiry Reminder
+        template = await dao.getByType(MailTemplateType.LicenseExpiryReminder);
+        if (template === undefined || template == null) {
+            template = new MailTemplate();
+            template.type = MailTemplateType.LicenseExpiryReminder;
+            template.subject = "Your License Key for {{product}} will expire in {{daysRemaining}} days";
+            template.body = "Dear {{firstname}} {{lastname}},\n\n" +
+            "we'd like to remind you that your license key for {{product}} will\n" +
+            "expire in {{daysRemaining}} days.\n\n" +
+            "You can easily get a brand-new license key here within seconds:\n\n" +
+            "{{siteUrl}}\n\n" +
+            "In case you've already got a new license key, please just ignore this email.\n\n" +
+            "Do you have any questions we can help you with? Don't hesitate to let us know.";
             await dao.save(template);
         }
     }
