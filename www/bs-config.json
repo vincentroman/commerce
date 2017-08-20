@@ -1,7 +1,7 @@
 {
     "port": 3001,
     "server": {
-        "baseDir": ["dist", "dist/app", "src"],
+        "baseDir": ["src", "dist", "dist/app"],
         "routes": {
             "/node_modules": "node_modules"
         }

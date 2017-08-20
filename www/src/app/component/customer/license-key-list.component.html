@@ -23,7 +23,15 @@
                 <span *ngIf="!licenseKey.issueDate">not issued yet</span>
             </td>
             <td>
-                <span *ngIf="licenseKey.expiryDate">{{licenseKey.expiryDate.format('YYYY-MM-DD')}} (in {{licenseKey.expiresInDays}} days)</span>
+                <span class="glyphicon glyphicon-ok" *ngIf="licenseKey.expiryDate && licenseKey.expiresInDays >= 30" style="color:green"></span>
+                <span class="glyphicon glyphicon-bell" *ngIf="licenseKey.expiryDate && licenseKey.expiresInDays < 30 && licenseKey.expiresInDays > 0" style="color:orange"></span>
+                <span class="glyphicon glyphicon-fire" *ngIf="licenseKey.expiryDate && licenseKey.expiresInDays <= 0" style="color:orangered"></span>
+                <span *ngIf="licenseKey.expiryDate">
+                    {{licenseKey.expiryDate.format('YYYY-MM-DD')}}
+                    <span *ngIf="licenseKey.expiresInDays > 0">(in {{licenseKey.expiresInDays}} days)</span>
+                    <span *ngIf="licenseKey.expiresInDays == 0">(today)</span>
+                    <span *ngIf="licenseKey.expiresInDays < 0">(expired)</span>
+                </span>
                 <span *ngIf="!licenseKey.expiryDate">–</span>
             </td>
         </tr>
