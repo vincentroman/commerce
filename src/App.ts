@@ -22,6 +22,7 @@ import BrokerProductVariantRouter from "./router/BrokerProductVariantRouter";
 import SupportTicketRouter from "./router/SupportTicketRouter";
 import SystemSettingRouter from "./router/SystemSettingRouter";
 import TopLevelDomainRouter from "./router/TopLevelDomainRouter";
+import { ScheduledTasks } from "./util/ScheduledTasks";
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
@@ -47,6 +48,7 @@ export class App extends EventEmitter {
             this.setupMiddleware();
             this.setupRoutes();
             DefaultSettingsCheck.check().then(() => {
+                ScheduledTasks.init();
                 this.emit("appStarted");
                 this.ready = true;
                 console.log("Server ready");

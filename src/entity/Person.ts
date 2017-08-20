@@ -4,16 +4,16 @@ import { DbEntity } from "./DbEntity";
 
 @Entity()
 export class Person extends DbEntity<Person> {
-    @Column({nullable: true})
+    @Column({nullable: true, default: ""})
     company: string;
 
-    @Column({nullable: true})
+    @Column({nullable: true, default: ""})
     firstname: string;
 
-    @Column({nullable: true})
+    @Column({nullable: true, default: ""})
     lastname: string;
 
-    @Column({nullable: true})
+    @Column({nullable: true, default: ""})
     country: string;
 
     @Column({unique: true, nullable: false})

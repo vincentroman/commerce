@@ -15,6 +15,7 @@ import { DomainList } from "../util/DomainList";
 import { AuthRole, RestError } from "./BaseRouter";
 import { PersonDao } from "../dao/PersonDao";
 import { TopLevelDomainDao } from "../dao/TopLevelDomainDao";
+import { NotificationBacklogItemDao } from "../dao/NotificationBacklogItemDao";
 
 class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     protected getDao(): LicenseKeyDao {
@@ -231,10 +232,12 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                                 entity.expiryDate = encoder.expiryDate;
                                 entity.licenseKey = licenseKey;
                                 dao.save(entity).then(entity => {
-                                    res.status(200).send({
-                                        message: "Operation successful",
-                                        status: res.status,
-                                        licenseKey: licenseKey
+                                    Container.get(NotificationBacklogItemDao).createLicenseKeyItems(entity).then(() => {
+                                        res.status(200).send({
+                                            message: "Operation successful",
+                                            status: res.status,
+                                            licenseKey: licenseKey
+                                        });
                                     });
                                 });
                             });
