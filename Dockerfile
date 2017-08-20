@@ -5,6 +5,7 @@ WORKDIR /usr/src/app
 
 COPY *.js /usr/src/app/
 COPY *.json /usr/src/app/
+COPY res/ /usr/src/app/res/
 COPY src/ /usr/src/app/src/
 COPY www/ /usr/src/app/www/
 
