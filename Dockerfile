@@ -10,13 +10,8 @@ COPY www/ /usr/src/app/www/
 
 RUN ls /usr/src/app/
 
-RUN cd www && \
-    npm install && \
-    npm run build && \
-    cd ..
-
 RUN npm install && \
-    npm run grunt
+    npm run build-prod
 
 # Workaround for segfault in bcrypt
 # See: https://github.com/kelektiv/node.bcrypt.js/issues/528
