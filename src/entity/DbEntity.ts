@@ -1,4 +1,4 @@
-import { AbstractEntity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { AbstractEntity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
 import * as moment from 'moment';
 
 @AbstractEntity()
@@ -18,6 +18,9 @@ export abstract class DbEntity<T extends DbEntity<T>> {
     @Column({default: false})
     deleted: boolean;
 
+    @VersionColumn()
+    version: number;
+
     constructor(o?: Object) {
         if (o) {
             this.deserialize(o);
@@ -31,7 +34,8 @@ export abstract class DbEntity<T extends DbEntity<T>> {
         return {
             uuid:       this.uuid,
             createDate: moment(this.createDate).format("YYYY-MM-DD HH:mm:ss"),
-            lastUpdate: moment(this.lastUpdate).format("YYYY-MM-DD HH:mm:ss")
+            lastUpdate: moment(this.lastUpdate).format("YYYY-MM-DD HH:mm:ss"),
+            version:    this.version
         };
     }
 
