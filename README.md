@@ -33,6 +33,7 @@ The easiest way of getting weweave Commerce up and running is to use our pre-bui
         weweave/commerce
     ```
 1. Access the web frontend at port 3000. Default username is "admin@admin.local", password is "admin".
+1. After logging in with the admin account, change the username and/or password under "Persons" and configure the system further under "Settings".
 
 ### Building from source
 1. Make sure you have [Node.js](https://nodejs.org) installed (tested with Node.js v8).
@@ -49,6 +50,7 @@ The easiest way of getting weweave Commerce up and running is to use our pre-bui
     node dist/server.js
     ```
 1. Access the web frontend at port 3000. Default username is "admin@admin.local", password is "admin".
+1. After logging in with the admin account, change the username and/or password under "Persons" and configure the system further under "Settings".
 
 ## Configuration
 The settings required on server start are in ```config.json```. Make sure to change this file before starting the server.
@@ -73,3 +75,8 @@ The settings required on server start are in ```config.json```. Make sure to cha
     "importTldListOnStart": true
 }
 ```
+
+More settings can be changed at runtime by logging in with an administrator account and navigating to "Settings".
+
+## Documentation
+Check out the documentation at: https://weweave.net/products/commerce/documentation/
