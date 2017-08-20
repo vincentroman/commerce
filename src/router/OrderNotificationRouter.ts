@@ -18,6 +18,8 @@ import { MailTemplateType } from "../entity/MailTemplate";
 import { Email, Address } from "../util/Email";
 import { Person } from "../entity/Person";
 import { PersonDao } from "../dao/PersonDao";
+import { SystemSettingDao } from "../dao/SystemSettingDao";
+import { SystemSettingId } from "../entity/SystemSetting";
 
 class OrderNotificationRouter extends BaseRouter {
     protected init(): void {
@@ -47,6 +49,7 @@ class OrderNotificationRouter extends BaseRouter {
             if (!person.roleCustomer || !person.password) {
                 let personDao: PersonDao = Container.get(PersonDao);
                 let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
+                let settingsDao: SystemSettingDao = Container.get(SystemSettingDao);
                 let plainPassword: string = pwGen.generate({
                     length: 12,
                     numbers: true
@@ -54,17 +57,21 @@ class OrderNotificationRouter extends BaseRouter {
                 person.setPlainPassword(plainPassword);
                 person.roleCustomer = true;
                 personDao.save(person).then(person => {
-                    mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
-                        let recipient: Address = {
-                            name: person.firstname + " " + person.lastname,
-                            email: person.email
-                        };
-                        let params = {
-                            username: person.email,
-                            password: plainPassword
-                        };
-                        Email.sendByTemplate(template, recipient, params).then(() => {
-                            resolve(person);
+                    mailTemplateDao.getByType(MailTemplateType.NewAccount).then((template) => {
+                        settingsDao.getString(SystemSettingId.Site_Url, "").then(siteUrl => {
+                            let recipient: Address = {
+                                name: person.firstname + " " + person.lastname,
+                                email: person.email
+                            };
+                            let params = {
+                                firstname: person.firstname,
+                                lastname: person.lastname,
+                                siteUrl: siteUrl,
+                                password: plainPassword
+                            };
+                            Email.sendByTemplate(template, recipient, params).then(() => {
+                                resolve(person);
+                            }).catch(e => reject(e));
                         }).catch(e => reject(e));
                     }).catch(e => reject(e));
                 }).catch(e => reject(e));
@@ -82,19 +89,24 @@ class OrderNotificationRouter extends BaseRouter {
         return Promise.all<void>(process);
     }
 
-    private checkOrderItemTriggers(item: PurchaseItem): Promise<void> {
+    private async checkOrderItemTriggers(item: PurchaseItem): Promise<void> {
+        let siteUrl = await Container.get(SystemSettingDao).getString(SystemSettingId.Site_Url, "");
         return new Promise<void>((resolve, reject) => {
             let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
             let productVariant: ProductVariant = item.productVariant;
             let type: ProductVariantType = productVariant.type;
+            let customer: Person = item.purchase.customer;
             let recipient: Address = {
-                name: item.purchase.customer.firstname + " " + item.purchase.customer.lastname,
-                email: item.purchase.customer.email
+                name: customer.firstname + " " + customer.lastname,
+                email: customer.email
             };
             if (type === ProductVariantType.Eval) {
                 mailTemplateDao.getByType(MailTemplateType.DownloadEval).then((template) => {
                     let params = {
-                        productName: item.productVariant.product.title
+                        firstname: customer.firstname,
+                        lastname: customer.lastname,
+                        siteUrl: siteUrl,
+                        product: item.productVariant.product.title
                     };
                     Email.sendByTemplate(template, recipient, params).then(() => {
                         resolve();
@@ -104,7 +116,10 @@ class OrderNotificationRouter extends BaseRouter {
                 this.createLicenseKeyRequest(item).then(licenseKey => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let params = {
-                            productName: item.productVariant.product.title
+                            firstname: customer.firstname,
+                            lastname: customer.lastname,
+                            siteUrl: siteUrl,
+                            product: item.productVariant.product.title
                         };
                         Email.sendByTemplate(template, recipient, params).then(() => {
                             resolve();
@@ -115,7 +130,10 @@ class OrderNotificationRouter extends BaseRouter {
                 this.createLicenseKeyRequest(item).then(licenseKey => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let params = {
-                            productName: item.productVariant.product.title
+                            firstname: customer.firstname,
+                            lastname: customer.lastname,
+                            siteUrl: siteUrl,
+                            product: item.productVariant.product.title
                         };
                         Email.sendByTemplate(template, recipient, params).then(() => {
                             resolve();
@@ -126,7 +144,10 @@ class OrderNotificationRouter extends BaseRouter {
                 this.createLicenseKeyRequest(item).then(licenseKey => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let params = {
-                            productName: item.productVariant.product.title
+                            firstname: customer.firstname,
+                            lastname: customer.lastname,
+                            siteUrl: siteUrl,
+                            product: item.productVariant.product.title
                         };
                         Email.sendByTemplate(template, recipient, params).then(() => {
                             resolve();
@@ -137,7 +158,10 @@ class OrderNotificationRouter extends BaseRouter {
                 this.createSupportRequest(item).then(supportTicket => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseSupportTicket).then((template) => {
                         let params = {
-                            productName: item.productVariant.product.title
+                            firstname: customer.firstname,
+                            lastname: customer.lastname,
+                            siteUrl: siteUrl,
+                            product: item.productVariant.product.title
                         };
                         Email.sendByTemplate(template, recipient, params).then(() => {
                             resolve();
