@@ -1,14 +1,9 @@
 export class DomainList {
-    private static LOCAL_DOMAINS: string = "(.*\\.)?localhost|(.*)?\\.local";
     private static DOMAIN_PREFIX: string = "(.*\\.)?";
 
     domains: string[] = [];
-    strict: boolean = true;
 
-    constructor(strict?: boolean, regex?: RegExp|string) {
-        if (strict !== undefined) {
-            this.strict = strict;
-        }
+    constructor(regex?: RegExp|string) {
         if (regex !== undefined) {
             if (regex instanceof RegExp) {
                 this.domains = this.extractDomains(regex.source);
@@ -18,14 +13,20 @@ export class DomainList {
         }
     }
 
-    public addDomain(domain: string): void {
+    public addDomain(domain: string, assureIncludeDot?: boolean, assureSingleDot?: boolean): void {
+        if (assureIncludeDot === undefined) {
+            assureIncludeDot = true;
+        }
+        if (assureSingleDot === undefined) {
+            assureSingleDot = true;
+        }
         if (domain === undefined || domain == null || domain === "") {
             throw new Error("Domain must not be null or empty");
         }
-        if (domain.indexOf(".") === -1) {
+        if (assureIncludeDot && domain.indexOf(".") === -1) {
             throw new Error("Domain must consist of top and second level domain");
         }
-        if (this.strict && domain.indexOf(".") !== domain.lastIndexOf(".")) {
+        if (assureSingleDot && domain.indexOf(".") !== domain.lastIndexOf(".")) {
             throw new Error("There must be exactly one dot (.) in the domain name");
         }
         if (new RegExp(".*[\\*\\[\\]\\{\\}\\(\\)\\?\\+].*").test(domain)) {
@@ -36,10 +37,14 @@ export class DomainList {
 
     public getRegex(): RegExp {
         let regex: string = "";
-        regex += "^" + DomainList.LOCAL_DOMAINS;
-        this.domains.forEach(domain => {
-            regex += "|" + DomainList.DOMAIN_PREFIX + domain.replace(".", "\\.");
-        });
+        regex += "^";
+        for (let i = 0; i < this.domains.length; i++) {
+            if (i > 0) {
+                regex += "|";
+            }
+            let domain = this.domains[i];
+            regex += DomainList.DOMAIN_PREFIX + domain.replace(".", "\\.");
+        }
         regex += "$";
         return new RegExp(regex);
     }
@@ -48,11 +53,6 @@ export class DomainList {
         let result: string[] = [];
         if (regex.startsWith("^")) {
             regex = regex.substr(1);
-        }
-        if (regex.startsWith(DomainList.LOCAL_DOMAINS)) {
-            result.push("localhost");
-            result.push("*.local");
-            regex = regex.substr(DomainList.LOCAL_DOMAINS.length);
         }
         if (regex.endsWith("$")) {
             regex = regex.substr(0, regex.length-1);

@@ -59,6 +59,7 @@ export enum SystemSettingId {
     NumDays_About_To_Expire = 30,
     LicenseKey_PrivateKey = 50,
     LicenseKey_PublicKey = 51,
+    LicenseKey_AutoIncludeDomains = 52,
     Tld_List_Version = 901
 }
 

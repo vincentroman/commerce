@@ -9,6 +9,8 @@ describe("DomainList", () => {
     describe("getRegex()", () => {
         it("Should generate correct regex", () => {
             let dl: DomainList = new DomainList();
+            dl.addDomain("localhost", false, false);
+            dl.addDomain("local", false, false);
             dl.addDomain("weweave.net");
             dl.addDomain("microsoft.de");
             let regex: RegExp = dl.getRegex();
@@ -64,13 +66,15 @@ describe("DomainList", () => {
     describe("extractDomains()", () => {
         it("Should extract the correct domain names", () => {
             let dl: DomainList = new DomainList();
+            dl.addDomain("localhost", false, false);
+            dl.addDomain("local", false, false);
             dl.addDomain("weweave.net");
             dl.addDomain("microsoft.de");
             let regex: RegExp = dl.getRegex();
-            dl = new DomainList(undefined, regex);
+            dl = new DomainList(regex);
             let domains = dl.domains;
             expect(domains.length).to.equal(4);
-            expect(domains[0]).to.equal("localhost");
+            expect(domains[0]).to.equal("*.localhost");
             expect(domains[1]).to.equal("*.local");
             expect(domains[2]).to.equal("*.weweave.net");
             expect(domains[3]).to.equal("*.microsoft.de");

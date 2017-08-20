@@ -180,6 +180,8 @@ export class DefaultSettingsCheck {
             "", "RSA Private Key for License Key Encoding");
         dao.createIfNotExists(SystemSettingId.LicenseKey_PublicKey, SystemSettingType.MultiLine,
             "", "RSA Public Key for License Key Encoding");
+        dao.createIfNotExists(SystemSettingId.LicenseKey_AutoIncludeDomains, SystemSettingType.MultiLine,
+            "localhost\nlocal", "Domains automatically to be included in License Keys");
         dao.createIfNotExists(SystemSettingId.Tld_List_Version, SystemSettingType.Integer, "0", "TLD List Version", true);
     }
 

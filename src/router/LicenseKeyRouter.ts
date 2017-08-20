@@ -117,7 +117,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     private sendOneItem(res: Response, entity: LicenseKey): void {
         if (entity.licenseKey) {
             this.getDomainRegexFromLicenseKey(entity.licenseKey).then(regex => {
-                let dl: DomainList = new DomainList(true, regex);
+                let dl: DomainList = new DomainList(regex);
                 res.send(entity.serialize(dl.domains));
             });
         } else {
@@ -162,42 +162,31 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
 
     private generate(req: Request, res: Response, next: NextFunction): void {
         let encoder: LicenseKeyEncoder = new LicenseKeyEncoder();
-        let subject: string = "";
+        let wildcard = false;
         if (req.body.wildcard) {
-            subject = "^.*$";
-        } else {
-            let domains: string[] = req.body.domains;
-            if (!domains) {
-                this.badRequest(res);
-                return;
-            }
-            let dl: DomainList = new DomainList(false);
-            domains.forEach(domain => dl.addDomain(domain));
-            subject = dl.getRegex().source;
+            wildcard = true;
         }
-        Container.get(ProductDao).getByUuid(req.body.productUuid).then(product => {
-            Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PrivateKey).then(privateKeySetting => {
-                encoder.issueDate = new Date();
-                encoder.expiryDate = moment().add(req.body.validMonths, "months").toDate();
-                encoder.description = "License Key generated manually";
-                encoder.onlineVerification = req.body.onlineVerification;
-                encoder.owner = req.body.owner;
-                encoder.uuid = req.body.uuid;
-                encoder.product = product.licenseKeyIdentifier;
-                encoder.subject = subject;
-                encoder.type = req.body.type;
-                let licenseKey = encoder.toString(privateKeySetting.value);
-                res.status(200).send({
-                    message: "Operation successful",
-                    status: res.status,
-                    licenseKey: licenseKey
-                });
-            }).catch((e) => {
-                this.internalServerError(res);
-            });
-        }).catch((e) => {
-            this.badRequest(res);
-        });
+        this.getLicenseEncoderSubject(wildcard, req.body.domains).then(subject => {
+            Container.get(ProductDao).getByUuid(req.body.productUuid).then(product => {
+                Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PrivateKey).then(privateKeySetting => {
+                    encoder.issueDate = new Date();
+                    encoder.expiryDate = moment().add(req.body.validMonths, "months").toDate();
+                    encoder.description = "License Key generated manually";
+                    encoder.onlineVerification = req.body.onlineVerification;
+                    encoder.owner = req.body.owner;
+                    encoder.uuid = req.body.uuid;
+                    encoder.product = product.licenseKeyIdentifier;
+                    encoder.subject = subject;
+                    encoder.type = req.body.type;
+                    let licenseKey = encoder.toString(privateKeySetting.value);
+                    res.status(200).send({
+                        message: "Operation successful",
+                        status: res.status,
+                        licenseKey: licenseKey
+                    });
+                }).catch(e => this.internalServerError(res));
+            }).catch(e => this.badRequest(res));
+        }).catch(e => this.badRequest(res));
     }
 
     private issue(req: Request, res: Response, next: NextFunction): void {
@@ -254,7 +243,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         }).catch(e => this.notFound(res));
     }
 
-    private buildDomainList(domains: string[]): Promise<DomainList> {
+    private async buildDomainList(domains: string[]): Promise<DomainList> {
         let dao: TopLevelDomainDao = Container.get(TopLevelDomainDao);
         return new Promise<DomainList>((resolve, reject) => {
             Promise.all(domains.map(domain => {
@@ -284,11 +273,20 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                     }
                 });
             })).then(domains => {
-                let dl: DomainList = new DomainList(false);
-                for (let domain of domains) {
-                    dl.addDomain(domain);
-                }
-                resolve(dl);
+                let dl: DomainList = new DomainList();
+                Container.get(SystemSettingDao).getString(SystemSettingId.LicenseKey_AutoIncludeDomains, "").then(autoIncludes => {
+                    let autoIncludeTokens: string[] = autoIncludes.split("\n");
+                    for (let domain of autoIncludeTokens) {
+                        domain = domain.trim();
+                        if (domain) {
+                            dl.addDomain(domain, false, false);
+                        }
+                    }
+                    for (let domain of domains) {
+                        dl.addDomain(domain);
+                    }
+                    resolve(dl);
+                });
             }).catch(e => reject(e));
         });
     }
@@ -303,6 +301,34 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         } else {
             return "";
         }
+    }
+
+    private async getLicenseEncoderSubject(wildcard: boolean, domains?: string[]): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            if (wildcard) {
+                resolve("^.*$");
+            } else if (!wildcard && domains !== undefined && domains.length > 0) {
+                let dl: DomainList = new DomainList();
+                Container.get(SystemSettingDao).getString(SystemSettingId.LicenseKey_AutoIncludeDomains, "").then(autoIncludes => {
+                    let autoIncludeTokens: string[] = autoIncludes.split("\n");
+                    for (let domain of autoIncludeTokens) {
+                        domain = domain.trim();
+                        if (domain) {
+                            dl.addDomain(domain, false, false);
+                        }
+                    }
+                    for (let domain of domains) {
+                        domain = domain.trim();
+                        if (domain) {
+                            dl.addDomain(domain);
+                        }
+                    }
+                    resolve(dl.getRegex().source);
+                });
+            } else {
+                resolve("");
+            }
+        });
     }
 }
 
