@@ -9,13 +9,13 @@ export class Purchase extends DbEntity<Purchase> {
     @ManyToOne(type => Person)
     customer: Person;
 
-    @ManyToOne(type => Broker)
+    @ManyToOne(type => Broker, {nullable: true})
     broker: Broker;
 
     @OneToMany(type => PurchaseItem, purchaseItem => purchaseItem.purchase)
     items: PurchaseItem[];
 
-    @Column()
+    @Column({nullable: true})
     referenceId: string;
 
     public serialize(): Object {
