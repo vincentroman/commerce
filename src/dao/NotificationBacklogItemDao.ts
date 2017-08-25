@@ -42,15 +42,15 @@ export class NotificationBacklogItemDao extends Dao<NotificationBacklogItem> {
             return;
         }
         let daysRemainingList: number[] = this.getExpiryDaysRemainingList(licenseKey);
-        for (let daysRemining of daysRemainingList) {
+        for (let daysRemaining of daysRemainingList) {
             let item: NotificationBacklogItem = new NotificationBacklogItem();
             item.type = NotificationType.REMIND_EXPIRY;
             item.person = licenseKey.customer;
-            item.dueDate = moment(licenseKey.expiryDate).subtract(daysRemining, "days").toDate();
+            item.dueDate = moment(licenseKey.expiryDate).subtract(daysRemaining, "days").toDate();
             item.setPayload({
                 licenseKeyId: licenseKey.id,
                 productId: licenseKey.productVariant.product.id,
-                daysRemaining: daysRemining
+                daysRemaining: daysRemaining
             });
             await this.save(item);
         }
