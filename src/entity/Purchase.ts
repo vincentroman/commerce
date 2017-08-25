@@ -18,10 +18,10 @@ export class Purchase extends DbEntity<Purchase> {
     @Column({nullable: true})
     referenceId: string;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
-            customer: (this.customer ? this.customer.serialize() : null),
-            broker: (this.broker ? this.broker.serialize() : null),
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
+            customer: (this.customer ? this.customer.serialize(true) : null),
+            broker: (this.broker ? this.broker.serialize(true) : null),
             itemIds: (this.items ? this.items.map(item => item.uuid) : []),
             referenceId: this.referenceId
         });

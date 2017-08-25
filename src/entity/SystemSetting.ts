@@ -18,8 +18,8 @@ export class SystemSetting extends DbEntity<SystemSetting> {
     @Column()
     internal: boolean = false;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             id: this.settingId,
             description: this.description,
             type: this.type,

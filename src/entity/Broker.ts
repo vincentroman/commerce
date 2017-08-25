@@ -9,8 +9,8 @@ export class Broker extends DbEntity<Broker> {
     @Column("text", {nullable: true})
     mappingTemplate: string;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             name: this.name,
             mappingTemplate: this.mappingTemplate
         });

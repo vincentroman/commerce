@@ -13,8 +13,8 @@ export class Product extends DbEntity<Product> {
     @OneToMany(type => ProductVariant, variant => variant.product)
     variants: ProductVariant[];
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             title: this.title,
             licenseKeyIdentifier: this.licenseKeyIdentifier
         });

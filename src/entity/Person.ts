@@ -40,8 +40,8 @@ export class Person extends DbEntity<Person> {
         return bcrypt.compareSync(password, this.password);
     }
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             company:    this.company,
             firstname:  this.firstname,
             lastname:   this.lastname,

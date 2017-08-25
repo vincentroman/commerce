@@ -17,12 +17,12 @@ export class Comment extends DbEntity<Comment> {
     @ManyToOne(type => Person, {nullable: false})
     author: Person;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             text: this.text,
             customerUuid: (this.customer ? this.customer.uuid : null),
             supportTicketUuid: (this.supportTicket ? this.supportTicket.uuid : null),
-            author: (this.author ? this.author.serialize() : null)
+            author: (this.author ? this.author.serialize(true) : null)
         });
     }
 

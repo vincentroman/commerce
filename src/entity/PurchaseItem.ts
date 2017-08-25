@@ -14,10 +14,10 @@ export class PurchaseItem extends DbEntity<PurchaseItem> {
     @Column()
     quantity: number;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             purchaseId: (this.purchase ? this.purchase.uuid : null),
-            productVariant: (this.productVariant ? this.productVariant.serialize() : null),
+            productVariant: (this.productVariant ? this.productVariant.serialize(true) : null),
             quantity: this.quantity
         });
     }

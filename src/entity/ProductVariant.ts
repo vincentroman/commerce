@@ -22,10 +22,10 @@ export class ProductVariant extends DbEntity<ProductVariant> {
     @Column("double")
     price: number;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             title: this.title,
-            product: (this.product ? this.product.serialize() : null),
+            product: (this.product ? this.product.serialize(true) : null),
             type: this.type,
             numDomains: this.numDomains,
             numSupportYears: this.numSupportYears,

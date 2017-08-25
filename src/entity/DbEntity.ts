@@ -27,8 +27,8 @@ export abstract class DbEntity<T extends DbEntity<T>> {
         }
     }
 
-    public serialize(): Object {
-        if (this.deleted) {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        if (!skipDeletedCheck && this.deleted) {
             throw new Error("Must not serialize a deleted entity");
         }
         return {

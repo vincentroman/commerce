@@ -17,10 +17,10 @@ export class BrokerProductVariant extends DbEntity<BrokerProductVariant> {
     @Column({nullable: true})
     url: string;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             broker: this.broker.serialize(),
-            productVariant: this.productVariant.serialize(),
+            productVariant: this.productVariant.serialize(true),
             idForBroker: this.idForBroker,
             url: this.url
         });

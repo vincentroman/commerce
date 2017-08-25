@@ -16,8 +16,8 @@ export class NotificationBacklogItem extends DbEntity<NotificationBacklogItem> {
     @ManyToOne(type => Person)
     person: Person;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
         });
     }
 

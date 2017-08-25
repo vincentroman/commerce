@@ -12,8 +12,8 @@ export class MailTemplate extends DbEntity<MailTemplate> {
     @Column("text")
     body: string;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             type: this.type,
             subject: this.subject,
             body: this.body

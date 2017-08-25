@@ -118,7 +118,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         if (entity.licenseKey) {
             this.getDomainRegexFromLicenseKey(entity.licenseKey).then(regex => {
                 let dl: DomainList = new DomainList(regex);
-                res.send(entity.serialize(dl.domains));
+                res.send(entity.serialize(false, dl.domains));
             });
         } else {
             res.send(entity.serialize());

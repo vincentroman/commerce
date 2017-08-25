@@ -25,13 +25,13 @@ export class SupportTicket extends DbEntity<SupportTicket> {
     @Column()
     status: SupportRequestStatus;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             text: this.text,
             sendDate: (this.sendDate ? moment(this.sendDate).format("YYYY-MM-DD HH:mm:ss") : null),
-            productVariant: (this.productVariant ? this.productVariant.serialize() : null),
-            customer: (this.customer ? this.customer.serialize() : null),
-            purchaseItem: (this.purchaseItem ? this.purchaseItem.serialize() : null),
+            productVariant: (this.productVariant ? this.productVariant.serialize(true) : null),
+            customer: (this.customer ? this.customer.serialize(true) : null),
+            purchaseItem: (this.purchaseItem ? this.purchaseItem.serialize(true) : null),
             status: this.status
         });
     }

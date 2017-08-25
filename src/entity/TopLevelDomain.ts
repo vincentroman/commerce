@@ -6,8 +6,8 @@ export class TopLevelDomain extends DbEntity<TopLevelDomain> {
     @Column({unique: true})
     tld: string;
 
-    public serialize(): Object {
-        return Object.assign(super.serialize(), {
+    public serialize(skipDeletedCheck?: boolean): Object {
+        return Object.assign(super.serialize(skipDeletedCheck), {
             tld: this.tld
         });
     }
