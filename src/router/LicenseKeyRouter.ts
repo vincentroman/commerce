@@ -117,8 +117,12 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     private sendOneItem(res: Response, entity: LicenseKey): void {
         if (entity.licenseKey) {
             this.getDomainRegexFromLicenseKey(entity.licenseKey).then(regex => {
-                let dl: DomainList = new DomainList(regex);
-                res.send(entity.serialize(false, dl.domains));
+                if (regex) {
+                    let dl: DomainList = new DomainList(regex);
+                    res.send(entity.serialize(false, dl.domains));
+                } else {
+                    res.send(entity.serialize());
+                }
             });
         } else {
             res.send(entity.serialize());
@@ -127,8 +131,12 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
 
     private getDomainRegexFromLicenseKey(licenseKey: string): Promise<string> {
         return Container.get(SystemSettingDao).getBySettingId(SystemSettingId.LicenseKey_PublicKey).then(publicKeySetting => {
-            let encoder: LicenseKeyEncoder = LicenseKeyEncoder.factory(licenseKey, publicKeySetting.value);
-            return encoder.subject;
+            try {
+                let encoder: LicenseKeyEncoder = LicenseKeyEncoder.factory(licenseKey, publicKeySetting.value);
+                return encoder.subject;
+            } catch (e) {
+                return "";
+            }
         });
     }
 

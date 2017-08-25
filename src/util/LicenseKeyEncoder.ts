@@ -66,9 +66,14 @@ export class LicenseKeyEncoder {
     }
 
     public static factory(licenseKey: string, publicKey: string): LicenseKeyEncoder {
-        let json: any = JSON.parse(Buffer.from(licenseKey, 'base64').toString());
+        let json: any;
+        try {
+            json = JSON.parse(Buffer.from(licenseKey, 'base64').toString());
+        } catch (e) {
+            throw new Error("Could not JSON-decode license key");
+        }
         if (!LicenseKeyEncoder.isSignatureValid(json.details, json.signature, publicKey)) {
-            throw new Error("Invalid signature");
+            throw new Error("Invalid signature (might be the wrong version)");
         }
         let detailsDecoded: any = JSON.parse(Buffer.from(json.details, 'base64').toString());
         let key: LicenseKeyEncoder = new LicenseKeyEncoder();
