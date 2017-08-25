@@ -11,3 +11,7 @@ if (location.hostname !== "localhost") {
 }
 const platform = platformBrowserDynamic();
 platform.bootstrapModule(AppModule);
+
+window.setInterval(function() {
+    $(".navbar").height($(document).height() - 2);
+}, 250);

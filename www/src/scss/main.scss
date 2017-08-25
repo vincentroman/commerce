@@ -12,6 +12,12 @@ h1 {
   margin-bottom: 30px;
 }
 
+.poweredby {
+  font-size: 12px;
+  position: absolute;
+  bottom: 10px;
+}
+
 table {
   tr.clickable {
     cursor: pointer;
@@ -35,6 +41,8 @@ section {
 .main {
   /* Add gap to nav and right windows.*/
   padding: 30px;
+  padding-bottom: 75px;
+  min-height: 100%;
 
   .row {
     padding: 0px;
