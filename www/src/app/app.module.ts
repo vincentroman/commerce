@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { FormsModule } from "@angular/forms";
 import { HttpModule }    from "@angular/http";
-import { RouterModule } from "@angular/router";
+import { RouterModule, Router, NavigationStart } from "@angular/router";
 
 import { AppComponent } from "./component/app.component";
 import { HomeComponent } from "./component/home.component";
@@ -113,4 +113,12 @@ import { ConfirmEmailComponent } from "./component/confirm-email.component";
         NavComponent
     ]
 })
-export class AppModule {}
+export class AppModule {
+    constructor(private router: Router) {
+        router.events.subscribe(event => {
+            if (event instanceof NavigationStart) {
+                window.scrollTo(0, 0);
+            }
+        });
+    }
+}
