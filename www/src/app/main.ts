@@ -13,9 +13,13 @@ const platform = platformBrowserDynamic();
 platform.bootstrapModule(AppModule);
 
 window.setInterval(function() {
-    let navHeight: number = $(".navbar-collapse").height();
-    let mainHeight: number = $(".main").outerHeight();
-    let windowInnerHeight: number = window.innerHeight;
-    let targetHeight: number = Math.max(navHeight, mainHeight, windowInnerHeight);
-    $(".navbar").height(targetHeight - 2);
+    if (window.innerWidth >= 768) {
+        let navHeight: number = $(".navbar-collapse").height();
+        let mainHeight: number = $(".main").outerHeight();
+        let windowInnerHeight: number = window.innerHeight;
+        let targetHeight: number = Math.max(navHeight, mainHeight, windowInnerHeight);
+        $(".navbar").height(targetHeight - 2);
+    } else {
+        $(".navbar").height("auto");
+    }
 }, 250);
