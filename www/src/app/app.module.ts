@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { FormsModule } from "@angular/forms";
 import { HttpModule }    from "@angular/http";
-import { RouterModule, Router, NavigationStart } from "@angular/router";
+import { RouterModule, Router, NavigationStart, NavigationEnd } from "@angular/router";
 
 import { AppComponent } from "./component/app.component";
 import { HomeComponent } from "./component/home.component";
@@ -118,6 +118,13 @@ export class AppModule {
         router.events.subscribe(event => {
             if (event instanceof NavigationStart) {
                 window.scrollTo(0, 0);
+            }
+            if (event instanceof NavigationEnd) {
+                if ($(".main .poweredby").length === 0) {
+                    $(".main").append("<p class='poweredby'>Powered by " +
+                        "<a href='https://weweave.net/products/commerce' target='_blank'>weweave Commerce</a>" +
+                        ".</p>");
+                }
             }
         });
     }
