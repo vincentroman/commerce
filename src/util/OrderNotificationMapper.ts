@@ -66,7 +66,7 @@ export class OrderNotificationMapper {
             return new Promise<PurchaseItem>((resolve, reject) => {
                 brokerProductVariantDao.getByBrokerId(broker, json.id).then((brokerProductVariant) => {
                     if (brokerProductVariant === undefined || brokerProductVariant == null) {
-                        reject(new Error("No such id for broker: " + json.id));
+                        reject(new Error("No such broker-product-variant for broker: " + json.id));
                         return;
                     }
                     let item: PurchaseItem = new PurchaseItem();

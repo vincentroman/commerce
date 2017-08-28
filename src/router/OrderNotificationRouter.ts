@@ -27,9 +27,10 @@ class OrderNotificationRouter extends BaseRouter {
     }
 
     private notify(req: Request, res: Response, next: NextFunction): void {
-        let brokderId = req.params.id;
+        let brokerId = req.params.id;
         let brokerDao: BrokerDao = Container.get(BrokerDao);
-        brokerDao.getByUuid(brokderId).then((broker) => {
+        console.log("Incoming order notification for broker uuid %s with content %s", brokerId, JSON.stringify(req.body));
+        brokerDao.getByUuid(brokerId).then((broker) => {
             if (broker) {
                 OrderNotificationMapper.map(req.body, broker, true).then((order) => {
                     this.checkCreateUserAccount(order.customer).then(() => {
@@ -37,8 +38,12 @@ class OrderNotificationRouter extends BaseRouter {
                             this.saved(res, order);
                         });
                     });
-                }).catch(e => this.badRequest(res));
+                }).catch(e => {
+                    console.log("Order Notification Mapping failed: " + e.stack);
+                    this.badRequest(res);
+                });
             } else {
+                console.log("No such broker: %s", brokerId);
                 this.notFound(res);
             }
         }).catch(e => this.notFound(res));
