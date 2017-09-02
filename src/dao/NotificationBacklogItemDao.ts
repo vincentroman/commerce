@@ -5,6 +5,7 @@ import { NotificationBacklogItem, NotificationType } from "../entity/Notificatio
 import * as moment from "moment";
 import { LicenseKey } from "../entity/LicenseKey";
 import { ProductVariantType } from "../entity/ProductVariant";
+import { Config } from "../util/Config";
 
 @Service()
 export class NotificationBacklogItemDao extends Dao<NotificationBacklogItem> {
@@ -25,7 +26,7 @@ export class NotificationBacklogItemDao extends Dao<NotificationBacklogItem> {
             .innerJoinAndSelect("nbi.person", "person")
             .where("nbi.deleted != 1")
             .andWhere("nbi.type = :type", {type: type})
-            .andWhere("DATETIME(nbi.dueDate) <= DATETIME(:date)", {date: today})
+            .andWhere(this.getDateComparisonString("nbi.dueDate", ":date"), {date: today})
             .orderBy("nbi.dueDate", "ASC")
             .getMany();
     }
@@ -53,6 +54,22 @@ export class NotificationBacklogItemDao extends Dao<NotificationBacklogItem> {
                 daysRemaining: daysRemaining
             });
             await this.save(item);
+        }
+    }
+
+    private getDateComparisonString(field: string, parameter: string): string {
+        let config: any = Config.getInstance().get("database");
+        let driver: string = config.driver.type.toLowerCase();
+        if (driver === "sqlite") {
+            return "DATETIME(" + field + ") <= DATETIME(" + parameter + ")";
+        } else if (driver === "mysql" || driver === "mariadb") {
+            return field + " <= STR_TO_DATE(" + parameter + ", '%Y-%m-%d %H:%i:%s')";
+        } else if (driver === "mssql") {
+            return field + " <= CONVERT(DATETIME, " + parameter + ", 120)";
+        } else if (driver === "postgres" || driver === "oracle") {
+            return field + " <= TO_DATE(" + parameter + ", 'YYYY-MM-DD HH24-MI-SS')";
+        } else {
+            return "UNSUPPORTED DATABASE DRIVER";
         }
     }
 
