@@ -1,0 +1,9 @@
+{
+    "order-notification.order._attributes.id": "id",
+    "order-notification.order.customer.address.first-name._text": "customer.firstname",
+    "order-notification.order.customer.address.last-name._text": "customer.lastname",
+    "order-notification.order.customer.address.company._text": "customer.company",
+    "order-notification.order.customer.address.email._text": "customer.email",
+    "order-notification.order.order-item.product._attributes.id": "items[].id",
+    "order-notification.order.order-item.quantity._text": "items[].quantity"
+}

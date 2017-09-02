@@ -1,0 +1,8 @@
+{
+    "InvoiceID": "id",
+    "BillToFirstName": "customer.firstname",
+    "BillToLastName": "customer.lastname",
+    "BillToEmail": "customer.email",
+    "OptionID": "items[].id",
+    "Quantity": "items[].quantity"
+}

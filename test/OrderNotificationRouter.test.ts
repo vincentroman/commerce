@@ -1,5 +1,7 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
+import * as fs from 'fs';
+import * as path from 'path';
 import chaiHttp = require('chai-http');
 
 import { Container } from "typedi";
@@ -28,7 +30,7 @@ const expect = chai.expect;
 let endpoint = '/api/v1/ordernotification/';
 
 describe('Router '+endpoint, () => {
-    let broker1: Broker, broker2: Broker;
+    let broker1: Broker, broker2: Broker, broker3: Broker;
 
     before(done => {
         if (App.getInstance().ready) { done(); }
@@ -41,84 +43,35 @@ describe('Router '+endpoint, () => {
         let productVariantDao: ProductVariantDao = Container.get(ProductVariantDao);
         let bpvDao: BrokerProductVariantDao = Container.get(BrokerProductVariantDao);
         broker1 = new Broker();
-        broker1.mappingTemplate = JSON.stringify({
-            "id": {
-                "path": "order-notification.order._attributes.id"
-            },
-            "customer": {
-                "path": "order-notification.order.customer",
-                "nested": {
-                    "firstname": {
-                        "path": "address.first-name._text"
-                    },
-                    "lastname": {
-                        "path": "address.last-name._text"
-                    },
-                    "company": {
-                        "path": "address.company._text"
-                    },
-                    "email": {
-                        "path": "address.email._text"
-                    }
-                }
-            },
-            "items": {
-                "path": "order-notification.order.order-item",
-                "nested": {
-                    "id": "product._attributes.id",
-                    "quantity": "quantity._text"
-                }
-            }
-        });
-        broker1.name = "DNN Store";
+        broker1.mappingTemplate = fs.readFileSync(path.join(process.cwd(), "./test/res/xmlstore.map.json"), "utf8");
+        broker1.name = "XML Store";
         broker2 = new Broker();
-        broker2.mappingTemplate = JSON.stringify({
-            "id": {
-                "path": "id"
-            },
-            "customer": {
-                "path": "customer",
-                "nested": {
-                    "firstname": {
-                        "path": "firstName"
-                    },
-                    "lastname": {
-                        "path": "lastName"
-                    },
-                    "company": {
-                        "path": "company"
-                    },
-                    "email": {
-                        "path": "email"
-                    }
-                }
-            },
-            "items": {
-                "path": "items",
-                "nested": {
-                    "id": "productName",
-                    "quantity": "quantity"
-                }
-            }
-        });
+        broker2.mappingTemplate = fs.readFileSync(path.join(process.cwd(), "./test/res/fastspring.map.json"), "utf8");
         broker2.name = "FastSpring";
-        brokerDao.save(broker1).then((broker) => {
-            brokerDao.save(broker2).then((broker2) => {
-                let p1: Product = new Product();
-                p1.title = "WP Ajaxify Comments";
-                p1.licenseKeyIdentifier = "WpAjaxifyComments";
-                productDao.save(p1).then((p1) => {
-                    let pv1: ProductVariant = new ProductVariant();
-                    pv1.product = p1;
-                    pv1.title = "PV 1";
-                    pv1.type = ProductVariantType.LimitedLicense;
-                    pv1.numDomains = 1;
-                    pv1.numSupportYears = 1;
-                    pv1.price = 99;
-                    productVariantDao.save(pv1).then((pv1) => {
-                        bpvDao.addOrReplace(broker2, pv1, "wpac-support-ticket").then(() => {
-                            bpvDao.addOrReplace(broker1, pv1, "55305-9").then(() => {
-                                done();
+        broker3 = new Broker();
+        broker3.mappingTemplate = fs.readFileSync(path.join(process.cwd(), "./test/res/dnnstore.map.json"), "utf8");
+        broker3.name = "DNN Store";
+        brokerDao.save(broker1).then(() => {
+            brokerDao.save(broker2).then(() => {
+                brokerDao.save(broker3).then(() => {
+                    let p1: Product = new Product();
+                    p1.title = "WP Ajaxify Comments";
+                    p1.licenseKeyIdentifier = "WpAjaxifyComments";
+                    productDao.save(p1).then(() => {
+                        let pv1: ProductVariant = new ProductVariant();
+                        pv1.product = p1;
+                        pv1.title = "PV 1";
+                        pv1.type = ProductVariantType.LimitedLicense;
+                        pv1.numDomains = 1;
+                        pv1.numSupportYears = 1;
+                        pv1.price = 99;
+                        productVariantDao.save(pv1).then(() => {
+                            bpvDao.addOrReplace(broker2, pv1, "wpac-support-ticket").then(() => {
+                                bpvDao.addOrReplace(broker1, pv1, "55305-9").then(() => {
+                                    bpvDao.addOrReplace(broker3, pv1, "3").then(() => {
+                                        done();
+                                    }).catch(e => done(e));
+                                }).catch(e => done(e));
                             }).catch(e => done(e));
                         }).catch(e => done(e));
                     }).catch(e => done(e));
@@ -147,22 +100,7 @@ describe('Router '+endpoint, () => {
 
     describe('POST '+endpoint, () => {
         it("Should successfully accept a valid JSON", () => {
-            let input = '{'+
-                '"id": "WEW150414-9157-20105",'+
-                '"items": ['+
-                    '{'+
-                        '"productName": "wpac-support-ticket",'+
-                        '"priceTotalUSD": 22.81,'+
-                        '"quantity": 1'+
-                    '}'+
-                '],'+
-                '"customer": {'+
-                    '"firstName": "John",'+
-                    '"lastName": "Doe",'+
-                    '"company": "",'+
-                    '"email": "no-reply@weweave.net"'+
-                '}'+
-            '}';
+            let input = fs.readFileSync(path.join(process.cwd(), "./test/res/fastspring.json"), "utf8");
             return chai.request(App.getInstance().express).post(endpoint + broker2.uuid)
             .set('Content-Type', 'application/json')
             .send(input)

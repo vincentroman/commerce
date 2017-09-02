@@ -1,0 +1,9 @@
+{
+    "id": "id",
+    "customer.firstName": "customer.firstname",
+    "customer.lastName": "customer.lastname",
+    "customer.company": "customer.company",
+    "customer.email": "customer.email",
+    "items[].productName": "items[].id",
+    "items[].quantity": "items[].quantity"
+}

@@ -2,7 +2,7 @@
     "id": "WEW150414-9157-20105",
     "items": [
         {
-            "productName": "dnn-dynamic-redirect-1-domain",
+            "productName": "wpac-support-ticket",
             "priceTotalUSD": 22.81,
             "quantity": 1
         }
@@ -10,7 +10,7 @@
     "customer": {
         "firstName": "John",
         "lastName": "Doe",
-        "company": "",
+        "company": "weweave",
         "email": "no-reply@weweave.net"
     }
 }

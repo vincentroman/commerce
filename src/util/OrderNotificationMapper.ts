@@ -1,5 +1,5 @@
-import * as jsonMapper from 'json-mapper-json';
 import * as xmlJs from 'xml-js';
+import * as objectMapper from 'object-mapper';
 import { Container } from "typedi";
 import { Broker } from '../entity/Broker';
 import { BrokerProductVariant } from "../entity/BrokerProductVariant";
@@ -14,25 +14,24 @@ import { PersonDao } from "../dao/PersonDao";
 export class OrderNotificationMapper {
     public static map(input: string|Object, broker: Broker, persist?: boolean): Promise<Purchase> {
         return new Promise<Purchase>((resolve, reject) => {
-            let convertedInput: Object = OrderNotificationMapper.getInputAsJson(input);
-            let template = JSON.parse(broker.mappingTemplate);
-            jsonMapper(convertedInput, template).then((result) => {
-                let purchase: Purchase = new Purchase();
-                purchase.broker = broker;
-                purchase.referenceId = result.id;
-                OrderNotificationMapper.getOrCreateCustomer(result.customer, persist).then((customer) => {
-                    purchase.customer = customer;
-                    OrderNotificationMapper.getOrderItems(broker, result.items, persist).then((items) => {
-                        purchase.items = items;
-                        if (persist) {
-                            let purchaseDao = Container.get(PurchaseDao);
-                            purchaseDao.save(purchase).then(order => resolve(order));
-                        } else {
-                            resolve(purchase);
-                        }
-                    }).catch((e) => reject(e));
-                });
-            }).catch((e) => reject(e));
+            let src: Object = OrderNotificationMapper.getInputAsJson(input);
+            let map: any = JSON.parse(broker.mappingTemplate);
+            let result: any = objectMapper(src, map);
+            let purchase: Purchase = new Purchase();
+            purchase.broker = broker;
+            purchase.referenceId = result.id;
+            OrderNotificationMapper.getOrCreateCustomer(result.customer, persist).then((customer) => {
+                purchase.customer = customer;
+                OrderNotificationMapper.getOrderItems(broker, result.items, persist).then((items) => {
+                    purchase.items = items;
+                    if (persist) {
+                        let purchaseDao = Container.get(PurchaseDao);
+                        purchaseDao.save(purchase).then(order => resolve(order));
+                    } else {
+                        resolve(purchase);
+                    }
+                }).catch((e) => reject(e));
+            });
         });
     }
 

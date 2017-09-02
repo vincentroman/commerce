@@ -1,0 +1,22 @@
+{
+    "InvoiceID": "c167f59f-439f-4138-bbe2-a9bada34eeba",
+    "BillToFirstName": "Mary",
+    "BillToLastName": "Smith",
+    "BillToEmail": "test@test.com",
+    "BillToState": "TX",
+    "BillToZip": "12345-1234",
+    "BillToCountry": "US",
+    "PackageID": "123",
+    "OrderDetailID": "456789",
+    "PackageName": "Test Product 1",
+    "Quantity": "1",
+    "RetailPrice": "99.95",
+    "Price": "89.95",
+    "SKU_UPC": "123_abc",
+    "Discount": "0.10",
+    "Amount": "89.95",
+    "OptionID": "3",
+    "OptionName": "Red",
+    "OptionText": "OptionText",
+    "SecurityValue": "123"
+}

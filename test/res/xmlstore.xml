@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<order-notification>
+    <order id="1227037271-23207-250782" is-test="true" is-gift="false">
+        <event>
+            <event-name>order</event-name>
+            <event-date>2008-11-18T13:41:11-06:00</event-date>
+        </event>
+        <order-status>Test</order-status>
+        <order-date>2008-11-18T13:41:11-06:00</order-date>
+        <order-item id="1227037271-23207-250782">
+            <product id="55305-9">
+                <name>DNN Dynamic Roles</name>
+            </product>
+            <quantity>2</quantity>
+            <tax>3.13</tax>
+            <total>53.13</total>
+            <reginfo />
+            <profit>0</profit>
+            <affiliate-commission />
+            <coupon-code />
+        </order-item>
+        <customer id="1226354950-348-707099">
+            <address>
+                <first-name>Joe</first-name>
+                <last-name>Goe</last-name>
+                <company>DR</company>
+                <address1>550 W. Van Buren</address1>
+                <address2 />
+                <city>Chicago</city>
+                <region>IL</region>
+                <postal-code>60607</postal-code>
+                <country>US</country>
+                <phone>312-3255555</phone>
+                <email>no-reply@weweave.net</email>
+                <language-chosen>EN</language-chosen>
+            </address>
+        </customer>
+        <referrer>QA Test Account</referrer>
+        <custom-referrer />
+        <link-location>Unknown</link-location>
+        <name-on-card>Test Order</name-on-card>
+        <ip>208.79.252.140</ip>
+    </order>
+</order-notification>
