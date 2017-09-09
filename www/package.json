@@ -11,7 +11,7 @@
     "webpack": "webpack --config webpack.prod.js --progress --profile --bail",
     "build": "npm run grunt && npm run webpack && cp src/index.prod.html dist/index.html"
   },
-  "license": "UNLICENSED",
+  "license": "GPL-3.0",
   "dependencies": {
     "@angular/common": "4.3.5",
     "@angular/compiler": "4.3.5",

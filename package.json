@@ -12,7 +12,7 @@
     "build-prod": "npm run clean && cd www && npm install && npm run clean && npm run build && cd .. && npm run grunt"
   },
   "author": "weweave GbR <mail@weweave.net>",
-  "license": "GPLv3",
+  "license": "GPL-3.0",
   "dependencies": {
     "bcrypt": "1.0.2",
     "body-parser": "1.17.2",
