@@ -1,17 +1,16 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
 import { CrudRouter } from "./CrudRouter";
+import { LicenseKeyEncoder, DomainList } from "commerce-key";
 
 import { LicenseKey } from "../entity/LicenseKey";
 import { LicenseKeyDao } from "../dao/LicenseKeyDao";
 import { ProductVariantDao } from "../dao/ProductVariantDao";
 import { ProductVariantType } from "../entity/ProductVariant";
-import { LicenseKeyEncoder } from "../util/LicenseKeyEncoder";
 import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { SystemSetting, SystemSettingId } from "../entity/SystemSetting";
 import * as moment from "moment";
 import { ProductDao } from "../dao/ProductDao";
-import { DomainList } from "../util/DomainList";
 import { AuthRole, RestError } from "./BaseRouter";
 import { PersonDao } from "../dao/PersonDao";
 import { TopLevelDomainDao } from "../dao/TopLevelDomainDao";
