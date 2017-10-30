@@ -28,7 +28,7 @@ export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
     public readonly express: express.Application;
     public ready: boolean = false;
-    private dbConnection: Connection = null;
+    public dbConnection: Connection = null;
     private devEnvironment: boolean = false;
 
     constructor() {
@@ -145,7 +145,7 @@ export class App extends EventEmitter {
                 __dirname + "/entity/*.ts"
             ],
             logging: config.logging,
-            autoSchemaSync: true
+            synchronize: true
         });
         return createConnection(<ConnectionOptions>options);
     }

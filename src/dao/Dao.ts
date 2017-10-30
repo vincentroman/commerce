@@ -1,6 +1,7 @@
-import { getEntityManager, Repository, EntityManager } from "typeorm";
+import { Repository, Connection, EntityManager } from "typeorm";
 import * as uuid from 'uuid/v4';
 import { DbEntity } from "../entity/DbEntity";
+import { App } from "../App";
 
 export abstract class Dao<T extends DbEntity<T>> {
     public async getById(id: number): Promise<T> {
@@ -41,7 +42,7 @@ export abstract class Dao<T extends DbEntity<T>> {
             } while (!id);
             o.uuid = id;
         }
-        return this.getRepository().persist(o);
+        return this.getRepository().save(o);
     }
 
     public async delete(o: T): Promise<T> {
@@ -56,7 +57,11 @@ export abstract class Dao<T extends DbEntity<T>> {
     }
 
     protected getEm(): EntityManager {
-        return getEntityManager();
+        return this.getConnection().manager;
+    }
+
+    private getConnection(): Connection {
+        return App.getInstance().dbConnection;
     }
 
     public async removeAll(): Promise<void> {

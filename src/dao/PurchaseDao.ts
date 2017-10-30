@@ -27,7 +27,7 @@ export class PurchaseDao extends Dao<Purchase> {
             .where("order.deleted != 1")
             .orderBy("order.createDate", "DESC");
         if (limit !== undefined) {
-            query = query.setMaxResults(limit);
+            query = query.limit(limit);
         }
         return query.getMany();
     }

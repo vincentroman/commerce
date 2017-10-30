@@ -31,6 +31,7 @@ class AuthRouter extends BaseRouter {
                     let jwt: string = this.createJwt(user);
                     res.send(jwt);
                 } else {
+                    console.log("Invalid login attempt for user %s (uuid = %s)", user.email, user.uuid);
                     this.notFound(res);
                 }
             } else {

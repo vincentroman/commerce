@@ -13,7 +13,7 @@ import { PurchaseDao } from "../src/dao/PurchaseDao";
 
 const expect = chai.expect;
 
-describe("OrderDao", () => {
+describe("PurchaseDao", () => {
     after(done => {
         let brokerDao: BrokerDao = Container.get(BrokerDao);
         let orderDao: PurchaseDao = Container.get(PurchaseDao);

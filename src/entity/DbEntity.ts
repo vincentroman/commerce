@@ -1,7 +1,6 @@
-import { AbstractEntity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
 import * as moment from 'moment';
 
-@AbstractEntity()
 export abstract class DbEntity<T extends DbEntity<T>> {
     @PrimaryGeneratedColumn()
     id: number;
