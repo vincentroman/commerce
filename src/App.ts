@@ -23,10 +23,12 @@ import SupportTicketRouter from "./router/SupportTicketRouter";
 import SystemSettingRouter from "./router/SystemSettingRouter";
 import TopLevelDomainRouter from "./router/TopLevelDomainRouter";
 import { ScheduledTasks } from "./util/ScheduledTasks";
+import { Server } from "http";
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
     public readonly express: express.Application;
+    public server: Server;
     public ready: boolean = false;
     public dbConnection: Connection = null;
     private devEnvironment: boolean = false;
@@ -58,6 +60,10 @@ export class App extends EventEmitter {
 
     private exitOnSignal(): void {
         console.log("Received exit signal...");
+        if (this.server) {
+            console.log("Closing http listener...");
+            this.server.close();
+        }
         if (this.dbConnection) {
             console.log("Closing database connection...");
             this.dbConnection.close().then(() => {

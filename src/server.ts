@@ -17,6 +17,7 @@ const server = http.createServer(App.getInstance().express);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+App.getInstance().server = server;
 
 function normalizePort(val: number|string): number|string|boolean {
     let port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
