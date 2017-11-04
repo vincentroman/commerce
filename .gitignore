@@ -7,3 +7,4 @@ dist/
 **/.baseDir.ts
 package-lock.json
 www/package-lock.json
+.DS_Store
