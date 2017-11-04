@@ -56,7 +56,7 @@ export class ScheduledTasks {
     private static async sendEvalBuyReminders(): Promise<void> {
         console.log("Checking if we need to send eval buy reminders...");
         let dao: NotificationBacklogItemDao = Container.get(NotificationBacklogItemDao);
-        let template: MailTemplate = await Container.get(MailTemplateDao).getByType(MailTemplateType.LicenseExpiryReminder);
+        let template: MailTemplate = await Container.get(MailTemplateDao).getByType(MailTemplateType.EvalBuyReminder);
         let siteUrl: string = await Container.get(SystemSettingDao).getString(SystemSettingId.Site_Url, "");
         let notificationItems: NotificationBacklogItem[] = await dao.getItemsDueToday(NotificationType.REMIND_EVAL_BUY);
         for (let notificationItem of notificationItems) {
