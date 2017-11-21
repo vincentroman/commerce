@@ -1,9 +1,7 @@
 import * as http from 'http';
 import * as debug from 'debug';
-
 import { App } from './App';
-
-//import App from './App';
+import { DemoSetup } from './util/DemoSetup';
 
 console.log("Starting server...");
 
@@ -12,6 +10,7 @@ debug('ts-express:server');
 const port = normalizePort(process.env.PORT || 3000);
 console.log("Setting port to %d...", port);
 App.getInstance().express.set('port', port);
+App.getInstance().on("appStarted", onAppStarted);
 
 const server = http.createServer(App.getInstance().express);
 server.listen(port);
@@ -53,4 +52,14 @@ function onListening(): void {
     let addr = server.address();
     let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     debug(`Listening on ${bind}`);
+}
+
+function onAppStarted(): void {
+    if (process.env.DEMO && process.env.DEMO === "1") {
+        console.log("Setting up demo data...");
+        let demo: DemoSetup = new DemoSetup();
+        demo.setup().then(() => {
+            console.log("Demo data successfully created");
+        });
+    }
 }
