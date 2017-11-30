@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as uuid from 'uuid/v4';
+import * as moment from "moment";
 import { Person } from "../entity/Person";
 import { Container } from "typedi/Container";
 import { PersonDao } from "../dao/PersonDao";
@@ -20,9 +21,20 @@ import { SupportTicket, SupportRequestStatus } from "../entity/SupportTicket";
 import { SupportTicketDao } from "../dao/SupportTicketDao";
 import { LicenseKey } from "../entity/LicenseKey";
 import { LicenseKeyDao } from "../dao/LicenseKeyDao";
+import { LicenseKeyEncoder, DomainList } from "commerce-key";
 
 export class DemoSetup {
+    private static LOREM_IPSUM: string =
+        "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor " +
+        "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam " +
+        "et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est " +
+        "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed " +
+        "diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam "+
+        "voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd " +
+        "gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
+
     private input: any;
+    private privateKey: string;
     private brokers: Broker[] = [];
     private productVariants: ProductVariant[] = [];
 
@@ -66,10 +78,10 @@ export class DemoSetup {
 
     private async updateSystemSettings() {
         let dao: SystemSettingDao = Container.get(SystemSettingDao);
-        let privateKey: string = fs.readFileSync(path.join(process.cwd(), "./res/private.pem"), "utf8");
+        this.privateKey = fs.readFileSync(path.join(process.cwd(), "./res/private.pem"), "utf8");
         let publicKey: string = fs.readFileSync(path.join(process.cwd(), "./res/public.pem"), "utf8");
         dao.updateSetting(SystemSettingId.MailServer_LogAndDiscard, "0");
-        dao.updateSetting(SystemSettingId.LicenseKey_PrivateKey, privateKey);
+        dao.updateSetting(SystemSettingId.LicenseKey_PrivateKey, this.privateKey);
         dao.updateSetting(SystemSettingId.LicenseKey_PublicKey, publicKey);
     }
 
@@ -138,19 +150,44 @@ export class DemoSetup {
                     ticket.productVariant = item.productVariant;
                     ticket.purchaseItem = item;
                     ticket.customer = customer;
-                    ticket.status = SupportRequestStatus.NEW;
-                    // TODO
+                    ticket.status = this.getRandomNumber(1, SupportRequestStatus.CLOSED + 1);
+                    if (ticket.status !== SupportRequestStatus.NEW) {
+                        ticket.text = DemoSetup.LOREM_IPSUM;
+                        ticket.sendDate = new Date();
+                    }
                     return Container.get(SupportTicketDao).save(ticket).then(ticket => purchase);
                 } else {
                     let key: LicenseKey = new LicenseKey();
                     key.productVariant = item.productVariant;
                     key.purchaseItem = item;
                     key.customer = customer;
-                    // TODO
+                    if (this.getRandomBool()) {
+                        key.issueDate = new Date();
+                        key.expiryDate = moment().add(item.productVariant.numSupportYears, "years").toDate();
+                        this.addLicenseKey(key);
+                    }
                     return Container.get(LicenseKeyDao).save(key).then(key => purchase);
                 }
             });
         });
+    }
+
+    private addLicenseKey(key: LicenseKey): void {
+        let dl: DomainList = new DomainList();
+        dl.addDomain("weweave.local", false, false);
+        let encoder: LicenseKeyEncoder = new LicenseKeyEncoder();
+        encoder.issueDate = new Date();
+        encoder.expiryDate = key.expiryDate;
+        encoder.description = key.productVariant.product.title +
+            " (" + key.productVariant.numDomains + " domains)";
+        encoder.onlineVerification = false;
+        encoder.uuid = "";
+        encoder.owner = key.customer.printableName();
+        encoder.product = key.productVariant.product.licenseKeyIdentifier;
+        encoder.subject = dl.getRegex().source;
+        encoder.type = "limited";
+        let licenseKey = encoder.toString(this.privateKey);
+        key.licenseKey = licenseKey;
     }
 
     private getRandomBroker(): Broker {
@@ -170,6 +207,10 @@ export class DemoSetup {
 
     private getRandomNumber(minInclusive: number, maxExclusive: number): number {
         return Math.floor(Math.random() * (maxExclusive - minInclusive) + minInclusive);
+    }
+
+    private getRandomBool(): boolean {
+        return (this.getRandomNumber(0, 2) === 1);
     }
 
     private loadInput(): void {
