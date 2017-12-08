@@ -29,7 +29,19 @@ export abstract class Dao<T extends DbEntity<T>> {
             .getMany();
     }
 
+    public async saveAll(oList: T[]): Promise<T[]> {
+        for (let o of oList) {
+            o = await this.assignUuid(o);
+        }
+        return this.getRepository().save(oList);
+    }
+
     public async save(o: T): Promise<T> {
+        o = await this.assignUuid(o);
+        return this.getRepository().save(o);
+    }
+
+    private async assignUuid(o: T): Promise<T> {
         if (!o.uuid) {
             let id: string;
             let item: T;
@@ -42,7 +54,7 @@ export abstract class Dao<T extends DbEntity<T>> {
             } while (!id);
             o.uuid = id;
         }
-        return this.getRepository().save(o);
+        return new Promise<T>((resolve, reject) => resolve(o));
     }
 
     public async delete(o: T): Promise<T> {

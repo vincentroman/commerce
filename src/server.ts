@@ -2,14 +2,23 @@ import * as http from 'http';
 import * as debug from 'debug';
 import { App } from './App';
 import { DemoSetup } from './util/DemoSetup';
+import { Config } from './util/Config';
 
 console.log("Starting server...");
 
 debug('ts-express:server');
 
 const port = normalizePort(process.env.PORT || 3000);
+const demoMode = (process.env.DEMO && process.env.DEMO === "1");
+
+if (demoMode) {
+    console.log("Demo mode enabled");
+    Config.getInstance().loadDemoConfig();
+}
+
 console.log("Setting port to %d...", port);
 App.getInstance().express.set('port', port);
+App.getInstance().start();
 App.getInstance().on("appStarted", onAppStarted);
 
 const server = http.createServer(App.getInstance().express);
@@ -55,7 +64,7 @@ function onListening(): void {
 }
 
 function onAppStarted(): void {
-    if (process.env.DEMO && process.env.DEMO === "1") {
+    if (demoMode) {
         console.log("Setting up demo data...");
         let demo: DemoSetup = new DemoSetup();
         demo.setup().then(() => {

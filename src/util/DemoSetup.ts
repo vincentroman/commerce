@@ -88,6 +88,7 @@ export class DemoSetup {
     private createBroker(i: number): Promise<Broker> {
         let broker: Broker = new Broker();
         broker.name = "Broker " + i;
+        broker.mappingTemplate = "{}";
         return Container.get(BrokerDao).save(broker);
     }
 

@@ -22,6 +22,11 @@ export class Config {
         this.loadConfig(filePath);
     }
 
+    public loadDemoConfig(): void {
+        let filePath: string = path.join(process.cwd(), "./res/config.demo.json");
+        this.loadConfig(filePath);
+    }
+
     private loadConfig(filePath: string): void {
         console.log("Loading config from " + filePath);
         let buffer: string = fs.readFileSync(filePath, "utf8");
