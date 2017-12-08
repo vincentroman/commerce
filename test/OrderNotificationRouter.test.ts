@@ -16,9 +16,6 @@ import { PurchaseDao } from "../src/dao/PurchaseDao";
 import { ProductDao } from "../src/dao/ProductDao";
 import { ProductVariantDao } from "../src/dao/ProductVariantDao";
 import { BrokerProductVariantDao } from "../src/dao/BrokerProductVariantDao";
-
-import { Config } from '../src/util/Config';
-Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
 import { LicenseKey } from "../src/entity/LicenseKey";
 import { LicenseKeyDao } from "../src/dao/LicenseKeyDao";

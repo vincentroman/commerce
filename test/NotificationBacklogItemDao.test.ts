@@ -1,9 +1,6 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import { Container } from "typedi";
-
-import { Config } from '../src/util/Config';
-Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
 import { NotificationBacklogItemDao } from "../src/dao/NotificationBacklogItemDao";
 import { NotificationBacklogItem, NotificationType } from "../src/entity/NotificationBacklogItem";
