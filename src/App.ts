@@ -147,7 +147,6 @@ export class App extends EventEmitter {
 
     private async setupOrm(): Promise<Connection> {
         let config = Config.getInstance().get("database");
-        console.log("---> %s " + JSON.stringify(config));
         let options: Object = {};
         Object.assign(options, config.driver, {
             entities: [
