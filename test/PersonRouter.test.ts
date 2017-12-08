@@ -1,9 +1,6 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import chaiHttp = require('chai-http');
-
-import { Config } from '../src/util/Config';
-Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
 import { Container } from "typedi";
 import { TestUtil } from "./TestUtil";

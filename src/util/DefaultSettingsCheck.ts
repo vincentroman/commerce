@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as uuid from 'uuid/v4';
 import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { Container } from "typedi";
 import { MailTemplate, MailTemplateType } from "../entity/MailTemplate";
@@ -8,6 +9,7 @@ import { PersonDao } from "../dao/PersonDao";
 import { Person } from "../entity/Person";
 import { TopLevelDomainDao } from "../dao/TopLevelDomainDao";
 import { Config } from "./Config";
+import { TopLevelDomain } from "../entity/TopLevelDomain";
 
 export class DefaultSettingsCheck {
     public static async check(): Promise<void> {
@@ -197,8 +199,21 @@ export class DefaultSettingsCheck {
         if (data.version > currentListVersion) {
             console.log("Updating top level domain list to version %d (this might take a while)...", data.version);
             let dao: TopLevelDomainDao = Container.get(TopLevelDomainDao);
-            for (let item of data.items) {
-                await dao.insertIfNotExists(item.tld);
+            if (currentListVersion === 0) {
+                // Initial insert: Do bulk update
+                let bucket: TopLevelDomain[] = [];
+                for (let item of data.items) {
+                    let e: TopLevelDomain = new TopLevelDomain();
+                    e.tld = item.tld;
+                    e.uuid = uuid();
+                    bucket.push(e);
+                }
+                await dao.saveAll(bucket);
+            } else {
+                // Update: Check every TLD before inserting
+                for (let item of data.items) {
+                    await dao.insertIfNotExists(item.tld);
+                }
             }
             await systemSettingDao.updateSetting(SystemSettingId.Tld_List_Version, String(data.version));
         } else {

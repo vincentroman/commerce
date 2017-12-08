@@ -1,8 +1,5 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
-
-import { Config } from '../src/util/Config';
-Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
 import { Person } from '../src/entity/Person';
 

@@ -45,6 +45,9 @@ export class App extends EventEmitter {
         process.on("uncaughtException", this.handleUnknownException.bind(this));
         process.on("unhandledRejection", this.handleUnknownRejection.bind(this));
         this.express = express();
+    }
+
+    public start(): void {
         this.setupOrm().then(connection => {
             this.dbConnection = connection;
             this.setupMiddleware();

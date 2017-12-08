@@ -1,0 +1,15 @@
+{
+    "database": {
+        "driver": {
+            "type": "sqlite",
+            "database": ":memory:"
+        },
+        "logging": ["error", "warn"]
+    },
+    "session": {
+        "secret": "fkj49l7WwjUtqcfLZKlLA269J28kC4uL",
+        "issuer": "https://change.me",
+        "lifetime": "12h"
+    },
+    "importTldListOnStart": true
+}

@@ -1,11 +1,7 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import { Container } from "typedi";
-
-import { Config } from '../src/util/Config';
-Config.getInstance().loadTestConfig();
 import { App } from '../src/App';
-
 import { Broker } from "../src/entity/Broker";
 import { Purchase } from "../src/entity/Purchase";
 import { BrokerDao } from "../src/dao/BrokerDao";
