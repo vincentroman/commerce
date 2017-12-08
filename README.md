@@ -78,5 +78,16 @@ The settings required on server start are in ```config.json```. Make sure to cha
 
 More settings can be changed at runtime by logging in with an administrator account and navigating to "Settings".
 
+
+## Demo Mode
+Just want to sneak a peek with some demo data prepared for you?
+
+If you start weweave Commerce with environment variable DEMO=1, the server automatically uses an SQLite In-Memory Database and generates some random sample data. The easiest way to run weweave Commerce in Demo Mode is to use the Docker image like this:
+```
+docker run -e "DEMO=1" -p 3000:3000 -it weweave/commerce
+```
+
+Afterwards, open your browser and go to: http://localhost:3000
+
 ## Documentation
 Check out the documentation at: https://weweave.net/products/commerce/documentation/
