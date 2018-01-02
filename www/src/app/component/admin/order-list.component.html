@@ -5,8 +5,9 @@
 </div>
 <table class="table table-hover" [hidden]="!entities || !entities.length">
     <thead>
-        <tr>
+        <tr style="white-space:nowrap">
             <th>Customer</th>
+            <th>Email</th>
             <th>Broker</th>
             <th>Reference ID</th>
             <th># Items</th>
@@ -16,6 +17,7 @@
     <tbody>
         <tr *ngFor="let order of entities" class="clickable" (click)="showEntity(order.uuid)">
             <td><span *ngIf="order.customer">{{order.customer.printableName()}}</span></td>
+            <td><span *ngIf="order.customer">{{order.customer.email}}</span></td>
             <td><span *ngIf="order.broker">{{order.broker.name}}</span></td>
             <td>{{order.referenceId}}</td>
             <td>{{order.itemIds.length}}</td>
