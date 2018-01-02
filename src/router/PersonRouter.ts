@@ -64,7 +64,7 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
                 if (!(excludeCustomerUuid && customer.uuid === excludeCustomerUuid)) {
                     if (!(customer.roleAdmin && excludeAdmin)) {
                         if (!(customer.roleCustomer && excludeCustomer)) {
-                            result[customer.uuid] = customer.printableName();
+                            result[customer.uuid] = customer.printableName() + " - " + customer.email;
                         }
                     }
                 }
