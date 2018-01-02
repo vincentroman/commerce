@@ -208,10 +208,10 @@ describe('Router '+endpoint, () => {
                                 expect(res.body).to.be.an('object');
                                 expect(Object.keys(res.body)).to.have.lengthOf(4);
                                 let uuids = Object.keys(res.body);
-                                expect(res.body[uuids[0]]).to.equal("Andrew Miller");
-                                expect(res.body[uuids[1]]).to.equal("Bernd Mustermann");
-                                expect(res.body[uuids[2]]).to.equal("John Doe (weweave)");
-                                expect(res.body[uuids[3]]).to.equal("System Administrator");
+                                expect(res.body[uuids[0]]).to.equal("Andrew Miller - no-reply2@weweave.net");
+                                expect(res.body[uuids[1]]).to.equal("Bernd Mustermann - no-reply3@mustermann.net");
+                                expect(res.body[uuids[2]]).to.equal("John Doe (weweave) - no-reply1@weweave.net");
+                                expect(res.body[uuids[3]]).to.equal("System Administrator - admin@admin.local");
                             });
                     });
                 });
@@ -227,7 +227,7 @@ describe('Router '+endpoint, () => {
                         expect(res.body).to.be.an('object');
                         expect(Object.keys(res.body)).to.have.lengthOf(1);
                         let uuids = Object.keys(res.body);
-                        expect(res.body[uuids[0]]).to.equal("Andrew Miller");
+                        expect(res.body[uuids[0]]).to.equal("Andrew Miller - no-reply2@weweave.net");
                     });
         });
 
@@ -240,8 +240,8 @@ describe('Router '+endpoint, () => {
                         expect(res.body).to.be.an('object');
                         expect(Object.keys(res.body)).to.have.lengthOf(2);
                         let uuids = Object.keys(res.body);
-                        expect(res.body[uuids[0]]).to.equal("Andrew Miller");
-                        expect(res.body[uuids[1]]).to.equal("John Doe (weweave)");
+                        expect(res.body[uuids[0]]).to.equal("Andrew Miller - no-reply2@weweave.net");
+                        expect(res.body[uuids[1]]).to.equal("John Doe (weweave) - no-reply1@weweave.net");
                     });
         });
 
@@ -254,9 +254,9 @@ describe('Router '+endpoint, () => {
                         expect(res.body).to.be.an('object');
                         expect(Object.keys(res.body)).to.have.lengthOf(3);
                         let uuids = Object.keys(res.body);
-                        expect(res.body[uuids[0]]).to.equal("Andrew Miller");
-                        expect(res.body[uuids[1]]).to.equal("Bernd Mustermann");
-                        expect(res.body[uuids[2]]).to.equal("System Administrator");
+                        expect(res.body[uuids[0]]).to.equal("Andrew Miller - no-reply2@weweave.net");
+                        expect(res.body[uuids[1]]).to.equal("Bernd Mustermann - no-reply3@mustermann.net");
+                        expect(res.body[uuids[2]]).to.equal("System Administrator - admin@admin.local");
                     });
         });
 
@@ -269,9 +269,9 @@ describe('Router '+endpoint, () => {
                         expect(res.body).to.be.an('object');
                         expect(Object.keys(res.body)).to.have.lengthOf(3);
                         let uuids = Object.keys(res.body);
-                        expect(res.body[uuids[0]]).to.equal("Andrew Miller");
-                        expect(res.body[uuids[1]]).to.equal("Bernd Mustermann");
-                        expect(res.body[uuids[2]]).to.equal("John Doe (weweave)");
+                        expect(res.body[uuids[0]]).to.equal("Andrew Miller - no-reply2@weweave.net");
+                        expect(res.body[uuids[1]]).to.equal("Bernd Mustermann - no-reply3@mustermann.net");
+                        expect(res.body[uuids[2]]).to.equal("John Doe (weweave) - no-reply1@weweave.net");
                     });
         });
 
@@ -284,7 +284,7 @@ describe('Router '+endpoint, () => {
                         expect(res.body).to.be.an('object');
                         expect(Object.keys(res.body)).to.have.lengthOf(1);
                         let uuids = Object.keys(res.body);
-                        expect(res.body[uuids[0]]).to.equal("System Administrator");
+                        expect(res.body[uuids[0]]).to.equal("System Administrator - admin@admin.local");
                     });
         });
     });

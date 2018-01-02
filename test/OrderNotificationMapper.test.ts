@@ -108,7 +108,7 @@ describe("OrderNotificationMapper", () => {
                 expect(order.items).to.be.not.null;
                 expect(order.items).to.be.instanceOf(Array);
                 expect(order.items).to.have.lengthOf(1);
-                expect(order.items[0].quantity).to.equal(1);
+                expect(order.items[0].quantity).to.equal(2);
                 expect(order.items[0].productVariant).to.be.not.null;
                 expect(order.items[0].productVariant.product).to.be.not.null;
                 expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");

@@ -122,7 +122,7 @@ describe('Router '+endpoint, () => {
                     expect(order.items[0]).to.be.not.null;
                     expect(order.items[0]).to.be.not.undefined;
                     expect(order.items[0]).to.be.an.instanceOf(PurchaseItem);
-                    expect(order.items[0].quantity).to.be.equal(1);
+                    expect(order.items[0].quantity).to.be.equal(2);
                     expect(order.items[0].productVariant).to.be.not.null;
                     expect(order.items[0].productVariant).to.be.not.undefined;
                     expect(order.items[0].productVariant.type).to.be.not.null;

@@ -118,7 +118,7 @@ class OrderNotificationRouter extends BaseRouter {
                     });
                 });
             } else if (type === ProductVariantType.LifetimeLicense) {
-                this.createLicenseKeyRequest(item).then(licenseKey => {
+                this.createLicenseKeyRequest(item).then(licenseKeys => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let params = {
                             firstname: customer.firstname,
@@ -132,7 +132,7 @@ class OrderNotificationRouter extends BaseRouter {
                     });
                 }).catch(e => reject());
             } else if (type === ProductVariantType.LimitedLicense) {
-                this.createLicenseKeyRequest(item).then(licenseKey => {
+                this.createLicenseKeyRequest(item).then(licenseKeys => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let params = {
                             firstname: customer.firstname,
@@ -146,7 +146,7 @@ class OrderNotificationRouter extends BaseRouter {
                     });
                 }).catch(e => reject());
             } else if (type === ProductVariantType.TrialLicense) {
-                this.createLicenseKeyRequest(item).then(licenseKey => {
+                this.createLicenseKeyRequest(item).then(licenseKeys => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let params = {
                             firstname: customer.firstname,
@@ -160,7 +160,7 @@ class OrderNotificationRouter extends BaseRouter {
                     });
                 }).catch(e => reject());
             } else if (type === ProductVariantType.SupportTicket) {
-                this.createSupportRequest(item).then(supportTicket => {
+                this.createSupportRequest(item).then(supportTickets => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseSupportTicket).then((template) => {
                         let params = {
                             firstname: customer.firstname,
@@ -178,23 +178,31 @@ class OrderNotificationRouter extends BaseRouter {
         });
     }
 
-    private createLicenseKeyRequest(item: PurchaseItem): Promise<LicenseKey> {
+    private createLicenseKeyRequest(item: PurchaseItem): Promise<LicenseKey[]> {
         let licenseKeyDao: LicenseKeyDao = Container.get(LicenseKeyDao);
-        let key: LicenseKey = new LicenseKey();
-        key.purchaseItem = item;
-        key.customer = item.purchase.customer;
-        key.productVariant = item.productVariant;
-        return licenseKeyDao.save(key);
+        let promises: Promise<LicenseKey>[] = [];
+        for (let i = 1; i <= item.quantity; i++) {
+            let key: LicenseKey = new LicenseKey();
+            key.purchaseItem = item;
+            key.customer = item.purchase.customer;
+            key.productVariant = item.productVariant;
+            promises.push(licenseKeyDao.save(key));
+        }
+        return Promise.all(promises);
     }
 
-    private createSupportRequest(item: PurchaseItem): Promise<SupportTicket> {
+    private createSupportRequest(item: PurchaseItem): Promise<SupportTicket[]> {
         let supportTicketDao: SupportTicketDao;
-        let ticket = new SupportTicket();
-        ticket.purchaseItem = item;
-        ticket.customer = item.purchase.customer;
-        ticket.productVariant = item.productVariant;
-        ticket.status = SupportRequestStatus.NEW;
-        return supportTicketDao.save(ticket);
+        let promises: Promise<SupportTicket>[] = [];
+        for (let i = 1; i <= item.quantity; i++) {
+            let ticket = new SupportTicket();
+            ticket.purchaseItem = item;
+            ticket.customer = item.purchase.customer;
+            ticket.productVariant = item.productVariant;
+            ticket.status = SupportRequestStatus.NEW;
+            promises.push(supportTicketDao.save(ticket));
+        }
+        return Promise.all(promises);
     }
 }
 
