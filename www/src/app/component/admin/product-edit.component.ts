@@ -33,11 +33,13 @@ export class ProductEditComponent extends EntityEditComponent<Product> {
     }
 
     protected onInit(): void {
-        this.brokerService.list().then(brokers => this.brokers = brokers);
-        this.productVariantService.listForProduct(this.uuid).then(variants => this.variants = variants);
-        this.productVariantService.getBrokerProductVariants(this.uuid).then(list => {
-            this.brokerProductVariants = list;
-        });
+        if (this.uuid) {
+            this.brokerService.list().then(brokers => this.brokers = brokers);
+            this.productVariantService.listForProduct(this.uuid).then(variants => this.variants = variants);
+            this.productVariantService.getBrokerProductVariants(this.uuid).then(list => {
+                this.brokerProductVariants = list;
+            });
+        }
     }
 
     public getIdForBroker(brokerUuid: string, productVariantUuid: string): string {
