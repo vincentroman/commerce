@@ -14,6 +14,16 @@ export class ProductVariantDao extends Dao<ProductVariant> {
         return new Promise((resolve, reject) => resolve(false));
     }
 
+    public async getByUuid(uuid: string): Promise<ProductVariant> {
+        return this.getRepository()
+            .createQueryBuilder("pv")
+            .innerJoinAndSelect("pv.product", "product")
+            .where("pv.uuid = :uuid")
+            .andWhere("pv.deleted != 1")
+            .setParameters({uuid: uuid})
+            .getOne();
+    }
+
     public async getAll(): Promise<ProductVariant[]> {
         return this.getRepository()
             .createQueryBuilder("pv")

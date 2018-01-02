@@ -46,4 +46,8 @@ export class ProductVariantEditComponent extends EntityEditComponent<ProductVari
     protected getListPath(): string {
         return "/admin/products/edit/" + this.product.uuid;
     }
+
+    protected onEntityLoaded(): void {
+        this.entity.product.uuid = this.productUuid;
+    }
 }
