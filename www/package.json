@@ -11,6 +11,7 @@
     "webpack": "webpack --config webpack.prod.js --progress --profile --bail",
     "build": "npm run grunt && npm run webpack && cp src/index.prod.html dist/index.html"
   },
+  "author": "weweave UG <mail@weweave.net>",
   "license": "GPL-3.0",
   "dependencies": {
     "@angular/common": "5.1.0",

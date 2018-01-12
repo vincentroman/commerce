@@ -11,7 +11,7 @@
     "test": "mocha --reporter spec --require ts-node/register 'test/**/*.test.ts'",
     "build-prod": "npm run clean && cd www && npm install && npm run clean && npm run build && cd .. && npm run grunt"
   },
-  "author": "weweave GbR <mail@weweave.net>",
+  "author": "weweave UG <mail@weweave.net>",
   "license": "GPL-3.0",
   "dependencies": {
     "bcrypt": "1.0.3",
