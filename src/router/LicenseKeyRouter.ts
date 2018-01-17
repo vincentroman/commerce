@@ -290,7 +290,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                         }
                     }
                     for (let domain of domains) {
-                        dl.addDomain(domain);
+                        dl.addDomain(domain, true, false);
                     }
                     resolve(dl);
                 });
@@ -327,7 +327,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                     for (let domain of domains) {
                         domain = domain.trim();
                         if (domain) {
-                            dl.addDomain(domain);
+                            dl.addDomain(domain, true, false);
                         }
                     }
                     resolve(dl.getRegex().source);
