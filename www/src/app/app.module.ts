@@ -51,6 +51,7 @@ import { ChangePasswordComponent } from "./component/change-password.component";
 import { PersonService } from "./service/person.service";
 import { ProfileComponent } from "./component/profile.component";
 import { ConfirmEmailComponent } from "./component/confirm-email.component";
+import { SystemSettingService } from "./service/systemsetting.service";
 
 @NgModule({
     imports: [
@@ -106,7 +107,8 @@ import { ConfirmEmailComponent } from "./component/confirm-email.component";
         AuthGuard,
         GuestGuard,
         AdminGuard,
-        CustomerGuard
+        CustomerGuard,
+        SystemSettingService
     ],
     bootstrap: [
         AppComponent,
@@ -114,16 +116,32 @@ import { ConfirmEmailComponent } from "./component/confirm-email.component";
     ]
 })
 export class AppModule {
-    constructor(private router: Router) {
+    constructor(
+        private router: Router,
+        private settingsService: SystemSettingService) {
         router.events.subscribe(event => {
             if (event instanceof NavigationStart) {
                 window.scrollTo(0, 0);
             }
             if (event instanceof NavigationEnd) {
                 if ($(".main .poweredby").length === 0) {
-                    $(".main").append("<p class='poweredby'>Powered by " +
+                    $(".main").append("<p class='poweredby'>" +
+                        "<span class='siteImprintUrl' style='display:none'><a href='#' target='_blank'>Imprint</a> | </span>" +
+                        "<span class='sitePrivacyPolicyUrl' style='display:none'><a href='#' target='_blank'>Privacy Policy</a> | </span>" +
+                        "Powered by " +
                         "<a href='https://weweave.net/products/commerce' target='_blank'>weweave Commerce</a>" +
                         ".</p>");
+                    settingsService.list().then(settings => {
+                        settings.forEach(setting => {
+                            if (setting.settingId === 21 && setting.value) {
+                                $(".main .poweredby .siteImprintUrl").show();
+                                $(".main .poweredby .siteImprintUrl a").attr("href", setting.value);
+                            } else if (setting.settingId === 22 && setting.value) {
+                                $(".main .poweredby .sitePrivacyPolicyUrl").show();
+                                $(".main .poweredby .sitePrivacyPolicyUrl a").attr("href", setting.value);
+                            }
+                        });
+                    });
                 }
             }
         });
