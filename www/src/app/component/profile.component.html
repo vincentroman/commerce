@@ -45,3 +45,4 @@
     <a routerLink="/home" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
 </form>
+<p style="margin-top:50px" [hidden]="!siteContactUrl">Note: If you want to delete your account, please <a [attr.href]="siteContactUrl" target="_blank">contact us</a>.</p>

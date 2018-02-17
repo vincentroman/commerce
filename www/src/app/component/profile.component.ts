@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { AuthService } from "../service/auth.service";
 import { Person } from "../model/person";
 import { PersonService } from "../service/person.service";
+import { SystemSettingService } from "../service/systemsetting.service";
 
 @Component({
     templateUrl: "./profile.component.html",
@@ -18,16 +19,25 @@ export class ProfileComponent implements OnInit {
     submitting: boolean = false;
     success: boolean = false;
     error: boolean = false;
+    siteContactUrl: string = "";
 
     constructor(
         private router: Router,
-        private personService: PersonService
+        private personService: PersonService,
+        private settingsService: SystemSettingService
     ) {}
 
     ngOnInit(): void {
         this.personService.me().then(person => {
             this.entity = person;
             this.originalEmail = person.email;
+        });
+        this.settingsService.list().then(settings => {
+            settings.forEach(setting => {
+                if (setting.settingId === 23 && setting.value) {
+                    this.siteContactUrl = setting.value;
+                }
+            });
         });
     }
 

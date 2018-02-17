@@ -131,7 +131,7 @@ export class AppModule {
                         "Powered by " +
                         "<a href='https://weweave.net/products/commerce' target='_blank'>weweave Commerce</a>" +
                         ".</p>");
-                    settingsService.list().then(settings => {
+                    this.settingsService.list().then(settings => {
                         settings.forEach(setting => {
                             if (setting.settingId === 21 && setting.value) {
                                 $(".main .poweredby .siteImprintUrl").show();
