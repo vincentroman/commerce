@@ -32,12 +32,10 @@ export class ProfileComponent implements OnInit {
             this.entity = person;
             this.originalEmail = person.email;
         });
-        this.settingsService.list().then(settings => {
-            settings.forEach(setting => {
-                if (setting.settingId === 23 && setting.value) {
-                    this.siteContactUrl = setting.value;
-                }
-            });
+        this.settingsService.getPublicSettings().then(settings => {
+            if (settings.siteContactUrl) {
+                this.siteContactUrl = settings.siteContactUrl;
+            }
         });
     }
 

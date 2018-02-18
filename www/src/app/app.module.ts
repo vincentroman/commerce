@@ -129,21 +129,19 @@ export class AppModule {
                         "<span class='siteImprintUrl' style='display:none'><a href='#' target='_blank'>Imprint</a> | </span>" +
                         "<span class='sitePrivacyPolicyUrl' style='display:none'><a href='#' target='_blank'>Privacy Policy</a> | </span>" +
                         "Powered by " +
-                        "<a href='https://weweave.net/products/commerce' target='_blank'>weweave Commerce</a> (version <span class='version'>unknown</span>)" +
+                        "<a href='https://weweave.net/products/commerce' target='_blank'>weweave Commerce</a> " +
+                        "(version <span class='version'>unknown</span>)" +
                         ".</p>");
-                    this.settingsService.getVersion().then(version => {
-                        $(".main .poweredby .version").text(version);
-                    });
-                    this.settingsService.list().then(settings => {
-                        settings.forEach(setting => {
-                            if (setting.settingId === 21 && setting.value) {
-                                $(".main .poweredby .siteImprintUrl").show();
-                                $(".main .poweredby .siteImprintUrl a").attr("href", setting.value);
-                            } else if (setting.settingId === 22 && setting.value) {
-                                $(".main .poweredby .sitePrivacyPolicyUrl").show();
-                                $(".main .poweredby .sitePrivacyPolicyUrl a").attr("href", setting.value);
-                            }
-                        });
+                    this.settingsService.getPublicSettings().then(settings => {
+                        $(".main .poweredby .version").text(settings.version);
+                        if (settings.siteImprintUrl) {
+                            $(".main .poweredby .siteImprintUrl").show();
+                            $(".main .poweredby .siteImprintUrl a").attr("href", settings.siteImprintUrl);
+                        }
+                        if (settings.sitePrivacyPolicyUrl) {
+                            $(".main .poweredby .sitePrivacyPolicyUrl").show();
+                            $(".main .poweredby .sitePrivacyPolicyUrl a").attr("href", settings.sitePrivacyPolicyUrl);
+                        }
                     });
                 }
             }

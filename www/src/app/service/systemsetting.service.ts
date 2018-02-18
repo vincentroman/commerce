@@ -33,4 +33,17 @@ export class SystemSettingService extends CrudService<SystemSetting> {
             .catch(error => reject(this.httpService.handleError(error)));
         });
     }
+
+    public getPublicSettings(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.http
+            .get(this.httpService.getUrl(this.getPath() + "/public"), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let settings: number = res.json();
+                resolve(settings);
+            })
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
 }
