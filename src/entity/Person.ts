@@ -22,6 +22,9 @@ export class Person extends DbEntity<Person> {
     @Column({nullable: true})
     password: string;
 
+    @Column({default: true})
+    receiveProductUpdates: boolean;
+
     @Column({default: false})
     roleAdmin: boolean;
 
@@ -42,13 +45,14 @@ export class Person extends DbEntity<Person> {
 
     public serialize(skipDeletedCheck?: boolean): Object {
         return Object.assign(super.serialize(skipDeletedCheck), {
-            company:    this.company,
-            firstname:  this.firstname,
-            lastname:   this.lastname,
-            country:    this.country,
-            email:      this.email,
-            roleAdmin:  this.roleAdmin,
-            roleCustomer:   this.roleCustomer
+            company:                this.company,
+            firstname:              this.firstname,
+            lastname:               this.lastname,
+            country:                this.country,
+            email:                  this.email,
+            receiveProductUpdates:  this.receiveProductUpdates,
+            roleAdmin:              this.roleAdmin,
+            roleCustomer:           this.roleCustomer
         });
     }
 
@@ -58,6 +62,9 @@ export class Person extends DbEntity<Person> {
         this.lastname       = o['lastname'];
         this.email          = o['email'];
         this.country        = o['country'];
+        this.receiveProductUpdates =
+            (o['receiveProductUpdates'] === 1 || o['receiveProductUpdates'] === "true" || o['receiveProductUpdates'] === true
+            ? true : false);
         this.roleAdmin      = (o['roleAdmin'] === 1 || o['roleAdmin'] === "true" || o['roleAdmin'] === true ? true : false);
         this.roleCustomer   = (o['roleCustomer'] === 1 || o['roleCustomer'] === "true" || o['roleCustomer'] === true ? true : false);
         if (o['password']) {

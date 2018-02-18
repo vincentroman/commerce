@@ -35,20 +35,23 @@ export class ScheduledTasks {
         let siteUrl: string = await Container.get(SystemSettingDao).getString(SystemSettingId.Site_Url, "");
         let notificationItems: NotificationBacklogItem[] = await dao.getItemsDueToday(NotificationType.REMIND_EXPIRY);
         for (let notificationItem of notificationItems) {
-            let payload = notificationItem.getPayload();
-            let product: Product = await Container.get(ProductDao).getById(payload.productId);
-            let recipient: Address = {
-                email: notificationItem.person.email
-            };
-            let params = {
-                firstname: notificationItem.person.firstname,
-                lastname: notificationItem.person.lastname,
-                siteUrl: siteUrl,
-                daysRemaining: payload.daysRemaining,
-                product: product.title
-            };
-            console.log("Sending license expiration reminder for product %s to customer %s", product.title, notificationItem.person.email);
-            await Email.sendByTemplate(template, recipient, params);
+            if (notificationItem.person.receiveProductUpdates) {
+                let payload = notificationItem.getPayload();
+                let product: Product = await Container.get(ProductDao).getById(payload.productId);
+                let recipient: Address = {
+                    email: notificationItem.person.email
+                };
+                let params = {
+                    firstname: notificationItem.person.firstname,
+                    lastname: notificationItem.person.lastname,
+                    siteUrl: siteUrl,
+                    daysRemaining: payload.daysRemaining,
+                    product: product.title
+                };
+                console.log("Sending license expiration reminder for product %s to customer %s",
+                    product.title, notificationItem.person.email);
+                await Email.sendByTemplate(template, recipient, params);
+            }
             await dao.delete(notificationItem);
         }
     }
@@ -60,19 +63,22 @@ export class ScheduledTasks {
         let siteUrl: string = await Container.get(SystemSettingDao).getString(SystemSettingId.Site_Url, "");
         let notificationItems: NotificationBacklogItem[] = await dao.getItemsDueToday(NotificationType.REMIND_EVAL_BUY);
         for (let notificationItem of notificationItems) {
-            let payload = notificationItem.getPayload();
-            let product: Product = await Container.get(ProductDao).getById(payload.productId);
-            let recipient: Address = {
-                email: notificationItem.person.email
-            };
-            let params = {
-                firstname: notificationItem.person.firstname,
-                lastname: notificationItem.person.lastname,
-                siteUrl: siteUrl,
-                product: product.title
-            };
-            console.log("Sending eval buy reminder for product %s to customer %s", product.title, notificationItem.person.email);
-            await Email.sendByTemplate(template, recipient, params);
+            if (notificationItem.person.receiveProductUpdates) {
+                let payload = notificationItem.getPayload();
+                let product: Product = await Container.get(ProductDao).getById(payload.productId);
+                let recipient: Address = {
+                    email: notificationItem.person.email
+                };
+                let params = {
+                    firstname: notificationItem.person.firstname,
+                    lastname: notificationItem.person.lastname,
+                    siteUrl: siteUrl,
+                    product: product.title
+                };
+                console.log("Sending eval buy reminder for product %s to customer %s",
+                    product.title, notificationItem.person.email);
+                await Email.sendByTemplate(template, recipient, params);
+            }
             await dao.delete(notificationItem);
         }
     }

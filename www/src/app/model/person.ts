@@ -7,6 +7,7 @@ export class Person extends RestModel<Person> {
     email: string;
     country: string;
     password: string;
+    receiveProductUpdates: boolean = false;
     roleAdmin: boolean = false;
     roleCustomer: boolean = false;
 
@@ -18,6 +19,7 @@ export class Person extends RestModel<Person> {
             "email": this.email,
             "country": this.country,
             "password": this.password,
+            "receiveProductUpdates": this.receiveProductUpdates,
             "roleAdmin": this.roleAdmin,
             "roleCustomer": this.roleCustomer
         });
@@ -31,6 +33,7 @@ export class Person extends RestModel<Person> {
         this.company = input.company;
         this.country = input.country;
         this.password = "";
+        this.receiveProductUpdates = input.receiveProductUpdates;
         this.roleAdmin = input.roleAdmin;
         this.roleCustomer = input.roleCustomer;
         return this;

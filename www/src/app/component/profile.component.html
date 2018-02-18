@@ -42,6 +42,11 @@
         <label for="country">Country Code (2 letters)</label>
         <input type="text" id="country" name="country" placeholder="2 letter country code" class="form-control" [(ngModel)]="entity.country" />
     </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" id="receiveProductUpdates" name="receiveProductUpdates" [(ngModel)]="entity.receiveProductUpdates" /> I want to receive updates for my products by email (i.e. expiry reminders, new versions)
+        </label>
+    </div>
     <a routerLink="/home" class="btn btn-default">Cancel</a>
     <button type="submit" class="btn btn-default" [disabled]="!form.valid || submitting"><span class="glyphicon glyphicon-ok"></span> Save</button>
 </form>
