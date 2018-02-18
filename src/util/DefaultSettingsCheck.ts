@@ -3,20 +3,31 @@ import * as uuid from 'uuid/v4';
 import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { Container } from "typedi";
 import { MailTemplate, MailTemplateType } from "../entity/MailTemplate";
-import { SystemSettingId, SystemSettingType } from "../entity/SystemSetting";
+import { SystemSettingId, SystemSettingType, SystemSetting } from "../entity/SystemSetting";
 import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { PersonDao } from "../dao/PersonDao";
 import { Person } from "../entity/Person";
 import { TopLevelDomainDao } from "../dao/TopLevelDomainDao";
 import { Config } from "./Config";
 import { TopLevelDomain } from "../entity/TopLevelDomain";
+import { App } from "../App";
 
 export class DefaultSettingsCheck {
     public static async check(): Promise<void> {
+        await DefaultSettingsCheck.checkSystemSettings();
+        await DefaultSettingsCheck.checkSchemaUpdates();
         await DefaultSettingsCheck.checkAdminUser();
         await DefaultSettingsCheck.checkMailTemplates();
-        await DefaultSettingsCheck.checkSystemSettings();
         await DefaultSettingsCheck.checkTopLevelDomains();
+    }
+
+    private static async checkSchemaUpdates(): Promise<void> {
+        let dao: SystemSettingDao = Container.get(SystemSettingDao);
+        let oldVersion: number = parseInt((await dao.getBySettingId(SystemSettingId.Schema_Version)).value, 10);
+        let curVersion: number = App.getInstance().version;
+        console.log("Checking for schema upgrades (old version = %d, current = %d)...", oldVersion, curVersion);
+        // Person.receiveProductUpdates was added in 2018021801 - default = true, handled via ORM
+        await dao.updateSetting(SystemSettingId.Schema_Version, curVersion.toString());
     }
 
     private static async checkAdminUser(): Promise<void> {
@@ -166,28 +177,31 @@ export class DefaultSettingsCheck {
 
     private static async checkSystemSettings(): Promise<void> {
         let dao: SystemSettingDao = Container.get(SystemSettingDao);
-        dao.createIfNotExists(SystemSettingId.MailServer_Host, SystemSettingType.String, "localhost", "SMTP Server");
-        dao.createIfNotExists(SystemSettingId.MailServer_Port, SystemSettingType.Integer, "25", "SMTP Port");
-        dao.createIfNotExists(SystemSettingId.MailServer_Secure, SystemSettingType.Boolean, "0", "SMTP Secure");
-        dao.createIfNotExists(SystemSettingId.MailServer_Auth, SystemSettingType.Boolean, "0", "SMTP Auth");
-        dao.createIfNotExists(SystemSettingId.MailServer_User, SystemSettingType.String, "", "SMTP Username");
-        dao.createIfNotExists(SystemSettingId.MailServer_Pass, SystemSettingType.String, "", "SMTP Password");
-        dao.createIfNotExists(SystemSettingId.MailServer_LogAndDiscard, SystemSettingType.Boolean, "1", "SMTP Log and Discard");
-        dao.createIfNotExists(SystemSettingId.MailServer_Sender_Name, SystemSettingType.String, "Your Company Ltd.", "SMTP Sender Name");
-        dao.createIfNotExists(SystemSettingId.MailServer_Sender_Email, SystemSettingType.String, "your@company.local", "SMTP Sender Email");
-        dao.createIfNotExists(SystemSettingId.Site_Url, SystemSettingType.String, "http://localhost:3001", "Site URL");
-        dao.createIfNotExists(SystemSettingId.Site_Contact_Url, SystemSettingType.String, "", "Contact URL");
-        dao.createIfNotExists(SystemSettingId.Site_Imprint_Url, SystemSettingType.String, "", "Imprint URL");
-        dao.createIfNotExists(SystemSettingId.Site_PrivacyPolicy_Url, SystemSettingType.String, "", "Privacy Policy URL");
-        dao.createIfNotExists(SystemSettingId.NumDays_About_To_Expire, SystemSettingType.Integer, "20",
+        await dao.createIfNotExists(SystemSettingId.MailServer_Host, SystemSettingType.String, "localhost", "SMTP Server");
+        await dao.createIfNotExists(SystemSettingId.MailServer_Port, SystemSettingType.Integer, "25", "SMTP Port");
+        await dao.createIfNotExists(SystemSettingId.MailServer_Secure, SystemSettingType.Boolean, "0", "SMTP Secure");
+        await dao.createIfNotExists(SystemSettingId.MailServer_Auth, SystemSettingType.Boolean, "0", "SMTP Auth");
+        await dao.createIfNotExists(SystemSettingId.MailServer_User, SystemSettingType.String, "", "SMTP Username");
+        await dao.createIfNotExists(SystemSettingId.MailServer_Pass, SystemSettingType.String, "", "SMTP Password");
+        await dao.createIfNotExists(SystemSettingId.MailServer_LogAndDiscard, SystemSettingType.Boolean, "1", "SMTP Log and Discard");
+        await dao.createIfNotExists(SystemSettingId.MailServer_Sender_Name, SystemSettingType.String, "Your Company Ltd.",
+            "SMTP Sender Name");
+        await dao.createIfNotExists(SystemSettingId.MailServer_Sender_Email, SystemSettingType.String, "your@company.local",
+            "SMTP Sender Email");
+        await dao.createIfNotExists(SystemSettingId.Site_Url, SystemSettingType.String, "http://localhost:3001", "Site URL");
+        await dao.createIfNotExists(SystemSettingId.Site_Contact_Url, SystemSettingType.String, "", "Contact URL");
+        await dao.createIfNotExists(SystemSettingId.Site_Imprint_Url, SystemSettingType.String, "", "Imprint URL");
+        await dao.createIfNotExists(SystemSettingId.Site_PrivacyPolicy_Url, SystemSettingType.String, "", "Privacy Policy URL");
+        await dao.createIfNotExists(SystemSettingId.NumDays_About_To_Expire, SystemSettingType.Integer, "20",
             "Days before license key is considered nearly expired");
-        dao.createIfNotExists(SystemSettingId.LicenseKey_PrivateKey, SystemSettingType.MultiLine,
+        await dao.createIfNotExists(SystemSettingId.LicenseKey_PrivateKey, SystemSettingType.MultiLine,
             "", "RSA Private Key for License Key Encoding");
-        dao.createIfNotExists(SystemSettingId.LicenseKey_PublicKey, SystemSettingType.MultiLine,
+        await dao.createIfNotExists(SystemSettingId.LicenseKey_PublicKey, SystemSettingType.MultiLine,
             "", "RSA Public Key for License Key Encoding");
-        dao.createIfNotExists(SystemSettingId.LicenseKey_AutoIncludeDomains, SystemSettingType.MultiLine,
+        await dao.createIfNotExists(SystemSettingId.LicenseKey_AutoIncludeDomains, SystemSettingType.MultiLine,
             "localhost\nlocal", "Domains automatically to be included in License Keys");
-        dao.createIfNotExists(SystemSettingId.Tld_List_Version, SystemSettingType.Integer, "0", "TLD List Version", true);
+        await dao.createIfNotExists(SystemSettingId.Tld_List_Version, SystemSettingType.Integer, "0", "TLD List Version", true);
+        await dao.createIfNotExists(SystemSettingId.Schema_Version, SystemSettingType.Integer, "0", "Schema Version", true);
     }
 
     private static async checkTopLevelDomains(): Promise<void> {

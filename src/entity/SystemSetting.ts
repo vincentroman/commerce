@@ -63,6 +63,7 @@ export enum SystemSettingId {
     LicenseKey_PrivateKey = 50,
     LicenseKey_PublicKey = 51,
     LicenseKey_AutoIncludeDomains = 52,
+    Schema_Version = 801,
     Tld_List_Version = 901
 }
 
