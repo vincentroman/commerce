@@ -12,6 +12,7 @@ RUN npm rebuild bcrypt --build-from-source
 FROM node:8-alpine
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
+COPY VERSION /usr/src/app/
 COPY *.js /usr/src/app/
 COPY *.json /usr/src/app/
 COPY res/ /usr/src/app/res/

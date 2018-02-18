@@ -20,4 +20,17 @@ export class SystemSettingService extends CrudService<SystemSetting> {
     protected getPath(): string {
         return "systemsetting";
     }
+
+    public getVersion(): Promise<number> {
+        return new Promise((resolve, reject) => {
+            this.http
+            .get(this.httpService.getUrl(this.getPath() + "/version"), this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let version: number = parseInt(res.text(), 10);
+                resolve(version);
+            })
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
 }

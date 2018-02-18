@@ -3,6 +3,7 @@ import * as EventEmitter from "events";
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as path from 'path';
+import * as fs from 'fs';
 import { createConnection, Connection, ConnectionOptions } from "typeorm";
 import { Config } from './util/Config';
 import { DefaultSettingsCheck } from "./util/DefaultSettingsCheck";
@@ -31,6 +32,7 @@ export class App extends EventEmitter {
     public server: Server;
     public ready: boolean = false;
     public dbConnection: Connection = null;
+    public version: number = 0;
     private devEnvironment: boolean = false;
 
     constructor() {
@@ -38,6 +40,8 @@ export class App extends EventEmitter {
         if (App.INSTANCE) {
             throw new Error("Call App.getInstance() instead!");
         }
+        this.version = parseInt(fs.readFileSync(path.join(process.cwd(), "./VERSION"), "utf8").trim(), 10);
+        console.log("Commerce version = %d", this.version);
         this.devEnvironment = (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() === "dev");
         console.log("Dev mode = %s", this.devEnvironment);
         process.on("SIGINT", this.exitOnSignal.bind(this));

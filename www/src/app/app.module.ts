@@ -129,8 +129,11 @@ export class AppModule {
                         "<span class='siteImprintUrl' style='display:none'><a href='#' target='_blank'>Imprint</a> | </span>" +
                         "<span class='sitePrivacyPolicyUrl' style='display:none'><a href='#' target='_blank'>Privacy Policy</a> | </span>" +
                         "Powered by " +
-                        "<a href='https://weweave.net/products/commerce' target='_blank'>weweave Commerce</a>" +
+                        "<a href='https://weweave.net/products/commerce' target='_blank'>weweave Commerce</a> (version <span class='version'>unknown</span>)" +
                         ".</p>");
+                    this.settingsService.getVersion().then(version => {
+                        $(".main .poweredby .version").text(version);
+                    });
                     this.settingsService.list().then(settings => {
                         settings.forEach(setting => {
                             if (setting.settingId === 21 && setting.value) {
