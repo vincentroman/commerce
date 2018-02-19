@@ -28,7 +28,7 @@ class SystemSettingRouter extends CrudRouter<SystemSetting, SystemSettingDao> {
     }
 
     private getVersion(req: Request, res: Response, next: NextFunction): void {
-        res.send(App.getInstance().version.toString());
+        res.type("txt").send(App.getInstance().version.toString());
     }
 
     private getPublicSettings(req: Request, res: Response, next: NextFunction): void {

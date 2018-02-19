@@ -38,7 +38,9 @@ describe('API Protection', () => {
             {url: "/api/v1/product/get/abcdef", expectForbidden: false, method: "get"},
             {url: "/api/v1/product/list", expectForbidden: false, method: "get"},
             {url: "/api/v1/productvariant/list/abcdef", expectForbidden: false, method: "get"},
-            {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: false, method: "get"}
+            {url: "/api/v1/brokerproductvariant/abcdef/list", expectForbidden: false, method: "get"},
+            {url: "/api/v1/systemsetting/public", expectForbidden: false, method: "get"},
+            {url: "/api/v1/systemsetting/version", expectForbidden: false, method: "get"}
         ]);
     });
 
