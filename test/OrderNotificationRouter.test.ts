@@ -21,6 +21,9 @@ import { LicenseKey } from "../src/entity/LicenseKey";
 import { LicenseKeyDao } from "../src/dao/LicenseKeyDao";
 import { DefaultSettingsCheck } from "../src/util/DefaultSettingsCheck";
 import { PersonDao } from "../src/dao/PersonDao";
+import { PendingActionDao } from '../src/dao/PendingActionDao';
+import { ActionType } from '../src/entity/PendingAction';
+import { PurchaseItemDao } from '../src/dao/PurchaseItemDao';
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -79,13 +82,15 @@ describe('Router '+endpoint, () => {
 
     afterEach(done => {
         Container.get(LicenseKeyDao).removeAll().then(() => {
-            Container.get(PurchaseDao).removeAll().then(() => {
-                Container.get(PersonDao).removeAll().then(() => {
-                    Container.get(BrokerProductVariantDao).removeAll().then(() => {
-                        Container.get(ProductVariantDao).removeAll().then(() => {
-                            Container.get(ProductDao).removeAll().then(() => {
-                                Container.get(BrokerDao).removeAll().then(() => {
-                                    DefaultSettingsCheck.check().then(() => done());
+            Container.get(PurchaseItemDao).removeAll().then(() => {
+                Container.get(PurchaseDao).removeAll().then(() => {
+                    Container.get(PersonDao).removeAll().then(() => {
+                        Container.get(BrokerProductVariantDao).removeAll().then(() => {
+                            Container.get(ProductVariantDao).removeAll().then(() => {
+                                Container.get(ProductDao).removeAll().then(() => {
+                                    Container.get(BrokerDao).removeAll().then(() => {
+                                        DefaultSettingsCheck.check().then(() => done());
+                                    }).catch(e => done(e));
                                 }).catch(e => done(e));
                             }).catch(e => done(e));
                         }).catch(e => done(e));
@@ -96,8 +101,8 @@ describe('Router '+endpoint, () => {
     });
 
     describe('POST '+endpoint, () => {
-        it("Should successfully accept a valid JSON", () => {
-            let input = fs.readFileSync(path.join(process.cwd(), "./test/res/fastspring.json"), "utf8");
+        it("Should immediately process an order for an existing customer", () => {
+            let input = fs.readFileSync(path.join(process.cwd(), "./test/res/fastspring-2.json"), "utf8");
             return chai.request(App.getInstance().express).post(endpoint + broker2.uuid)
             .set('Content-Type', 'application/json')
             .send(input)
@@ -131,6 +136,69 @@ describe('Router '+endpoint, () => {
                     expect(order.items[0].productVariant.product).to.be.not.null;
                     expect(order.items[0].productVariant.product).to.be.not.undefined;
                     expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
+                });
+            });
+        });
+
+        it("Should perform a double opt in for an new customer", () => {
+            let input = fs.readFileSync(path.join(process.cwd(), "./test/res/fastspring.json"), "utf8");
+            return chai.request(App.getInstance().express).post(endpoint + broker2.uuid)
+            .set('Content-Type', 'application/json')
+            .send(input)
+            .then(res => {
+                expect(res.status).to.equal(200);
+                expect(res.body.uuid).to.be.undefined;
+                return Container.get(PendingActionDao).getLatest(ActionType.ConfirmOrder).then(action => {
+                    expect(action).to.be.not.null;
+                    expect(action).to.be.not.undefined;
+                    return chai.request(App.getInstance().express).get("/api/v1/purchase/pending/" + action.uuid)
+                    .then(res => {
+                        expect(res.status).to.equal(200);
+                        expect(res).to.be.json;
+                        expect(res.body).to.be.an('object');
+                        expect(res.body.broker.name).to.equal("FastSpring");
+                        expect(res.body.customer.firstname).to.equal("John");
+                        expect(res.body.customer.lastname).to.equal("Doe");
+                        expect(res.body.customer.company).to.equal("weweave");
+                        expect(res.body.customer.email).to.equal("no-reply@weweave.net");
+                        expect(res.body.customer.country).to.be.undefined
+                        return chai.request(App.getInstance().express).post(endpoint + "confirm")
+                        .send({uuid: action.uuid})
+                        .then(res => {
+                            expect(res.status).to.equal(200);
+                            expect(res).to.be.json;
+                            expect(res.body).to.be.an('object');
+                            expect(res.body.uuid).to.be.string;
+                            let orderDao: PurchaseDao = Container.get(PurchaseDao);
+                            return orderDao.getByUuid(res.body.uuid).then(order => {
+                                expect(order).to.be.not.null;
+                                expect(order).to.be.not.undefined;
+                                expect(order.uuid).to.equal(res.body.uuid);
+                                expect(order.broker).to.be.not.null;
+                                expect(order.broker).to.be.not.undefined;
+                                expect(order.broker.id).to.equal(broker2.id);
+                                expect(order.broker.name).to.equal(broker2.name);
+                                expect(order.items).to.be.not.null;
+                                expect(order.items).to.be.not.undefined;
+                                expect(order.items).to.be.an('array');
+                                expect(order.items).to.have.lengthOf(1);
+                                expect(order.items[0]).to.be.not.null;
+                                expect(order.items[0]).to.be.not.undefined;
+                                expect(order.items[0]).to.be.an.instanceOf(PurchaseItem);
+                                expect(order.items[0].quantity).to.be.equal(2);
+                                expect(order.items[0].productVariant).to.be.not.null;
+                                expect(order.items[0].productVariant).to.be.not.undefined;
+                                expect(order.items[0].productVariant.type).to.be.not.null;
+                                expect(order.items[0].productVariant.type).to.be.not.undefined;
+                                expect(order.items[0].productVariant.type).to.be.equal(ProductVariantType.LimitedLicense);
+                                expect(order.items[0].productVariant.product).to.be.not.null;
+                                expect(order.items[0].productVariant.product).to.be.not.undefined;
+                                expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
+                            });
+                        });
+                    });
+
+
                 });
             });
         });

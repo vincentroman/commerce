@@ -38,11 +38,13 @@ import { PurchaseComponent } from "./component/purchase.component";
 import { ChangePasswordComponent } from "./component/change-password.component";
 import { ProfileComponent } from "./component/profile.component";
 import { ConfirmEmailComponent } from "./component/confirm-email.component";
+import { ConfirmOrderComponent } from "./component/confirm-order.component";
 
 const appRoutes: Routes = [
     // "Any" routes
     { path: "purchase", component: PurchaseComponent },
     { path: "emailconfirm/:uuid", component: ConfirmEmailComponent },
+    { path: "doi/:uuid", component: ConfirmOrderComponent },
 
     // Guest routes
     { path: "login", component: LoginComponent, canActivate: [GuestGuard] },

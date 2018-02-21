@@ -37,5 +37,6 @@ export class PendingAction extends DbEntity<PendingAction> {
 
 export enum ActionType {
     ResetPassword = 1,
-    ChangeEmail = 2
+    ChangeEmail = 2,
+    ConfirmOrder = 3
 }

@@ -52,6 +52,7 @@ import { PersonService } from "./service/person.service";
 import { ProfileComponent } from "./component/profile.component";
 import { ConfirmEmailComponent } from "./component/confirm-email.component";
 import { SystemSettingService } from "./service/systemsetting.service";
+import { ConfirmOrderComponent } from "./component/confirm-order.component";
 
 @NgModule({
     imports: [
@@ -69,6 +70,7 @@ import { SystemSettingService } from "./service/systemsetting.service";
         BrokerProductVariantEditComponent,
         ChangePasswordComponent,
         ConfirmEmailComponent,
+        ConfirmOrderComponent,
         HomeComponent,
         LicenseKeyListComponent,
         LicenseKeyEditComponent,

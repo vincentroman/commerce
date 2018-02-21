@@ -17,6 +17,18 @@ export class PersonDao extends Dao<Person> {
         return this.getRepository().findOne({email: email});
     }
 
+    public async existsPerson(email: string): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            this.getByEmail(email).then(person => {
+                if (person === null || person === undefined) {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            }).catch(reason => resolve(false));
+        });
+    }
+
     public async getAll(): Promise<Person[]> {
         return this.getRepository()
             .createQueryBuilder("p")

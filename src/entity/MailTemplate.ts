@@ -43,5 +43,6 @@ export enum MailTemplateType {
     ResetPassword = 5,
     ChangeEmail = 6,
     EvalBuyReminder = 7,
-    LicenseExpiryReminder = 8
+    LicenseExpiryReminder = 8,
+    ConfirmOrder = 9
 }

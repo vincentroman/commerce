@@ -5,7 +5,7 @@ import { BaseRouter, AuthRole } from "./BaseRouter";
 import { Broker } from "../entity/Broker";
 import { BrokerDao } from "../dao/BrokerDao";
 import { PurchaseDao } from "../dao/PurchaseDao";
-import { OrderNotificationMapper } from "../util/OrderNotificationMapper";
+import { OrderNotificationMapper, MappedOrderInput } from "../util/OrderNotificationMapper";
 import { Purchase } from "../entity/Purchase";
 import { PurchaseItem } from "../entity/PurchaseItem";
 import { ProductVariant, ProductVariantType } from "../entity/ProductVariant";
@@ -20,9 +20,12 @@ import { Person } from "../entity/Person";
 import { PersonDao } from "../dao/PersonDao";
 import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { SystemSettingId } from "../entity/SystemSetting";
+import { PendingAction, ActionType } from '../entity/PendingAction';
+import { PendingActionDao } from '../dao/PendingActionDao';
 
 class OrderNotificationRouter extends BaseRouter {
     protected init(): void {
+        this.addRoutePost('/confirm', this.confirmOrder, AuthRole.ANY);
         this.addRoutePost('/:id', this.notify, AuthRole.ANY);
     }
 
@@ -32,11 +35,17 @@ class OrderNotificationRouter extends BaseRouter {
         console.log("Incoming order notification for broker uuid %s with content %s", brokerId, JSON.stringify(req.body));
         brokerDao.getByUuid(brokerId).then((broker) => {
             if (broker) {
-                OrderNotificationMapper.map(req.body, broker, true).then((order) => {
-                    this.checkCreateUserAccount(order.customer).then(() => {
-                        this.checkOrderTriggers(order).then(() => {
-                            this.saved(res, order);
-                        });
+                OrderNotificationMapper.mapAndValidate(req.body, broker).then(mappedInput => {
+                    Container.get(PersonDao).existsPerson(mappedInput.customer.email).then(customerExists => {
+                        if (customerExists) {
+                            this.processPurchaseWithoutDoubleOptIn(mappedInput, broker)
+                                .then(order => this.saved(res, order))
+                                .catch(e => this.internalServerError(res));
+                        } else {
+                            this.startDoubleOptInForPurchase(mappedInput, broker)
+                                .then(() => this.ok(res))
+                                .catch(e => this.internalServerError(res));
+                        }
                     });
                 }).catch(e => {
                     console.log("Order Notification Mapping failed: " + e.stack);
@@ -47,6 +56,74 @@ class OrderNotificationRouter extends BaseRouter {
                 this.notFound(res);
             }
         }).catch(e => this.notFound(res));
+    }
+
+    private confirmOrder(req: Request, res: Response, next: NextFunction): void {
+        let actionDao: PendingActionDao = Container.get(PendingActionDao);
+        actionDao.getByUuid(req.body.uuid).then(action => {
+            if (action && action.type === ActionType.ConfirmOrder) {
+                Container.get(BrokerDao).getByUuid(action.getPayload().brokerUuid).then(broker => {
+                    if (broker) {
+                        let mappedInput: MappedOrderInput = action.getPayload().mappedInput;
+                        this.processPurchaseWithoutDoubleOptIn(mappedInput, broker).then(order => {
+                                actionDao.delete(action).then(() => this.saved(res, order));
+                            }).catch(e => this.internalServerError(res));
+                    } else {
+                        this.internalServerError(res);
+                    }
+                }).catch(e => this.internalServerError(res));
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => this.internalServerError(res));
+    }
+
+    private processPurchaseWithoutDoubleOptIn(mappedInput: MappedOrderInput, broker: Broker): Promise<Purchase> {
+        return new Promise<Purchase>((resolve, reject) => {
+            OrderNotificationMapper.persistMappedOrder(mappedInput, broker).then((order) => {
+                this.checkCreateUserAccount(order.customer).then(() => {
+                    this.checkOrderTriggers(order).then(() => {
+                        resolve(order);
+                    });
+                });
+            }).catch(e => {
+                console.log("Order Notification persisting failed: " + e.stack);
+                reject(e);
+            });
+        });
+    }
+
+    private startDoubleOptInForPurchase(mappedInput: MappedOrderInput, broker: Broker): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            let actionDao: PendingActionDao = Container.get(PendingActionDao);
+            let settingsDao: SystemSettingDao = Container.get(SystemSettingDao);
+            let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
+            let action: PendingAction = new PendingAction();
+            let payload = {
+                brokerUuid: broker.uuid,
+                mappedInput: mappedInput
+            };
+            action.type = ActionType.ConfirmOrder;
+            action.setPayload(payload);
+            actionDao.save(action).then(action => {
+                mailTemplateDao.getByType(MailTemplateType.ConfirmOrder).then(mailTemplate => {
+                    settingsDao.getString(SystemSettingId.Site_Url, "").then(siteUrl => {
+                        let params = {
+                            broker: broker.name,
+                            firstname: mappedInput.customer.firstname,
+                            lastname: mappedInput.customer.lastname,
+                            uuid: action.uuid,
+                            siteUrl: siteUrl
+                        };
+                        let recipient: Address = {
+                            email: mappedInput.customer.email
+                        };
+                        Email.sendByTemplate(mailTemplate, recipient, params);
+                        resolve();
+                    }).catch(e => reject(e));
+                }).catch(e => reject(e));
+            }).catch(e => reject(e));
+        });
     }
 
     private checkCreateUserAccount(person: Person): Promise<Person> {

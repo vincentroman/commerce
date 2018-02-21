@@ -47,4 +47,30 @@ export class PurchaseService extends CrudService<Purchase> {
             .catch(error => reject(this.httpService.handleError(error)));
         });
     }
+
+    public getPendingOrder(uuid: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.http
+            .get(this.httpService.getUrl(this.getPath() + "/pending/" + uuid), this.httpService.getOptions())
+            .toPromise()
+            .then(res => resolve(res.json()))
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
+
+    public confirmOrder(uuid: string): Promise<Purchase> {
+        let payload = {
+            uuid: uuid
+        };
+        return new Promise((resolve, reject) => {
+            this.http
+            .post(this.httpService.getUrl("ordernotification/confirm"), payload, this.httpService.getOptions())
+            .toPromise()
+            .then(res => {
+                let result: Purchase = new Purchase().deserialize(res.json());
+                resolve(result);
+            })
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
 }

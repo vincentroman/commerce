@@ -37,6 +37,6 @@ export class HttpService {
             this.sessionService.logout();
             return;
         }
-        throw error;
+        return error;
     }
 }

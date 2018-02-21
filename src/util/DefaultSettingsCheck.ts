@@ -173,6 +173,22 @@ export class DefaultSettingsCheck {
             "Do you have any questions we can help you with? Don't hesitate to let us know.";
             await dao.save(template);
         }
+
+        // Confirm Order
+        template = await dao.getByType(MailTemplateType.ConfirmOrder);
+        if (template === undefined || template == null) {
+            template = new MailTemplate();
+            template.type = MailTemplateType.ConfirmOrder;
+            template.subject = "Please confirm your {{broker}} purchase";
+            template.body = "Dear {{firstname}} {{lastname}},\n\n" +
+            "thanks for purchasing a weweave product via {{broker}}!\n\n" +
+            "In order to process your order, we need your confirmation.\n" +
+            "Please review your data and confirm your order using the following link \n" +
+            "within 7 days:\n\n" +
+            "{{siteUrl}}/doi/{{uuid}}\n\n" +
+            "Do you have any questions we can help you with? Don't hesitate to let us know.";
+            await dao.save(template);
+        }
     }
 
     private static async checkSystemSettings(): Promise<void> {

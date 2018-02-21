@@ -1,0 +1,16 @@
+{
+    "id": "WEW150414-9157-20105",
+    "items": [
+        {
+            "productName": "wpac-support-ticket",
+            "priceTotalUSD": 22.81,
+            "quantity": 2
+        }
+    ],
+    "customer": {
+        "firstName": "System",
+        "lastName": "Administrator",
+        "company": "",
+        "email": "admin@admin.local"
+    }
+}
