@@ -23,6 +23,7 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
         this.addRoutePost('/addcomment/:id', this.addComment, AuthRole.ADMIN);
         this.addRouteGet('/me', this.me, AuthRole.USER);
         this.addRoutePut('/me/update', this.updateMe, AuthRole.USER);
+        this.addRoutePost('/me/confirmdata', this.confirmMyData, AuthRole.USER);
     }
 
     protected getDao(): PersonDao {
@@ -123,12 +124,32 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
             if (user) {
                 let oldEmail = user.email;
                 user.deserialize(req.body);
+                user.lastDataVerification = new Date();
                 if (user.email !== oldEmail) {
                     let newEmail = user.email;
                     user.email = oldEmail;
                     this.sendEmailUpdateDoi(user, newEmail).then(() => finishUpdate.call(this, user));
                 } else {
                     finishUpdate.call(this, user);
+                }
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => this.notFound(res));
+    }
+
+    private confirmMyData(req: Request, res: Response, next: NextFunction): void {
+        let uuid = this.getJwtUserUuid(req);
+        let dao = this.getDao();
+        dao.getByUuid(uuid).then((user) => {
+            if (user) {
+                user.lastDataVerification = new Date();
+                if (user.isConsistent()) {
+                    dao.save(user)
+                        .then(user => this.saved(res, user))
+                        .catch(e => this.internalServerError(res));
+                } else {
+                    this.badRequest(res);
                 }
             } else {
                 this.notFound(res);

@@ -1,4 +1,5 @@
 import * as bcrypt  from "bcrypt";
+import * as moment from "moment";
 import { Entity, Column } from "typeorm";
 import { DbEntity } from "./DbEntity";
 
@@ -31,6 +32,9 @@ export class Person extends DbEntity<Person> {
     @Column({default: false})
     roleCustomer: boolean;
 
+    @Column({nullable: true})
+    lastDataVerification: Date;
+
     public setPlainPassword(password: string): void {
         let hash: string = bcrypt.hashSync(password, 10);
         this.password = hash;
@@ -52,7 +56,9 @@ export class Person extends DbEntity<Person> {
             email:                  this.email,
             receiveProductUpdates:  this.receiveProductUpdates,
             roleAdmin:              this.roleAdmin,
-            roleCustomer:           this.roleCustomer
+            roleCustomer:           this.roleCustomer,
+            lastDataVerification:   this.lastDataVerification ? moment(this.lastDataVerification).format("YYYY-MM-DD HH:mm:ss") : null,
+            needDataVerification:   this.needDataVerification()
         });
     }
 
@@ -71,6 +77,12 @@ export class Person extends DbEntity<Person> {
             this.setPlainPassword(o['password']);
         }
         return this;
+    }
+
+    public needDataVerification(): boolean {
+        return this.lastDataVerification === undefined ||
+            this.lastDataVerification == null ||
+            moment(this.lastDataVerification).isBefore(moment().subtract(1, "year"));
     }
 
     public printableName(): string {

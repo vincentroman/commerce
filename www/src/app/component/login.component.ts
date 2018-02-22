@@ -25,8 +25,12 @@ export class LoginComponent {
         this.loginError = false;
         this.submitting = true;
         this.authService.login(this.model.email, this.model.password)
-            .then(res => {
-                this.router.navigate(["/home"]);
+            .then(person => {
+                if (person.needDataVerification) {
+                    this.router.navigate(["/profile/verify"]);
+                } else {
+                    this.router.navigate(["/home"]);
+                }
             })
             .catch(res => {
                 this.loginError = true;

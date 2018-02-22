@@ -10,6 +10,7 @@ export class Person extends RestModel<Person> {
     receiveProductUpdates: boolean = false;
     roleAdmin: boolean = false;
     roleCustomer: boolean = false;
+    needDataVerification: boolean = false;
 
     serialize(): Object {
         return Object.assign(super.serialize(), {
@@ -36,6 +37,7 @@ export class Person extends RestModel<Person> {
         this.receiveProductUpdates = input.receiveProductUpdates;
         this.roleAdmin = input.roleAdmin;
         this.roleCustomer = input.roleCustomer;
+        this.needDataVerification = input.needDataVerification;
         return this;
     }
 

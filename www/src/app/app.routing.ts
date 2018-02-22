@@ -39,6 +39,7 @@ import { ChangePasswordComponent } from "./component/change-password.component";
 import { ProfileComponent } from "./component/profile.component";
 import { ConfirmEmailComponent } from "./component/confirm-email.component";
 import { ConfirmOrderComponent } from "./component/confirm-order.component";
+import { VerifyDataComponent } from "./component/verify-data.component";
 
 const appRoutes: Routes = [
     // "Any" routes
@@ -54,6 +55,7 @@ const appRoutes: Routes = [
     // Authenticated routes
     { path: "home", component: HomeComponent, canActivate: [AuthGuard] },
     { path: "profile", component: ProfileComponent, canActivate: [AuthGuard] },
+    { path: "profile/verify", component: VerifyDataComponent, canActivate: [AuthGuard] },
 
     // Customer routes
     { path: "customer/licensekeys", component: LicenseKeyMyListComponent, canActivate: [CustomerGuard] },

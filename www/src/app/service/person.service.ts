@@ -103,4 +103,13 @@ export class PersonService extends CrudService<Person> {
             .catch(error => reject(this.httpService.handleError(error)));
         });
     }
+
+    confirmMyData(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.http.post(this.httpService.getUrl(this.getPath() + "/me/confirmdata"), null, this.httpService.getOptions())
+            .toPromise()
+            .then(res => resolve())
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
 }
