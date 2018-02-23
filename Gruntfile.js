@@ -15,7 +15,8 @@ module.exports = function(grunt) {
           "emitDecoratorMetadata": true,
           "experimentalDecorators": true,
           "lib": [
-            "es6"
+            "es6",
+            "dom"
           ]
         }
       }

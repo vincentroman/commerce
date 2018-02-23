@@ -1,7 +1,7 @@
-import { Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, VersionColumn, BaseEntity } from "typeorm";
 import * as moment from 'moment';
 
-export abstract class DbEntity<T extends DbEntity<T>> {
+export abstract class DbEntity<T extends DbEntity<T>> extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -21,6 +21,7 @@ export abstract class DbEntity<T extends DbEntity<T>> {
     version: number;
 
     constructor(o?: Object) {
+        super();
         if (o) {
             this.deserialize(o);
         }

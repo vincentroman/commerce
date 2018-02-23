@@ -241,7 +241,8 @@ export class DefaultSettingsCheck {
                     e.uuid = uuid();
                     bucket.push(e);
                 }
-                await dao.saveAll(bucket);
+                bucket = await dao.prepareSaveAll(bucket);
+                await TopLevelDomain.save(bucket);
             } else {
                 // Update: Check every TLD before inserting
                 for (let item of data.items) {

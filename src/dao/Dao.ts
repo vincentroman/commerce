@@ -29,16 +29,17 @@ export abstract class Dao<T extends DbEntity<T>> {
             .getMany();
     }
 
-    public async saveAll(oList: T[]): Promise<T[]> {
+    public async prepareSaveAll(oList: T[]): Promise<T[]> {
         for (let o of oList) {
             o = await this.assignUuid(o);
         }
-        return this.getRepository().save(oList);
+        return oList;
+        //return this.getRepository().save(oList);
     }
 
     public async save(o: T): Promise<T> {
         o = await this.assignUuid(o);
-        return this.getRepository().save(o);
+        return o.save();
     }
 
     private async assignUuid(o: T): Promise<T> {
