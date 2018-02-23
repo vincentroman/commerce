@@ -39,6 +39,8 @@ export class MailTemplate extends RestModel<MailTemplate> {
                 return "Reminder to buy";
             case MailTemplateType.LicenseExpiryReminder:
                 return "Reminder to renew license";
+            case MailTemplateType.ConfirmOrder:
+                return "Confirm order";
             default:
                 return "Unknown";
         }
@@ -53,5 +55,6 @@ export enum MailTemplateType {
     ResetPassword = 5,
     ChangeEmail = 6,
     EvalBuyReminder = 7,
-    LicenseExpiryReminder = 8
+    LicenseExpiryReminder = 8,
+    ConfirmOrder = 9
 }
