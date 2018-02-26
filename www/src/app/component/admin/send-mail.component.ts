@@ -32,7 +32,7 @@ export class SendMailComponent {
                 this.uuid = uuid;
                 this.personService.get(uuid).then(user => {
                     this.user = user;
-                })
+                });
             }
         });
     }
