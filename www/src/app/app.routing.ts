@@ -40,6 +40,7 @@ import { ProfileComponent } from "./component/profile.component";
 import { ConfirmEmailComponent } from "./component/confirm-email.component";
 import { ConfirmOrderComponent } from "./component/confirm-order.component";
 import { VerifyDataComponent } from "./component/verify-data.component";
+import { SendMailComponent } from "./component/admin/send-mail.component";
 
 const appRoutes: Routes = [
     // "Any" routes
@@ -100,6 +101,9 @@ const appRoutes: Routes = [
     { path: "admin/users", component: UserListComponent, canActivate: [AdminGuard] },
     { path: "admin/users/new", component: UserEditComponent, canActivate: [AdminGuard] },
     { path: "admin/users/edit/:uuid", component: UserEditComponent, canActivate: [AdminGuard] },
+
+    { path: "admin/sendmail", component: SendMailComponent, canActivate: [AdminGuard] },
+    { path: "admin/sendmail/:uuid", component: SendMailComponent, canActivate: [AdminGuard] },
 
     {
         path: "",

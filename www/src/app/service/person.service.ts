@@ -112,4 +112,30 @@ export class PersonService extends CrudService<Person> {
             .catch(error => reject(this.httpService.handleError(error)));
         });
     }
+
+    sendMailToUser(uuid: string, subject: string, body: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            let payload = {
+                subject: subject,
+                body: body
+            };
+            this.http.post(this.httpService.getUrl(this.getPath() + "/sendmail/" + uuid), payload, this.httpService.getOptions())
+            .toPromise()
+            .then(res => resolve())
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
+
+    sendMailToAllUsers(subject: string, body: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            let payload = {
+                subject: subject,
+                body: body
+            };
+            this.http.post(this.httpService.getUrl(this.getPath() + "/sendmail/all"), payload, this.httpService.getOptions())
+            .toPromise()
+            .then(res => resolve())
+            .catch(error => reject(this.httpService.handleError(error)));
+        });
+    }
 }

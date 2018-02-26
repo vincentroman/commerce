@@ -54,6 +54,7 @@ import { ConfirmEmailComponent } from "./component/confirm-email.component";
 import { SystemSettingService } from "./service/systemsetting.service";
 import { ConfirmOrderComponent } from "./component/confirm-order.component";
 import { VerifyDataComponent } from "./component/verify-data.component";
+import { SendMailComponent } from "./component/admin/send-mail.component";
 
 @NgModule({
     imports: [
@@ -91,6 +92,7 @@ import { VerifyDataComponent } from "./component/verify-data.component";
         ProfileComponent,
         NavComponent,
         ResetPasswordComponent,
+        SendMailComponent,
         SupportRequestListComponent,
         SupportRequestEditComponent,
         SupportRequestViewComponent,

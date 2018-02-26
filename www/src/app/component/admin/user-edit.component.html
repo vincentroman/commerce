@@ -1,6 +1,7 @@
 <div class="page-header">
     <div class="btn-toolbar pull-right">
         <button type="button" class="btn btn-danger btn-lg" (click)="delete()" [hidden]="!entity.uuid" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>
+        <a routerLink="/admin/sendmail/{{entity.uuid}}" class="btn btn-primary btn-lg" title="Send mail"><span class="glyphicon glyphicon-envelope"></span></a>
         <a routerLink="/admin/users" class="btn btn-primary btn-lg" title="Show all"><span class="glyphicon glyphicon-list"></span></a>
         <a routerLink="/admin/users/new" class="btn btn-primary btn-lg" [hidden]="!entity.uuid" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
     </div>

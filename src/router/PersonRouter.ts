@@ -13,7 +13,7 @@ import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { MailTemplateType } from "../entity/MailTemplate";
 import { SystemSettingId } from "../entity/SystemSetting";
-import { Address, Email } from "../util/Email";
+import { Address, Email, EmailOptions } from "../util/Email";
 
 class CustomerRouter extends CrudRouter<Person, PersonDao> {
     protected init(): void {
@@ -21,6 +21,8 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
         this.addRouteGet('/suggest', this.suggest, AuthRole.ADMIN);
         this.addRouteGet('/comments/:id', this.getComments, AuthRole.ADMIN);
         this.addRoutePost('/addcomment/:id', this.addComment, AuthRole.ADMIN);
+        this.addRoutePost('/sendmail/:id', this.sendMailToUser, AuthRole.ADMIN);
+        this.addRoutePost('/sendmail/all', this.sendMailToAllUsers, AuthRole.ADMIN);
         this.addRouteGet('/me', this.me, AuthRole.USER);
         this.addRoutePut('/me/update', this.updateMe, AuthRole.USER);
         this.addRoutePost('/me/confirmdata', this.confirmMyData, AuthRole.USER);
@@ -98,6 +100,78 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
                 commentDao.save(comment).then(comment => this.saved(res, comment));
             }).catch(e => this.notFound(res));
         }).catch(e => this.notFound(res));
+    }
+
+    private sendMailToUser(req: Request, res: Response, next: NextFunction): void {
+        let dao: PersonDao = Container.get(PersonDao);
+        let settings: SystemSettingDao = Container.get(SystemSettingDao);
+        settings.getString(SystemSettingId.MailServer_Sender_Name, "").then(senderName => {
+            settings.getString(SystemSettingId.MailServer_Sender_Email, "").then(senderEmail => {
+                let sender = {
+                    name: senderName,
+                    email: senderEmail
+                };
+                dao.getByUuid(req.params.id).then(user => {
+                    if (user) {
+                        let params = {
+                            firstname: user.firstname,
+                            lastname: user.lastname,
+                            company: user.company
+                        };
+                        let recipient: Address = {
+                            email: user.email
+                        };
+                        let renderedSubject: string = Email.renderParamString(req.body.subject, params);
+                        let renderedTemplate: string = Email.renderParamString(req.body.body, params);
+                        let options: EmailOptions = {
+                            recipient: recipient,
+                            sender: sender,
+                            subject: renderedSubject,
+                            text: renderedTemplate
+                        };
+                        Email.send(options);
+                        this.ok(res);
+                    } else {
+                        this.notFound(res);
+                    }
+                });
+            });
+        });
+    }
+
+    private sendMailToAllUsers(req: Request, res: Response, next: NextFunction): void {
+        let dao: PersonDao = Container.get(PersonDao);
+        let settings: SystemSettingDao = Container.get(SystemSettingDao);
+        settings.getString(SystemSettingId.MailServer_Sender_Name, "").then(senderName => {
+            settings.getString(SystemSettingId.MailServer_Sender_Email, "").then(senderEmail => {
+                let sender = {
+                    name: senderName,
+                    email: senderEmail
+                };
+                dao.getAll().then(users => {
+                    users.forEach(user => {
+                        let params = {
+                            firstname: user.firstname,
+                            lastname: user.lastname,
+                            company: user.company
+                        };
+                        let recipient: Address = {
+                            email: user.email
+                        };
+                        let renderedSubject: string = Email.renderParamString(req.body.subject, params);
+                        let renderedTemplate: string = Email.renderParamString(req.body.body, params);
+                        let options: EmailOptions = {
+                            recipient: recipient,
+                            sender: sender,
+                            subject: renderedSubject,
+                            text: renderedTemplate
+                        };
+                        Email.send(options);
+                    });
+                    this.ok(res);
+                });
+            });
+        });
     }
 
     private me(req: Request, res: Response, next: NextFunction): void {
