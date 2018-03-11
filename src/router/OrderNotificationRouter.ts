@@ -98,12 +98,11 @@ class OrderNotificationRouter extends BaseRouter {
             let actionDao: PendingActionDao = Container.get(PendingActionDao);
             let settingsDao: SystemSettingDao = Container.get(SystemSettingDao);
             let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
-            let action: PendingAction = new PendingAction();
+            let action: PendingAction = actionDao.createConfirmOrderAction();
             let payload = {
                 brokerUuid: broker.uuid,
                 mappedInput: mappedInput
             };
-            action.type = ActionType.ConfirmOrder;
             action.setPayload(payload);
             actionDao.save(action).then(action => {
                 mailTemplateDao.getByType(MailTemplateType.ConfirmOrder).then(mailTemplate => {

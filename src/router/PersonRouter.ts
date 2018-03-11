@@ -236,8 +236,7 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
             let actionDao: PendingActionDao = Container.get(PendingActionDao);
             let settingsDao: SystemSettingDao = Container.get(SystemSettingDao);
             let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
-            let action: PendingAction = new PendingAction();
-            action.type = ActionType.ChangeEmail;
+            let action: PendingAction = actionDao.createChangeEmailAction();
             action.setPayload({
                 userId: person.id,
                 email: newEmail

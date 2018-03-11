@@ -9,6 +9,7 @@ import { NotificationBacklogItemDao } from "../dao/NotificationBacklogItemDao";
 import { NotificationType, NotificationBacklogItem } from "../entity/NotificationBacklogItem";
 import { ProductDao } from "../dao/ProductDao";
 import { Product } from "../entity/Product";
+import { PendingActionDao } from "../dao/PendingActionDao";
 
 export class ScheduledTasks {
     private static SCHEDULED: boolean = false;
@@ -23,6 +24,7 @@ export class ScheduledTasks {
             // Run cron every 8 hours at */8:15:00
             new CronJob("0 15 */8 * * *", ScheduledTasks.sendLicenseExpirationReminders).start();
             new CronJob("0 25 */8 * * *", ScheduledTasks.sendEvalBuyReminders).start();
+            new CronJob("0 35 */8 * * *", ScheduledTasks.deleteExpiredPendingActions).start();
         } catch (e) {
             console.error(e);
         }
@@ -81,5 +83,12 @@ export class ScheduledTasks {
             }
             await dao.delete(notificationItem);
         }
+    }
+
+    private static async deleteExpiredPendingActions(): Promise<void> {
+        console.log("Deleting expired pending actions...");
+        let dao: PendingActionDao = Container.get(PendingActionDao);
+        let num = await dao.deleteExpired();
+        console.log("%d expired actions deleted...", num);
     }
 }

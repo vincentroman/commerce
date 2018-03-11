@@ -101,8 +101,7 @@ class AuthRouter extends BaseRouter {
         let mailTemplateDao: MailTemplateDao = Container.get(MailTemplateDao);
         dao.getByEmail(req.body.email).then((user) => {
             if (user) {
-                let action: PendingAction = new PendingAction();
-                action.type = ActionType.ResetPassword;
+                let action: PendingAction = actionDao.createResetPasswordAction();
                 action.setPayload({
                     userId: user.id
                 });

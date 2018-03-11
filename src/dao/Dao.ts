@@ -2,6 +2,7 @@ import { Repository, Connection, EntityManager } from "typeorm";
 import * as uuid from 'uuid/v4';
 import { DbEntity } from "../entity/DbEntity";
 import { App } from "../App";
+import { Config } from "../util/Config";
 
 export abstract class Dao<T extends DbEntity<T>> {
     public async getById(id: number): Promise<T> {
@@ -34,7 +35,6 @@ export abstract class Dao<T extends DbEntity<T>> {
             o = await this.assignUuid(o);
         }
         return oList;
-        //return this.getRepository().save(oList);
     }
 
     public async save(o: T): Promise<T> {
@@ -79,6 +79,23 @@ export abstract class Dao<T extends DbEntity<T>> {
 
     public async removeAll(): Promise<void> {
         return this.getRepository().clear();
+    }
+
+
+    protected getDateComparisonString(field: string, parameter: string): string {
+        let config: any = Config.getInstance().get("database");
+        let driver: string = config.driver.type.toLowerCase();
+        if (driver === "sqlite") {
+            return "DATETIME(" + field + ") <= DATETIME(" + parameter + ")";
+        } else if (driver === "mysql" || driver === "mariadb") {
+            return field + " <= STR_TO_DATE(" + parameter + ", '%Y-%m-%d %H:%i:%s')";
+        } else if (driver === "mssql") {
+            return field + " <= CONVERT(DATETIME, " + parameter + ", 120)";
+        } else if (driver === "postgres" || driver === "oracle") {
+            return field + " <= TO_DATE(" + parameter + ", 'YYYY-MM-DD HH24-MI-SS')";
+        } else {
+            return "UNSUPPORTED DATABASE DRIVER";
+        }
     }
 
     protected abstract getRepository(): Repository<T>;

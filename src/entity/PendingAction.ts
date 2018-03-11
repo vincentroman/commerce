@@ -9,6 +9,9 @@ export class PendingAction extends DbEntity<PendingAction> {
     @Column()
     payload: string;
 
+    @Column({nullable: true})
+    expiry: Date;
+
     public serialize(skipDeletedCheck?: boolean): Object {
         return Object.assign(super.serialize(skipDeletedCheck), {
         });

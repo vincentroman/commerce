@@ -57,22 +57,6 @@ export class NotificationBacklogItemDao extends Dao<NotificationBacklogItem> {
         }
     }
 
-    private getDateComparisonString(field: string, parameter: string): string {
-        let config: any = Config.getInstance().get("database");
-        let driver: string = config.driver.type.toLowerCase();
-        if (driver === "sqlite") {
-            return "DATETIME(" + field + ") <= DATETIME(" + parameter + ")";
-        } else if (driver === "mysql" || driver === "mariadb") {
-            return field + " <= STR_TO_DATE(" + parameter + ", '%Y-%m-%d %H:%i:%s')";
-        } else if (driver === "mssql") {
-            return field + " <= CONVERT(DATETIME, " + parameter + ", 120)";
-        } else if (driver === "postgres" || driver === "oracle") {
-            return field + " <= TO_DATE(" + parameter + ", 'YYYY-MM-DD HH24-MI-SS')";
-        } else {
-            return "UNSUPPORTED DATABASE DRIVER";
-        }
-    }
-
     private async createEvalBuyItem(licenseKey: LicenseKey): Promise<void> {
         if (!(licenseKey.productVariant.type === ProductVariantType.TrialLicense ||
             licenseKey.productVariant.type === ProductVariantType.Eval)) {
