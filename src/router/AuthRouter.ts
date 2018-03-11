@@ -13,6 +13,8 @@ import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { SystemSettingId } from "../entity/SystemSetting";
 import { PersonDao } from "../dao/PersonDao";
 import { Person } from "../entity/Person";
+import { Log } from '../util/Log';
+import { LogEntryType } from '../entity/LogEntry';
 
 class AuthRouter extends BaseRouter {
     protected init(): void {
@@ -28,13 +30,24 @@ class AuthRouter extends BaseRouter {
         dao.getByEmail(req.body.email).then((user) => {
             if (user) {
                 if (user.isPasswordValid(req.body.password)) {
+                    Log.info("Successful authentication" +
+                        " for user " + user.uuid +
+                        " from ip " + req.ip,
+                        LogEntryType.Auth);
                     let jwt: string = this.createJwt(user);
                     res.send(jwt);
                 } else {
-                    console.log("Invalid login attempt for user %s (uuid = %s)", user.email, user.uuid);
+                    Log.info("Invalid log attempt" +
+                        " for user " + user.uuid +
+                        " from ip " + req.ip,
+                        LogEntryType.Auth);
                     this.notFound(res);
                 }
             } else {
+                Log.info("Invalid log attempt" +
+                    " for unknown user " + req.body.email +
+                    " from ip " + req.ip,
+                    LogEntryType.Auth);
                 this.notFound(res);
             }
         }).catch((e) => {
@@ -57,6 +70,10 @@ class AuthRouter extends BaseRouter {
                         user.email = action.getPayload().email;
                         dao.save(user).then(user => {
                             actionDao.delete(action).then(action => {
+                                Log.info("Confirmed pending email address update to " + user.email +
+                                    " for user " + user.uuid +
+                                    " from ip " + req.ip,
+                                    LogEntryType.Auth);
                                 this.ok(res);
                             });
                         });
@@ -81,6 +98,10 @@ class AuthRouter extends BaseRouter {
                         user.setPlainPassword(req.body.password);
                         dao.save(user).then(user => {
                             actionDao.delete(action).then(action => {
+                                Log.info("Confirmed pending password change" +
+                                    " for user " + user.uuid +
+                                    " from ip " + req.ip,
+                                    LogEntryType.Auth);
                                 this.ok(res);
                             });
                         });
@@ -120,6 +141,10 @@ class AuthRouter extends BaseRouter {
                             Email.sendByTemplate(mailTemplate, recipient, params);
                         });
                     });
+                    Log.info("Initiated password reset" +
+                        " for user " + user.uuid +
+                        " from ip " + req.ip,
+                        LogEntryType.Auth);
                     this.ok(res);
                 });
             } else {

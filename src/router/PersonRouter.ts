@@ -14,6 +14,8 @@ import { MailTemplateDao } from "../dao/MailTemplateDao";
 import { MailTemplateType } from "../entity/MailTemplate";
 import { SystemSettingId } from "../entity/SystemSetting";
 import { Address, Email, EmailOptions } from "../util/Email";
+import { Log } from '../util/Log';
+import { LogEntryType } from '../entity/LogEntry';
 
 class CustomerRouter extends CrudRouter<Person, PersonDao> {
     protected init(): void {
@@ -197,6 +199,17 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
         dao.getByUuid(uuid).then((user) => {
             if (user) {
                 let oldEmail = user.email;
+                if (user.receiveProductUpdates && !req.body.receiveProductUpdates) {
+                    Log.info("Opting out from product updates" +
+                        " for customer " + user.uuid +
+                        " from ip " + req.ip,
+                        LogEntryType.OptOut);
+                } else if (!user.receiveProductUpdates && req.body.receiveProductUpdates) {
+                    Log.info("Opting in for product updates" +
+                        " for customer " + user.uuid +
+                        " from ip " + req.ip,
+                        LogEntryType.OptIn);
+                }
                 user.deserialize(req.body);
                 user.lastDataVerification = new Date();
                 if (user.email !== oldEmail) {

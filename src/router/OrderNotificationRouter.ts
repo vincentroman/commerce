@@ -22,6 +22,8 @@ import { SystemSettingDao } from "../dao/SystemSettingDao";
 import { SystemSettingId } from "../entity/SystemSetting";
 import { PendingAction, ActionType } from '../entity/PendingAction';
 import { PendingActionDao } from '../dao/PendingActionDao';
+import { Log } from '../util/Log';
+import { LogEntryType } from '../entity/LogEntry';
 
 class OrderNotificationRouter extends BaseRouter {
     protected init(): void {
@@ -66,8 +68,12 @@ class OrderNotificationRouter extends BaseRouter {
                     if (broker) {
                         let mappedInput: MappedOrderInput = action.getPayload().mappedInput;
                         this.processPurchaseWithoutDoubleOptIn(mappedInput, broker).then(order => {
-                                actionDao.delete(action).then(() => this.saved(res, order));
-                            }).catch(e => this.internalServerError(res));
+                            Log.info("Confirming order " + order.uuid +
+                                " for customer " + order.customer.uuid +
+                                " from ip " + req.ip,
+                                LogEntryType.OptIn);
+                            actionDao.delete(action).then(() => this.saved(res, order));
+                        }).catch(e => this.internalServerError(res));
                     } else {
                         this.internalServerError(res);
                     }

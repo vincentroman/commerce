@@ -35,7 +35,8 @@ export class LogEntry extends DbEntity<LogEntry> {
 export enum LogEntryType {
     Undefined = 1,
     OptIn = 2,
-    OptOut = 3
+    OptOut = 3,
+    Auth = 4
 }
 
 export enum LogEntryLevel {
