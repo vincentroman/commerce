@@ -32,18 +32,29 @@ class SystemSettingRouter extends CrudRouter<SystemSetting, SystemSettingDao> {
     }
 
     private getPublicSettings(req: Request, res: Response, next: NextFunction): void {
-        this.getDao().getBySettingId(SystemSettingId.Site_Contact_Url).then(contactUrl => {
-            this.getDao().getBySettingId(SystemSettingId.Site_Imprint_Url).then(imprintUrl => {
-                this.getDao().getBySettingId(SystemSettingId.Site_PrivacyPolicy_Url).then(privacyPolicyUrl => {
-                    let result = {
-                        version: App.getInstance().version,
-                        siteImprintUrl: imprintUrl.value,
-                        sitePrivacyPolicyUrl: privacyPolicyUrl.value,
-                        siteContactUrl: contactUrl.value
-                    };
-                    res.send(result);
-                });
+        this.getDao().getAll().then(settings => {
+            let result = {
+                version: App.getInstance().version,
+                siteImprintUrl: "",
+                sitePrivacyPolicyUrl: "",
+                siteContactUrl: "",
+                siteTitle: "",
+                logoUrl: ""
+            };
+            settings.forEach(setting => {
+                if (setting.settingId === SystemSettingId.Site_Contact_Url) {
+                    result.siteContactUrl = setting.value;
+                } else if (setting.settingId === SystemSettingId.Site_Imprint_Url) {
+                    result.siteImprintUrl = setting.value;
+                } else if (setting.settingId === SystemSettingId.Site_PrivacyPolicy_Url) {
+                    result.sitePrivacyPolicyUrl = setting.value;
+                } else if (setting.settingId === SystemSettingId.Site_Title) {
+                    result.siteTitle = setting.value;
+                } else if (setting.settingId === SystemSettingId.Site_LogoUrl) {
+                    result.logoUrl = setting.value;
+                }
             });
+            res.send(result);
         });
     }
 }

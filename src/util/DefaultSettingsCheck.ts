@@ -208,6 +208,8 @@ export class DefaultSettingsCheck {
         await dao.createIfNotExists(SystemSettingId.Site_Contact_Url, SystemSettingType.String, "", "Contact URL");
         await dao.createIfNotExists(SystemSettingId.Site_Imprint_Url, SystemSettingType.String, "", "Imprint URL");
         await dao.createIfNotExists(SystemSettingId.Site_PrivacyPolicy_Url, SystemSettingType.String, "", "Privacy Policy URL");
+        await dao.createIfNotExists(SystemSettingId.Site_Title, SystemSettingType.String, "weweave Commerce", "Site Title");
+        await dao.createIfNotExists(SystemSettingId.Site_LogoUrl, SystemSettingType.String, "", "Logo URL");
         await dao.createIfNotExists(SystemSettingId.NumDays_About_To_Expire, SystemSettingType.Integer, "20",
             "Days before license key is considered nearly expired");
         await dao.createIfNotExists(SystemSettingId.LicenseKey_PrivateKey, SystemSettingType.MultiLine,

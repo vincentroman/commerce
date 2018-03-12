@@ -43,6 +43,9 @@ describe('Router '+endpoint, () => {
                 expect(res.body.siteImprintUrl).to.be.empty;
                 expect(res.body.sitePrivacyPolicyUrl).to.be.empty;
                 expect(res.body.siteContactUrl).to.be.empty;
+                expect(res.body.siteTitle).to.equal("weweave Commerce");
+                expect(res.body.logoUrl).to.be.empty;
+                expect(res.body.notExists).to.be.undefined;
             });
         });
     });

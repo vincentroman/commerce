@@ -122,35 +122,62 @@ import { SendMailComponent } from "./component/admin/send-mail.component";
     ]
 })
 export class AppModule {
+    private settings = null;
+    private baseSettingsApplied: boolean = false;
+
     constructor(
         private router: Router,
         private settingsService: SystemSettingService) {
         router.events.subscribe(event => {
             if (event instanceof NavigationStart) {
                 window.scrollTo(0, 0);
-            }
-            if (event instanceof NavigationEnd) {
-                if ($(".main .poweredby").length === 0) {
-                    $(".main").append("<p class='poweredby'>" +
-                        "<span class='siteImprintUrl' style='display:none'><a href='#' target='_blank'>Imprint</a> | </span>" +
-                        "<span class='sitePrivacyPolicyUrl' style='display:none'><a href='#' target='_blank'>Privacy Policy</a> | </span>" +
-                        "Powered by " +
-                        "<a href='https://weweave.net/products/commerce' target='_blank'>weweave Commerce</a> " +
-                        "(version <span class='version'>unknown</span>)" +
-                        ".</p>");
-                    this.settingsService.getPublicSettings().then(settings => {
-                        $(".main .poweredby .version").text(settings.version);
-                        if (settings.siteImprintUrl) {
-                            $(".main .poweredby .siteImprintUrl").show();
-                            $(".main .poweredby .siteImprintUrl a").attr("href", settings.siteImprintUrl);
-                        }
-                        if (settings.sitePrivacyPolicyUrl) {
-                            $(".main .poweredby .sitePrivacyPolicyUrl").show();
-                            $(".main .poweredby .sitePrivacyPolicyUrl a").attr("href", settings.sitePrivacyPolicyUrl);
-                        }
-                    });
-                }
+            } else if (event instanceof NavigationEnd) {
+                this.loadApplySiteSettings();
             }
         });
+    }
+
+    private loadApplySiteSettings(): void {
+        if (this.settings === null) {
+            this.settingsService.getPublicSettings().then(settings => {
+                this.settings = settings;
+                this.applySiteSettings();
+            });
+        } else {
+            this.applySiteSettings();
+        }
+    }
+
+    private applySiteSettings(): void {
+        if (!this.baseSettingsApplied) {
+            $("head title").text(this.settings.siteTitle);
+            $(".navbar-brand").text(this.settings.siteTitle);
+            if (this.settings.logoUrl) {
+                let img = $(document.createElement("img"));
+                img.attr("alt", this.settings.siteTitle);
+                img.attr("src", this.settings.logoUrl);
+                $(".navbar-brand").text("");
+                $(".navbar-brand").append(img);
+            }
+            this.baseSettingsApplied = true;
+        }
+        if ($(".main .poweredby").length === 0) {
+            $(".main").append("<p class='poweredby'>" +
+                "<span class='siteImprintUrl' style='display:none'><a href='#' target='_blank'>Imprint</a> | </span>" +
+                "<span class='sitePrivacyPolicyUrl' style='display:none'><a href='#' target='_blank'>Privacy Policy</a> | </span>" +
+                "Powered by " +
+                "<a href='https://weweave.net/products/commerce' target='_blank'>weweave Commerce</a> " +
+                "(version <span class='version'>unknown</span>)" +
+                ".</p>");
+            $(".main .poweredby .version").text(this.settings.version);
+            if (this.settings.siteImprintUrl) {
+                $(".main .poweredby .siteImprintUrl").show();
+                $(".main .poweredby .siteImprintUrl a").attr("href", this.settings.siteImprintUrl);
+            }
+            if (this.settings.sitePrivacyPolicyUrl) {
+                $(".main .poweredby .sitePrivacyPolicyUrl").show();
+                $(".main .poweredby .sitePrivacyPolicyUrl a").attr("href", this.settings.sitePrivacyPolicyUrl);
+            }
+        }
     }
 }

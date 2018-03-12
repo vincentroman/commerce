@@ -59,6 +59,8 @@ export enum SystemSettingId {
     Site_Imprint_Url = 21,
     Site_PrivacyPolicy_Url = 22,
     Site_Contact_Url = 23,
+    Site_Title = 24,
+    Site_LogoUrl = 25,
     NumDays_About_To_Expire = 30,
     LicenseKey_PrivateKey = 50,
     LicenseKey_PublicKey = 51,
