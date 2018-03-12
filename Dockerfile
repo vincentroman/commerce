@@ -19,7 +19,8 @@ COPY res/ /usr/src/app/res/
 COPY src/ /usr/src/app/src/
 COPY www/ /usr/src/app/www/
 RUN npm install && \
-    npm run build-prod
+    npm run build-prod && \
+    rm -rf www/node_modules
 COPY --from=bcrypt_builder /usr/src/app/node_modules/bcrypt /usr/src/app/node_modules/bcrypt
 EXPOSE 3000
 CMD [ "node", "dist/server.js" ]
