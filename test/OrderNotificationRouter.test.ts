@@ -142,63 +142,84 @@ describe('Router '+endpoint, () => {
 
         it("Should perform a double opt in for an new customer", () => {
             let input = fs.readFileSync(path.join(process.cwd(), "./test/res/fastspring.json"), "utf8");
+            // Send order notification
             return chai.request(App.getInstance().express).post(endpoint + broker2.uuid)
             .set('Content-Type', 'application/json')
             .send(input)
             .then(res => {
                 expect(res.status).to.equal(200);
                 expect(res.body.uuid).to.be.undefined;
-                return Container.get(PendingActionDao).getLatest(ActionType.ConfirmOrder).then(action => {
-                    expect(action).to.be.not.null;
-                    expect(action).to.be.not.undefined;
-                    return chai.request(App.getInstance().express).get("/api/v1/purchase/pending/" + action.uuid)
-                    .then(res => {
-                        expect(res.status).to.equal(200);
-                        expect(res).to.be.json;
-                        expect(res.body).to.be.an('object');
-                        expect(res.body.broker.name).to.equal("FastSpring");
-                        expect(res.body.customer.firstname).to.equal("John");
-                        expect(res.body.customer.lastname).to.equal("Doe");
-                        expect(res.body.customer.company).to.equal("weweave");
-                        expect(res.body.customer.email).to.equal("no-reply@weweave.net");
-                        expect(res.body.customer.country).to.be.undefined
-                        return chai.request(App.getInstance().express).post(endpoint + "confirm")
-                        .send({uuid: action.uuid})
+                // Ensure that is only one pending action
+                return Container.get(PendingActionDao).getAll().then(allActions => {
+                    expect(allActions).to.be.not.undefined;
+                    expect(allActions).to.have.lengthOf(1);
+                    // Get corresponding pending action (the latest)
+                    return Container.get(PendingActionDao).getLatest(ActionType.ConfirmOrder).then(action => {
+                        expect(action).to.be.not.null;
+                        expect(action).to.be.not.undefined;
+                        // Get concrete pending action
+                        return chai.request(App.getInstance().express).get("/api/v1/purchase/pending/" + action.uuid)
                         .then(res => {
                             expect(res.status).to.equal(200);
                             expect(res).to.be.json;
                             expect(res.body).to.be.an('object');
-                            expect(res.body.uuid).to.be.string;
-                            let orderDao: PurchaseDao = Container.get(PurchaseDao);
-                            return orderDao.getByUuid(res.body.uuid).then(order => {
-                                expect(order).to.be.not.null;
-                                expect(order).to.be.not.undefined;
-                                expect(order.uuid).to.equal(res.body.uuid);
-                                expect(order.broker).to.be.not.null;
-                                expect(order.broker).to.be.not.undefined;
-                                expect(order.broker.id).to.equal(broker2.id);
-                                expect(order.broker.name).to.equal(broker2.name);
-                                expect(order.items).to.be.not.null;
-                                expect(order.items).to.be.not.undefined;
-                                expect(order.items).to.be.an('array');
-                                expect(order.items).to.have.lengthOf(1);
-                                expect(order.items[0]).to.be.not.null;
-                                expect(order.items[0]).to.be.not.undefined;
-                                expect(order.items[0]).to.be.an.instanceOf(PurchaseItem);
-                                expect(order.items[0].quantity).to.be.equal(2);
-                                expect(order.items[0].productVariant).to.be.not.null;
-                                expect(order.items[0].productVariant).to.be.not.undefined;
-                                expect(order.items[0].productVariant.type).to.be.not.null;
-                                expect(order.items[0].productVariant.type).to.be.not.undefined;
-                                expect(order.items[0].productVariant.type).to.be.equal(ProductVariantType.LimitedLicense);
-                                expect(order.items[0].productVariant.product).to.be.not.null;
-                                expect(order.items[0].productVariant.product).to.be.not.undefined;
-                                expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
+                            expect(res.body.broker.name).to.equal("FastSpring");
+                            expect(res.body.customer.firstname).to.equal("John");
+                            expect(res.body.customer.lastname).to.equal("Doe");
+                            expect(res.body.customer.company).to.equal("weweave");
+                            expect(res.body.customer.email).to.equal("no-reply@weweave.net");
+                            expect(res.body.customer.country).to.be.undefined
+                            // Confirm order
+                            return chai.request(App.getInstance().express).post(endpoint + "confirm")
+                            .send({uuid: action.uuid})
+                            .then(res => {
+                                expect(res.status).to.equal(200);
+                                expect(res).to.be.json;
+                                expect(res.body).to.be.an('object');
+                                expect(res.body.uuid).to.be.string;
+                                let orderDao: PurchaseDao = Container.get(PurchaseDao);
+                                // Verify that order is in system
+                                return orderDao.getByUuid(res.body.uuid).then(order => {
+                                    expect(order).to.be.not.null;
+                                    expect(order).to.be.not.undefined;
+                                    expect(order.uuid).to.equal(res.body.uuid);
+                                    expect(order.broker).to.be.not.null;
+                                    expect(order.broker).to.be.not.undefined;
+                                    expect(order.broker.id).to.equal(broker2.id);
+                                    expect(order.broker.name).to.equal(broker2.name);
+                                    expect(order.items).to.be.not.null;
+                                    expect(order.items).to.be.not.undefined;
+                                    expect(order.items).to.be.an('array');
+                                    expect(order.items).to.have.lengthOf(1);
+                                    expect(order.items[0]).to.be.not.null;
+                                    expect(order.items[0]).to.be.not.undefined;
+                                    expect(order.items[0]).to.be.an.instanceOf(PurchaseItem);
+                                    expect(order.items[0].quantity).to.be.equal(2);
+                                    expect(order.items[0].productVariant).to.be.not.null;
+                                    expect(order.items[0].productVariant).to.be.not.undefined;
+                                    expect(order.items[0].productVariant.type).to.be.not.null;
+                                    expect(order.items[0].productVariant.type).to.be.not.undefined;
+                                    expect(order.items[0].productVariant.type).to.be.equal(ProductVariantType.LimitedLicense);
+                                    expect(order.items[0].productVariant.product).to.be.not.null;
+                                    expect(order.items[0].productVariant.product).to.be.not.undefined;
+                                    expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
+                                    // Verify there is only one order
+                                    return orderDao.getAll().then(allOrders => {
+                                        expect(allOrders).to.be.not.undefined;
+                                        expect(allOrders).to.have.lengthOf(1);
+                                        // Verify that double-opt-in-link is invalid now
+                                        return chai.request(App.getInstance().express).post(endpoint + "confirm")
+                                        .send({uuid: action.uuid})
+                                        .then(res => {
+                                            expect(res.status).to.equal(404);
+                                        }).catch(e => {
+                                            expect(e.response.status).to.equal(404);
+                                        });
+                                    });
+                                });
                             });
                         });
                     });
-
-
                 });
             });
         });
