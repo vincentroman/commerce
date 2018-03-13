@@ -36,7 +36,8 @@ export enum LogEntryType {
     Undefined = 1,
     OptIn = 2,
     OptOut = 3,
-    Auth = 4
+    Auth = 4,
+    Order = 5
 }
 
 export enum LogEntryLevel {

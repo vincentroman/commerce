@@ -34,16 +34,29 @@ class OrderNotificationRouter extends BaseRouter {
     private notify(req: Request, res: Response, next: NextFunction): void {
         let brokerId = req.params.id;
         let brokerDao: BrokerDao = Container.get(BrokerDao);
-        console.log("Incoming order notification for broker uuid %s with content %s", brokerId, JSON.stringify(req.body));
+        Log.info("Incoming order notification" +
+            " for broker uuid " + brokerId +
+            " with content: " + JSON.stringify(req.body),
+            LogEntryType.Order);
         brokerDao.getByUuid(brokerId).then((broker) => {
             if (broker) {
                 OrderNotificationMapper.mapAndValidate(req.body, broker).then(mappedInput => {
                     Container.get(PersonDao).existsPerson(mappedInput.customer.email).then(customerExists => {
                         if (customerExists) {
+                            Log.info("Customer for order notification already exists," +
+                                " continuing without double opt in" +
+                                " for broker uuid " + brokerId +
+                                " with content: " + JSON.stringify(req.body),
+                                LogEntryType.Order);
                             this.processPurchaseWithoutDoubleOptIn(mappedInput, broker)
                                 .then(order => this.saved(res, order))
                                 .catch(e => this.internalServerError(res));
                         } else {
+                            Log.info("Customer for order notification does not exist," +
+                                " initiating double opt in" +
+                                " for broker uuid " + brokerId +
+                                " with content: " + JSON.stringify(req.body),
+                                LogEntryType.Order);
                             this.startDoubleOptInForPurchase(mappedInput, broker)
                                 .then(() => this.ok(res))
                                 .catch(e => this.internalServerError(res));
