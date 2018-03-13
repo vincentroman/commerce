@@ -54,7 +54,7 @@ export class App extends EventEmitter {
     public start(): void {
         this.setupOrm().then(connection => {
             this.dbConnection = connection;
-            this.express.set("trust proxy", ["loopback", "linklocal", "uniquelocal"]);
+            this.express.set("trust proxy", true);
             this.setupMiddleware();
             this.setupRoutes();
             DefaultSettingsCheck.check().then(() => {
