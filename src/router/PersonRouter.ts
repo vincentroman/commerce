@@ -23,8 +23,8 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
         this.addRouteGet('/suggest', this.suggest, AuthRole.ADMIN);
         this.addRouteGet('/comments/:id', this.getComments, AuthRole.ADMIN);
         this.addRoutePost('/addcomment/:id', this.addComment, AuthRole.ADMIN);
-        this.addRoutePost('/sendmail/:id', this.sendMailToUser, AuthRole.ADMIN);
         this.addRoutePost('/sendmail/all', this.sendMailToAllUsers, AuthRole.ADMIN);
+        this.addRoutePost('/sendmail/:id', this.sendMailToUser, AuthRole.ADMIN);
         this.addRouteGet('/me', this.me, AuthRole.USER);
         this.addRoutePut('/me/update', this.updateMe, AuthRole.USER);
         this.addRoutePost('/me/confirmdata', this.confirmMyData, AuthRole.USER);
