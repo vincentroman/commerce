@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/node": "10.1.1",
     "angular2-template-loader": "0.6.2",
-    "awesome-typescript-loader": "5.0.0",
+    "awesome-typescript-loader": "^3.5.0",
     "babili-webpack-plugin": "0.1.2",
     "concurrently": "3.5.1",
     "grunt": "1.0.2",
@@ -51,6 +51,6 @@
     "lite-server": "2.3.0",
     "tslint": "5.10.0",
     "typescript": "2.8.3",
-    "webpack": "4.8.3"
+    "webpack": "^3.12.0"
   }
 }
