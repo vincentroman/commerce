@@ -178,6 +178,7 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
                     subject: renderedSubject,
                     text: renderedTemplate
                 };
+                console.log("Sending mail %d of %d to %s...", (i+1), users.length, user.email);
                 Email.send(options).then(() => resolve()).catch(() => resolve());
             });
         }
