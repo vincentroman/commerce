@@ -1,6 +1,7 @@
 FROM node:8-alpine
 # Packages needed for compiling bcrypt
-RUN apk add --no-cache python make g++
+RUN apk add --no-cache --virtual .build-deps \
+    python make g++
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY VERSION /usr/src/app/
@@ -12,5 +13,6 @@ COPY www/ /usr/src/app/www/
 RUN npm install && \
     npm run build-prod && \
     rm -rf www/node_modules
+RUN apk del .build-deps
 EXPOSE 3000
 CMD [ "node", "dist/server.js" ]
