@@ -19,16 +19,20 @@ export class Email {
         return new Promise<void>((resolve, reject) => {
             if (logAndDiscard) {
                 console.log("Would send email: %s", JSON.stringify(mailOptions, undefined, 2));
-                resolve();
-                return;
-            }
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    reject(error);
-                } else {
+                setTimeout(function() {
                     resolve();
-                }
-            });
+                }, 500);
+            } else {
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        setTimeout(function() {
+                            resolve();
+                        }, 100);
+                    }
+                });
+            }
         });
     }
 

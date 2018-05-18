@@ -151,29 +151,36 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
                     email: senderEmail
                 };
                 dao.getAll().then(users => {
-                    users.forEach(user => {
-                        let params = {
-                            firstname: user.firstname,
-                            lastname: user.lastname,
-                            company: user.company
-                        };
-                        let recipient: Address = {
-                            email: user.email
-                        };
-                        let renderedSubject: string = Email.renderParamString(req.body.subject, params);
-                        let renderedTemplate: string = Email.renderParamString(req.body.body, params);
-                        let options: EmailOptions = {
-                            recipient: recipient,
-                            sender: sender,
-                            subject: renderedSubject,
-                            text: renderedTemplate
-                        };
-                        Email.send(options);
-                    });
+                    this.sendMails(sender, req.body.subject, req.body.body, users);
                     this.ok(res);
                 });
             });
         });
+    }
+
+    private async sendMails(sender: any, subject: string, body: string, users: Person[]): Promise<void> {
+        for (let i = 15; i < users.length; i++) {
+            await new Promise(resolve => {
+                let user: Person = users[i];
+                let params = {
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    company: user.company
+                };
+                let recipient: Address = {
+                    email: user.email
+                };
+                let renderedSubject: string = Email.renderParamString(subject, params);
+                let renderedTemplate: string = Email.renderParamString(body, params);
+                let options: EmailOptions = {
+                    recipient: recipient,
+                    sender: sender,
+                    subject: renderedSubject,
+                    text: renderedTemplate
+                };
+                Email.send(options).then(() => resolve()).catch(() => resolve());
+            });
+        }
     }
 
     private me(req: Request, res: Response, next: NextFunction): void {
