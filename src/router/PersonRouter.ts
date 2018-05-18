@@ -159,7 +159,7 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
     }
 
     private async sendMails(sender: any, subject: string, body: string, users: Person[]): Promise<void> {
-        for (let i = 15; i < users.length; i++) {
+        for (let i = 0; i < users.length; i++) {
             await new Promise(resolve => {
                 let user: Person = users[i];
                 let params = {
