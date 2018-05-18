@@ -8,7 +8,7 @@
     "start": "node dist/server.js",
     "dev": "npm run clean && npm run grunt && NODE_ENV=dev node dist/server.js",
     "clean": "rm -rf dist/",
-    "test": "mocha --reporter spec --require ts-node/register/type-check --require ts-node/register 'test/**/*.test.ts'",
+    "test": "mocha --reporter spec --require ts-node/register 'test/**/*.test.ts'",
     "build-prod": "npm run clean && cd www && npm install && npm run clean && npm run build && npm prune --production && cd .. && npm run grunt && npm prune --production"
   },
   "author": "weweave UG <mail@weweave.net>",
