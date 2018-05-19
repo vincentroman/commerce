@@ -29,7 +29,7 @@ export class Email {
                     } else {
                         setTimeout(function() {
                             resolve();
-                        }, 250);
+                        }, 2000);
                     }
                 });
             }

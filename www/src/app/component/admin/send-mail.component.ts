@@ -17,7 +17,9 @@ export class SendMailComponent {
     success: boolean = false;
     model = {
         subject: "",
-        body: ""
+        body: "",
+        startIdx: 0,
+        limit: 999999999
     };
 
     constructor(
@@ -54,7 +56,7 @@ export class SendMailComponent {
                 this.submitting = true;
                 this.error = false;
                 this.success = false;
-                this.personService.sendMailToAllUsers(this.model.subject, this.model.body)
+                this.personService.sendMailToAllUsers(this.model.subject, this.model.body, this.model.startIdx, this.model.limit)
                     .then(() => {
                         this.error = false;
                         this.success = true;

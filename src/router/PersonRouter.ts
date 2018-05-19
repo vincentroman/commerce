@@ -151,15 +151,23 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
                     email: senderEmail
                 };
                 dao.getAll().then(users => {
-                    this.sendMails(sender, req.body.subject, req.body.body, users);
+                    this.sendMails(sender, req.body.subject, req.body.body, users,
+                        parseInt(req.body.startIdx, 10),
+                        parseInt(req.body.limit, 10));
                     this.ok(res);
                 });
             });
         });
     }
 
-    private async sendMails(sender: any, subject: string, body: string, users: Person[]): Promise<void> {
-        for (let i = 0; i < users.length; i++) {
+    private async sendMails(sender: any, subject: string, body: string, users: Person[], startIdx?: number, limit?: number): Promise<void> {
+        if (!startIdx) {
+            startIdx = 0;
+        }
+        if (!limit) {
+            limit = 999999999;
+        }
+        for (let i = startIdx; (i < users.length && i < startIdx + limit); i++) {
             await new Promise(resolve => {
                 let user: Person = users[i];
                 let params = {
@@ -179,7 +187,13 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
                     text: renderedTemplate
                 };
                 console.log("Sending mail %d of %d to %s...", (i+1), users.length, user.email);
-                Email.send(options).then(() => resolve()).catch(() => resolve());
+                Email.send(options).then(() => {
+                    console.log("OK!");
+                    resolve();
+                }).catch((e) => {
+                    console.log("Error sending mail to %s: %s", user.email, e);
+                    resolve();
+                });
             });
         }
     }

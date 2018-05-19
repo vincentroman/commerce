@@ -126,11 +126,13 @@ export class PersonService extends CrudService<Person> {
         });
     }
 
-    sendMailToAllUsers(subject: string, body: string): Promise<void> {
+    sendMailToAllUsers(subject: string, body: string, startIdx?: number, limit?: number): Promise<void> {
         return new Promise((resolve, reject) => {
             let payload = {
                 subject: subject,
-                body: body
+                body: body,
+                startIdx: startIdx,
+                limit: limit
             };
             this.http.post(this.httpService.getUrl(this.getPath() + "/sendmail/all"), payload, this.httpService.getOptions())
             .toPromise()
