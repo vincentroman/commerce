@@ -72,7 +72,7 @@ export class LicenseKeyService extends CrudService<LicenseKey> {
                 return res.json().uuid;
             })
             .catch(error => {
-                return this.httpService.handleError(error);
+                throw this.httpService.handleError(error);
             });
     }
 
@@ -83,10 +83,11 @@ export class LicenseKeyService extends CrudService<LicenseKey> {
         return this.http.post(this.httpService.getUrl(this.getPath() + "/issue/" + id), payload, this.httpService.getOptions())
             .toPromise()
             .then(res => {
+                console.log("status: %d", res.status);
                 return res.json().uuid;
             })
             .catch(error => {
-                return this.httpService.handleError(error);
+                throw this.httpService.handleError(error);
             });
     }
 
@@ -97,7 +98,7 @@ export class LicenseKeyService extends CrudService<LicenseKey> {
                 return res.json().licenseKey;
             })
             .catch(error => {
-                return this.httpService.handleError(error);
+                throw this.httpService.handleError(error);
             });
     }
 }
@@ -121,3 +122,9 @@ export declare class LicenseKeyStats {
     numIssuedAndOkay: number;
 }
 
+export enum LicenseKeyErrorCode {
+    INVALID_TLD = 101,
+    TLD_EMPTY = 102,
+    DOMAIN_EQUALS_TLD = 103,
+    DOMAIN_EMPTY = 104
+}

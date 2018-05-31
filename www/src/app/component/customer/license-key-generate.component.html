@@ -5,7 +5,10 @@
     <h1>Generate License Key</h1>
 </div>
 <form (ngSubmit)="submit()" #form="ngForm">
-    <div class="alert alert-danger" role="alert" [hidden]="!errorInvalidTld">Invalid top level domains entered. Please check your domain names.</div>
+    <div class="alert alert-danger" role="alert" *ngIf="error && errorCode == errorCodes.INVALID_TLD">Invalid top level domain ({{errorText}}).</div>
+    <div class="alert alert-danger" role="alert" *ngIf="error && errorCode == errorCodes.TLD_EMPTY">Top level domain not specified ({{errorText}}).</div>
+    <div class="alert alert-danger" role="alert" *ngIf="error && errorCode == errorCodes.DOMAIN_EQUALS_TLD">Domain name equals a top level domain ({{errorText}}).</div>
+    <div class="alert alert-danger" role="alert" *ngIf="error && errorCode == errorCodes.DOMAIN_EMPTY">Empty domain name(s) specified.</div>
     <div class="form-group">
         <label>Product</label>
         <p class="form-control-static">{{entity.productVariant.product.title}}</p>

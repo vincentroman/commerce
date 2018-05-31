@@ -237,7 +237,13 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                                     });
                                 });
                             });
-                        }).catch(e => this.badRequest(res, RestError.INVALID_TLD));
+                        }).catch(e => {
+                            if (e instanceof LicenseKeyError) {
+                                this.badRequest(res, e.code, e.message);
+                            } else {
+                                this.badRequest(res, RestError.INVALID_TLD);
+                            }
+                        });
                     } else {
                         this.badRequest(res);
                     }
@@ -265,18 +271,21 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                                         if (valid) {
                                             resolve(domain);
                                         } else {
-                                            reject(new Error("TLD '"+ tld +"' is not valid"));
+                                            reject(new LicenseKeyError(LicenseKeyErrorCode.INVALID_TLD,
+                                                "TLD '"+ tld +"' in domain '" + domain + "' is not valid"));
                                         }
                                     });
                                 } else {
-                                    reject(new Error("TLD must not be empty"));
+                                    reject(new LicenseKeyError(LicenseKeyErrorCode.TLD_EMPTY,
+                                        "TLD must not be empty for domain '" + domain + "'"));
                                 }
                             } else {
-                                reject(new Error("Domain must not equal a TLD"));
+                                reject(new LicenseKeyError(LicenseKeyErrorCode.DOMAIN_EQUALS_TLD,
+                                    "Domain '" + domain + "' must not equal a TLD"));
                             }
                         });
                     } else {
-                        reject(new Error("Domain must not be empty"));
+                        reject(new LicenseKeyError(LicenseKeyErrorCode.DOMAIN_EMPTY, "Domain must not be empty"));
                     }
                 });
             })).then(domains => {
@@ -337,6 +346,22 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
             }
         });
     }
+}
+
+class LicenseKeyError extends Error {
+    code: number;
+
+    constructor(code: number, message: string) {
+        super(message);
+        this.code = code;
+    }
+}
+
+enum LicenseKeyErrorCode {
+    INVALID_TLD = 101,
+    TLD_EMPTY = 102,
+    DOMAIN_EQUALS_TLD = 103,
+    DOMAIN_EMPTY = 104
 }
 
 export default new LicenseKeyRouter().router;

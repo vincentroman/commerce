@@ -145,9 +145,9 @@ export abstract class BaseRouter {
         });
     }
 
-    protected badRequest(res: Response, errorCode?: number): void {
+    protected badRequest(res: Response, errorCode?: number, errorMessage?: string): void {
         res.status(400).send({
-            message: "Bad Request",
+            message: (errorMessage ? errorMessage : "Bad Request"),
             status: res.status,
             errorCode: (errorCode ? errorCode : 0)
         });
@@ -175,4 +175,3 @@ export enum RestError {
     INVALID_TLD = 1,
     EMAIL_ALREADY_EXISTS = 2
 }
-
