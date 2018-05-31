@@ -99,7 +99,7 @@ export class SupportTicketService extends CrudService<SupportTicket> {
                 return res.json().uuid;
             })
             .catch(error => {
-                return this.httpService.handleError(error);
+                throw this.httpService.handleError(error);
             });
     }
 
@@ -113,7 +113,7 @@ export class SupportTicketService extends CrudService<SupportTicket> {
                 return res.json().uuid;
             })
             .catch(error => {
-                return this.httpService.handleError(error);
+                throw this.httpService.handleError(error);
             });
     }
 
@@ -124,7 +124,7 @@ export class SupportTicketService extends CrudService<SupportTicket> {
                 return res.json().uuid;
             })
             .catch(error => {
-                return this.httpService.handleError(error);
+                throw this.httpService.handleError(error);
             });
     }
 
@@ -138,7 +138,7 @@ export class SupportTicketService extends CrudService<SupportTicket> {
                 return res.json().uuid;
             })
             .catch(error => {
-                return this.httpService.handleError(error);
+                throw this.httpService.handleError(error);
             });
     }
 }
