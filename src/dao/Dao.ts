@@ -1,4 +1,4 @@
-import { Repository, Connection, EntityManager } from "typeorm";
+import { Repository, Connection, EntityManager, SelectQueryBuilder } from "typeorm";
 import * as uuid from 'uuid/v4';
 import { DbEntity } from "../entity/DbEntity";
 import { App } from "../App";
@@ -23,11 +23,21 @@ export abstract class Dao<T extends DbEntity<T>> {
             .getOne();
     }
 
-    public async getAll(): Promise<T[]> {
-        return this.getRepository()
+    protected async getManyWithLimits(qb: SelectQueryBuilder<any>, maxResults?: number, skipNumResults?: number): Promise<T[]> {
+        if (typeof maxResults === "undefined") {
+            maxResults = 9999999;
+        }
+        if (typeof skipNumResults === "undefined") {
+            skipNumResults = 0;
+        }
+        return qb.skip(skipNumResults).take(maxResults).getMany();
+    }
+
+    public async getAll(maxResults?: number, skipNumResults?: number): Promise<T[]> {
+        return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("e")
-            .where("e.deleted != 1")
-            .getMany();
+            .where("e.deleted != 1"),
+            maxResults, skipNumResults);
     }
 
     public async prepareSaveAll(oList: T[]): Promise<T[]> {

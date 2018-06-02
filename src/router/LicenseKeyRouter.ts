@@ -138,7 +138,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     private my(req: Request, res: Response, next: NextFunction): void {
         let dao: LicenseKeyDao = this.getDao();
         let customerUuid = this.getJwtUserUuid(req);
-        dao.getAllCustomerLicenses(customerUuid).then(entities => {
+        dao.getAllCustomerLicenses(customerUuid, req.query.size, req.query.skip).then(entities => {
             res.send(entities.map(entity => entity.serialize()));
         });
     }

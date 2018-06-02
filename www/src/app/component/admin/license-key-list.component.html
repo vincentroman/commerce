@@ -4,29 +4,37 @@
     </div>
     <h1>License Keys</h1>
 </div>
-<table class="table table-hover" [hidden]="!entities || !entities.length">
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Variant</th>
-            <th>Customer</th>
-            <th>Created</th>
-            <th>Issued</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let licenseKey of entities" class="clickable" (click)="showEntity(licenseKey.uuid)">
-            <td><span *ngIf="licenseKey.productVariant && licenseKey.productVariant.product">{{licenseKey.productVariant.product.title}}</span></td>
-            <td><span *ngIf="licenseKey.productVariant">{{licenseKey.productVariant.title}}</span></td>
-            <td><span *ngIf="licenseKey.customer">{{licenseKey.customer.printableName()}}</span></td>
-            <td>{{licenseKey.createDate.format('YYYY-MM-DD')}}</td>
-            <td>
-                <span *ngIf="!licenseKey.issueDate">Not yet</span>
-                <span *ngIf="licenseKey.issueDate">{{licenseKey.issueDate.format('YYYY-MM-DD')}}</span>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div [hidden]="!entities || !entities.length">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Variant</th>
+                <th>Customer</th>
+                <th>Created</th>
+                <th>Issued</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let licenseKey of entities" class="clickable" (click)="showEntity(licenseKey.uuid)">
+                <td><span *ngIf="licenseKey.productVariant && licenseKey.productVariant.product">{{licenseKey.productVariant.product.title}}</span></td>
+                <td><span *ngIf="licenseKey.productVariant">{{licenseKey.productVariant.title}}</span></td>
+                <td><span *ngIf="licenseKey.customer">{{licenseKey.customer.printableName()}}</span></td>
+                <td>{{licenseKey.createDate.format('YYYY-MM-DD')}}</td>
+                <td>
+                    <span *ngIf="!licenseKey.issueDate">Not yet</span>
+                    <span *ngIf="licenseKey.issueDate">{{licenseKey.issueDate.format('YYYY-MM-DD')}}</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="entity-list-toolbar">
+        <button class="btn btn-primary btn-lg" (click)="fetchMore()" [disabled]="fetching" *ngIf="enableFetchMore">
+            <span *ngIf="!fetching">Load more results</span>
+            <span *ngIf="fetching">Fetching...</span>
+        </button>
+    </div>
+</div>
 <p [hidden]="!entities ||entities.length">
     No records found.
 </p>

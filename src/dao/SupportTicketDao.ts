@@ -26,8 +26,8 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .getOne();
     }
 
-    public async getAll(): Promise<SupportTicket[]> {
-        return this.getRepository()
+    public async getAll(maxResults?: number, skipNumResults?: number): Promise<SupportTicket[]> {
+        return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("st")
             .innerJoinAndSelect("st.customer", "customer")
             .innerJoinAndSelect("st.productVariant", "productVariant")
@@ -35,12 +35,12 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .leftJoinAndSelect("st.purchaseItem", "purchaseItem")
             .where("st.deleted != 1")
             .orderBy("st.createDate", "DESC")
-            .addOrderBy("st.sendDate", "DESC")
-            .getMany();
+            .addOrderBy("st.sendDate", "DESC"),
+            maxResults, skipNumResults);
     }
 
-    public async getAllCustometTickets(customerUuid: string): Promise<SupportTicket[]> {
-        return this.getRepository()
+    public async getAllCustomerTickets(customerUuid: string, maxResults?: number, skipNumResults?: number): Promise<SupportTicket[]> {
+        return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("st")
             .innerJoinAndSelect("st.customer", "customer")
             .innerJoinAndSelect("st.productVariant", "productVariant")
@@ -50,8 +50,8 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .andWhere("st.deleted != 1")
             .orderBy("st.createDate", "DESC")
             .addOrderBy("st.sendDate", "DESC")
-            .setParameters({customerUuid: customerUuid})
-            .getMany();
+            .setParameters({customerUuid: customerUuid}),
+            maxResults, skipNumResults);
     }
 
     public async getAllUnclosedTickets(customerUuid?: string): Promise<SupportTicket[]> {

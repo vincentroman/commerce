@@ -18,8 +18,8 @@ export class TicketsMyListComponent extends EntityListComponent<SupportTicket> {
         super(router, supportTicketService);
     }
 
-    protected loadList(): void {
-        this.supportTicketService.my().then(entities => this.entities = entities);
+    protected getListFunction(): Function {
+        return this.supportTicketService.my;
     }
 
     protected getEditPath(): string {

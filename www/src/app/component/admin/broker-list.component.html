@@ -4,20 +4,28 @@
     </div>
     <h1>Brokers</h1>
 </div>
-<table class="table table-hover" [hidden]="!entities || !entities.length">
-    <thead>
-        <tr>
-            <th>UUID</th>
-            <th>Name</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let broker of entities" class="clickable" (click)="showEntity(broker.uuid)">
-            <td>{{broker.uuid}}</td>
-            <td>{{broker.name}}</td>
-        </tr>
-    </tbody>
-</table>
+<div [hidden]="!entities || !entities.length">
+    <table class="table table-hover" [hidden]="!entities || !entities.length">
+        <thead>
+            <tr>
+                <th>UUID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let broker of entities" class="clickable" (click)="showEntity(broker.uuid)">
+                <td>{{broker.uuid}}</td>
+                <td>{{broker.name}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="entity-list-toolbar">
+        <button class="btn btn-primary btn-lg" (click)="fetchMore()" [disabled]="fetching" *ngIf="enableFetchMore">
+            <span *ngIf="!fetching">Load more results</span>
+            <span *ngIf="fetching">Fetching...</span>
+        </button>
+    </div>
+</div>
 <p [hidden]="!entities ||entities.length">
     No records found.
 </p>

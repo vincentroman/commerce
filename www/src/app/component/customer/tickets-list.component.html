@@ -3,24 +3,32 @@
     </div>
     <h1>Support Tickets</h1>
 </div>
-<table class="table table-hover" [hidden]="!entities || !entities.length">
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Variant</th>
-            <th>Purchased</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let ticket of entities" class="clickable" (click)="showEntity(ticket.uuid)">
-            <td><span *ngIf="ticket.productVariant && ticket.productVariant.product">{{ticket.productVariant.product.title}}</span></td>
-            <td><span *ngIf="ticket.productVariant">{{ticket.productVariant.title}}</span></td>
-            <td>{{ticket.createDate.format('YYYY-MM-DD')}}</td>
-            <td>{{getStatus(ticket)}}</td>
-        </tr>
-    </tbody>
-</table>
+<div [hidden]="!entities || !entities.length">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Variant</th>
+                <th>Purchased</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let ticket of entities" class="clickable" (click)="showEntity(ticket.uuid)">
+                <td><span *ngIf="ticket.productVariant && ticket.productVariant.product">{{ticket.productVariant.product.title}}</span></td>
+                <td><span *ngIf="ticket.productVariant">{{ticket.productVariant.title}}</span></td>
+                <td>{{ticket.createDate.format('YYYY-MM-DD')}}</td>
+                <td>{{getStatus(ticket)}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="entity-list-toolbar">
+        <button class="btn btn-primary btn-lg" (click)="fetchMore()" [disabled]="fetching" *ngIf="enableFetchMore">
+            <span *ngIf="!fetching">Load more results</span>
+            <span *ngIf="fetching">Fetching...</span>
+        </button>
+    </div>
+</div>
 <p [hidden]="!entities ||entities.length">
     No records found.
 </p>

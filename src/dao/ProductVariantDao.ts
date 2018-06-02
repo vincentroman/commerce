@@ -24,13 +24,13 @@ export class ProductVariantDao extends Dao<ProductVariant> {
             .getOne();
     }
 
-    public async getAll(): Promise<ProductVariant[]> {
-        return this.getRepository()
+    public async getAll(maxResults?: number, skipNumResults?: number): Promise<ProductVariant[]> {
+        return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("pv")
             .innerJoinAndSelect("pv.product", "product")
             .where("pv.deleted != 1")
-            .orderBy("pv.title", "ASC")
-            .getMany();
+            .orderBy("pv.title", "ASC"),
+            maxResults, skipNumResults);
     }
 
     public async getAllForProduct(product: Product): Promise<ProductVariant[]> {

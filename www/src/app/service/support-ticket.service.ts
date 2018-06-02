@@ -23,10 +23,18 @@ export class SupportTicketService extends CrudService<SupportTicket> {
         return "supportticket";
     }
 
-    my(): Promise<SupportTicket[]> {
+    my(maxResults?: number, skipNumResults?: number): Promise<SupportTicket[]> {
+        let params = {};
+        if (typeof maxResults !== "undefined") {
+            params["size"] = maxResults;
+        }
+        if (typeof skipNumResults !== "undefined") {
+            params["skip"] = skipNumResults;
+        }
+        let options = Object.assign({params: params}, this.httpService.getOptions());
         return new Promise((resolve, reject) => {
             this.http
-            .get(this.httpService.getUrl(this.getPath() + "/my"), this.httpService.getOptions())
+            .get(this.httpService.getUrl(this.getPath() + "/my"), options)
             .toPromise()
             .then(res => {
                 let list: SupportTicket[] = (<SupportTicket[]>res.json()).map(o => this.newTypeInstance().deserialize(o));

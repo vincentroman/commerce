@@ -18,8 +18,8 @@ export class LicenseKeyMyListComponent extends EntityListComponent<LicenseKey> {
         super(router, licenseKeyService);
     }
 
-    protected loadList(): void {
-        this.licenseKeyService.my().then(entities => this.entities = entities);
+    protected getListFunction(): Function {
+        return this.licenseKeyService.my;
     }
 
     protected getEditPath(): string {

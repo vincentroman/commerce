@@ -13,7 +13,7 @@ export class SystemSettingDao extends Dao<SystemSetting> {
         return new Promise((resolve, reject) => resolve(true));
     }
 
-    public async getAll(): Promise<SystemSetting[]> {
+    public async getAll(maxResults?: number, skipNumResults?: number): Promise<SystemSetting[]> {
         return this.getRepository()
             .createQueryBuilder("ss")
             .where("ss.deleted != 1")

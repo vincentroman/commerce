@@ -4,20 +4,28 @@
     </div>
     <h1>Products</h1>
 </div>
-<table class="table table-hover" [hidden]="!entities || !entities.length">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>License Key ID</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let product of entities" class="clickable" (click)="showEntity(product.uuid)">
-            <td>{{product.title}}</td>
-            <td>{{product.licenseKeyIdentifier}}</td>
-        </tr>
-    </tbody>
-</table>
+<div [hidden]="!entities || !entities.length">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>License Key ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let product of entities" class="clickable" (click)="showEntity(product.uuid)">
+                <td>{{product.title}}</td>
+                <td>{{product.licenseKeyIdentifier}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="entity-list-toolbar">
+        <button class="btn btn-primary btn-lg" (click)="fetchMore()" [disabled]="fetching" *ngIf="enableFetchMore">
+            <span *ngIf="!fetching">Load more results</span>
+            <span *ngIf="fetching">Fetching...</span>
+        </button>
+    </div>
+</div>
 <p [hidden]="!entities ||entities.length">
     No records found.
 </p>

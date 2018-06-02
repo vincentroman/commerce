@@ -131,7 +131,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
     private my(req: Request, res: Response, next: NextFunction): void {
         let dao: SupportTicketDao = this.getDao();
         let customerUuid = this.getJwtUserUuid(req);
-        dao.getAllCustometTickets(customerUuid).then(entities => {
+        dao.getAllCustomerTickets(customerUuid, req.query.size, req.query.skip).then(entities => {
             res.send(entities.map(entity => entity.serialize()));
         });
     }

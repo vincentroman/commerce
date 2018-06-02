@@ -27,20 +27,20 @@ export class LicenseKeyDao extends Dao<LicenseKey> {
             .getOne();
     }
 
-    public async getAll(): Promise<LicenseKey[]> {
-        return this.getRepository()
+    public async getAll(maxResults?: number, skipNumResults?: number): Promise<LicenseKey[]> {
+        return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("lk")
             .innerJoinAndSelect("lk.customer", "customer")
             .innerJoinAndSelect("lk.productVariant", "productVariant")
             .innerJoinAndSelect("productVariant.product", "product")
             .where("lk.deleted != 1")
             .orderBy("lk.createDate", "DESC")
-            .addOrderBy("lk.issueDate", "DESC")
-            .getMany();
+            .addOrderBy("lk.issueDate", "DESC"),
+            maxResults, skipNumResults);
     }
 
-    public async getAllCustomerLicenses(customerUuid: string): Promise<LicenseKey[]> {
-        return this.getRepository()
+    public async getAllCustomerLicenses(customerUuid: string, maxResults?: number, skipNumResults?: number): Promise<LicenseKey[]> {
+        return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("lk")
             .innerJoinAndSelect("lk.customer", "customer")
             .innerJoinAndSelect("lk.productVariant", "productVariant")
@@ -49,7 +49,7 @@ export class LicenseKeyDao extends Dao<LicenseKey> {
             .andWhere("lk.deleted != 1")
             .orderBy("lk.createDate", "DESC")
             .addOrderBy("lk.issueDate", "DESC")
-            .setParameters({customerUuid: customerUuid})
-            .getMany();
+            .setParameters({customerUuid: customerUuid}),
+            maxResults, skipNumResults);
     }
 }

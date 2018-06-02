@@ -41,7 +41,7 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
 
     protected list(req: Request, res: Response, next: NextFunction): void {
         let dao: TDao = this.getDao();
-        dao.getAll().then(entities => {
+        dao.getAll(req.query.size, req.query.skip).then(entities => {
             res.send(entities.map(entity => entity.serialize()));
         });
     }

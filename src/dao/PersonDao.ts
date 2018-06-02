@@ -29,13 +29,13 @@ export class PersonDao extends Dao<Person> {
         });
     }
 
-    public async getAll(): Promise<Person[]> {
-        return this.getRepository()
+    public async getAll(maxResults?: number, skipNumResults?: number): Promise<Person[]> {
+        return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("p")
             .where("p.deleted != 1")
             .orderBy("p.firstname")
-            .addOrderBy("p.lastname")
-            .getMany();
+            .addOrderBy("p.lastname"),
+            maxResults, skipNumResults);
     }
 
     public async getSuggestions(keyword: string): Promise<Person[]> {

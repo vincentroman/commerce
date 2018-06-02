@@ -13,11 +13,11 @@ export class BrokerDao extends Dao<Broker> {
         return new Promise((resolve, reject) => resolve(false));
     }
 
-    public async getAll(): Promise<Broker[]> {
-        return this.getRepository()
+    public async getAll(maxResults?: number, skipNumResults?: number): Promise<Broker[]> {
+        return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("e")
             .where("e.deleted != 1")
-            .orderBy("e.name")
-            .getMany();
+            .orderBy("e.name"),
+            maxResults, skipNumResults);
     }
 }

@@ -5,30 +5,38 @@
     </div>
     <h1>Persons</h1>
 </div>
-<table class="table table-hover" [hidden]="!entities || !entities.length">
-    <thead>
-        <tr>
-            <th>Email Address</th>
-            <th>Firstname</th>
-            <th>Lastname</th>
-            <th>Company</th>
-            <th>Admin?</th>
-            <th>Customer?</th>
-            <th>Created</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let user of entities" class="clickable" (click)="showEntity(user.uuid)">
-            <td>{{user.email}}</td>
-            <td>{{user.firstname}}</td>
-            <td>{{user.lastname}}</td>
-            <td>{{user.company}}</td>
-            <td>{{user.roleAdmin ? "Yes" : "No"}}</td>
-            <td>{{user.roleCustomer ? "Yes" : "No"}}</td>
-            <td>{{user.createDate.format('YYYY-MM-DD')}}</td>
-        </tr>
-    </tbody>
-</table>
-<p [hidden]="!entities ||entities.length">
+<div [hidden]="!entities || !entities.length">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Email Address</th>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Company</th>
+                <th>Admin?</th>
+                <th>Customer?</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of entities" class="clickable" (click)="showEntity(user.uuid)">
+                <td>{{user.email}}</td>
+                <td>{{user.firstname}}</td>
+                <td>{{user.lastname}}</td>
+                <td>{{user.company}}</td>
+                <td>{{user.roleAdmin ? "Yes" : "No"}}</td>
+                <td>{{user.roleCustomer ? "Yes" : "No"}}</td>
+                <td>{{user.createDate.format('YYYY-MM-DD')}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="entity-list-toolbar">
+        <button class="btn btn-primary btn-lg" (click)="fetchMore()" [disabled]="fetching" *ngIf="enableFetchMore">
+            <span *ngIf="!fetching">Load more results</span>
+            <span *ngIf="fetching">Fetching...</span>
+        </button>
+    </div>
+</div>
+<p [hidden]="!entities || entities.length">
     No records found.
 </p>

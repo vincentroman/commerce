@@ -13,12 +13,12 @@ export class TopLevelDomainDao extends Dao<TopLevelDomain> {
         return new Promise((resolve, reject) => resolve(true));
     }
 
-    public async getAll(): Promise<TopLevelDomain[]> {
-        return this.getRepository()
+    public async getAll(maxResults?: number, skipNumResults?: number): Promise<TopLevelDomain[]> {
+        return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("t")
             .where("t.deleted != 1")
-            .orderBy("t.tld")
-            .getMany();
+            .orderBy("t.tld"),
+            maxResults, skipNumResults);
     }
 
     public async getByTld(tld: string): Promise<TopLevelDomain> {
