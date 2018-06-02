@@ -46,9 +46,13 @@ export abstract class CrudService<T extends RestModel<T>> {
         return new Promise((resolve, reject) => {
             let req: Observable<Response>;
             if (entity.uuid) {
-                req = this.http.put(this.httpService.getUrl(this.getPath() + "/" + entity.uuid), entity.serialize(), this.httpService.getOptions());
+                req = this.http.put(this.httpService.getUrl(this.getPath() + "/" + entity.uuid),
+                    entity.serialize(),
+                    this.httpService.getOptions());
             } else {
-                req = this.http.post(this.httpService.getUrl(this.getPath() + "/"), entity.serialize(), this.httpService.getOptions());
+                req = this.http.post(this.httpService.getUrl(this.getPath() + "/"),
+                    entity.serialize(),
+                    this.httpService.getOptions());
             }
             req.toPromise()
             .then(res => {
