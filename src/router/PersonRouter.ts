@@ -19,15 +19,15 @@ import { LogEntryType } from '../entity/LogEntry';
 
 class CustomerRouter extends CrudRouter<Person, PersonDao> {
     protected init(): void {
-        super.init();
         this.addRouteGet('/suggest', this.suggest, AuthRole.ADMIN);
-        this.addRouteGet('/comments/:id', this.getComments, AuthRole.ADMIN);
-        this.addRoutePost('/addcomment/:id', this.addComment, AuthRole.ADMIN);
-        this.addRoutePost('/sendmail/all', this.sendMailToAllUsers, AuthRole.ADMIN);
-        this.addRoutePost('/sendmail/:id', this.sendMailToUser, AuthRole.ADMIN);
-        this.addRouteGet('/me', this.me, AuthRole.USER);
+        this.addRoutePost('/all/sendmail', this.sendMailToAllUsers, AuthRole.ADMIN);
         this.addRoutePut('/me/update', this.updateMe, AuthRole.USER);
         this.addRoutePost('/me/confirmdata', this.confirmMyData, AuthRole.USER);
+        this.addRouteGet('/me', this.me, AuthRole.USER);
+        this.addRoutePost('/:id/sendmail', this.sendMailToUser, AuthRole.ADMIN);
+        this.addRouteGet('/:id/comments', this.getComments, AuthRole.ADMIN);
+        this.addRoutePost('/:id/comments', this.addComment, AuthRole.ADMIN);
+        super.init();
     }
 
     protected getDao(): PersonDao {
@@ -44,13 +44,25 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
         return AuthRole.ADMIN;
     }
 
-    protected save(req: Request, res: Response, next: NextFunction): void {
+    protected create(req: Request, res: Response, next: NextFunction): void {
         let dao: PersonDao = this.getDao();
         let email: string = req.body.email;
-        let uuid: string = req.body.uuid;
         dao.getByEmail(email).then(person => {
-            if (!person || person.uuid === uuid) {
-                super.save(req, res, next);
+            if (!person) {
+                super.create(req, res, next);
+            } else {
+                this.badRequest(res, RestError.EMAIL_ALREADY_EXISTS);
+            }
+        });
+    }
+
+    protected update(req: Request, res: Response, next: NextFunction): void {
+        let dao: PersonDao = this.getDao();
+        let email: string = req.body.email;
+        let id = req.params.id;
+        dao.getByEmail(email).then(person => {
+            if (!person || person.uuid === id) {
+                super.update(req, res, next);
             } else {
                 this.badRequest(res, RestError.EMAIL_ALREADY_EXISTS);
             }
@@ -99,7 +111,7 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
                 comment.text = req.body.text;
                 comment.customer = customer;
                 comment.author = user;
-                commentDao.save(comment).then(comment => this.saved(res, comment));
+                commentDao.save(comment).then(comment => this.created(res, comment));
             }).catch(e => this.notFound(res));
         }).catch(e => this.notFound(res));
     }
@@ -212,7 +224,7 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
         let finishUpdate = function(user: Person) {
             if (user.isConsistent()) {
                 dao.save(user)
-                    .then(user => this.saved(res, user))
+                    .then(user => this.updated(res, user))
                     .catch(e => this.internalServerError(res));
             } else {
                 this.badRequest(res);
@@ -255,7 +267,7 @@ class CustomerRouter extends CrudRouter<Person, PersonDao> {
                 user.lastDataVerification = new Date();
                 if (user.isConsistent()) {
                     dao.save(user)
-                        .then(user => this.saved(res, user))
+                        .then(user => this.updated(res, user))
                         .catch(e => this.internalServerError(res));
                 } else {
                     this.badRequest(res);

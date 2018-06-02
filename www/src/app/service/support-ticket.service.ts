@@ -62,23 +62,10 @@ export class SupportTicketService extends CrudService<SupportTicket> {
         });
     }
 
-    getMyOne(id: string): Promise<SupportTicket> {
-        return new Promise((resolve, reject) => {
-            this.http
-            .get(this.httpService.getUrl(this.getPath() + "/getmyone/" + id), this.httpService.getOptions())
-            .toPromise()
-            .then(res => {
-                let entity = this.newTypeInstance().deserialize(<SupportTicket>res.json());
-                resolve(entity);
-            })
-            .catch(error => reject(this.httpService.handleError(error)));
-        });
-    }
-
     getComments(id: string): Promise<Comment[]> {
         return new Promise((resolve, reject) => {
             this.http
-            .get(this.httpService.getUrl(this.getPath() + "/comments/" + id), this.httpService.getOptions())
+            .get(this.httpService.getUrl(this.getPath() + "/" + id + "/comments"), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: Comment[] = (<Comment[]>res.json()).map(o => new Comment().deserialize(o));
@@ -107,7 +94,7 @@ export class SupportTicketService extends CrudService<SupportTicket> {
         let payload = {
             text: text
         };
-        return this.http.post(this.httpService.getUrl(this.getPath() + "/open/" + id), payload, this.httpService.getOptions())
+        return this.http.post(this.httpService.getUrl(this.getPath() + "/" + id + "/open"), payload, this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 return res.json().uuid;
@@ -118,7 +105,7 @@ export class SupportTicketService extends CrudService<SupportTicket> {
     }
 
     close(id: string): Promise<string> {
-        return this.http.post(this.httpService.getUrl(this.getPath() + "/close/" + id), null, this.httpService.getOptions())
+        return this.http.post(this.httpService.getUrl(this.getPath() + "/" + id + "/close"), null, this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 return res.json().uuid;
@@ -132,7 +119,7 @@ export class SupportTicketService extends CrudService<SupportTicket> {
         let payload = {
             text: text
         };
-        return this.http.post(this.httpService.getUrl(this.getPath() + "/addcomment/" + id), payload, this.httpService.getOptions())
+        return this.http.post(this.httpService.getUrl(this.getPath() + "/" + id + "/comments"), payload, this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 return res.json().uuid;

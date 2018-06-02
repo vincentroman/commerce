@@ -117,15 +117,23 @@ export abstract class BaseRouter {
     }
 
     protected ok(res: Response): void {
-        res.status(200).send({
+        res.status(204).send({
             message: "Operation successful",
             status: res.status
         });
     }
 
-    protected saved(res: Response, entity: DbEntity<any>): void {
+    protected updated(res: Response, entity: DbEntity<any>): void {
         res.status(200).send({
             message: "Object saved",
+            uuid: (entity ? entity.uuid : ""),
+            status: res.status
+        });
+    }
+
+    protected created(res: Response, entity: DbEntity<any>): void {
+        res.status(201).send({
+            message: "Object created",
             uuid: (entity ? entity.uuid : ""),
             status: res.status
         });

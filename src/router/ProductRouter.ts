@@ -5,6 +5,7 @@ import { CrudRouter } from "./CrudRouter";
 import { Product } from '../entity/Product';
 import { ProductDao } from '../dao/ProductDao';
 import { AuthRole } from "./BaseRouter";
+import { ProductVariantDao } from '../dao/ProductVariantDao';
 
 class ProductRouter extends CrudRouter<Product, ProductDao> {
     protected getDao(): ProductDao {
@@ -22,10 +23,26 @@ class ProductRouter extends CrudRouter<Product, ProductDao> {
     }
 
     protected init(): void {
-        this.addRouteGet('/get/:id', this.getOne, AuthRole.ANY);
-        this.addRouteGet('/list', this.list, AuthRole.ANY);
-        this.addRouteDelete('/delete/:id', this.delete, this.getDefaultAuthRole());
-        this.addRoutePut('/save', this.save, this.getDefaultAuthRole());
+        this.addRouteGet('/:productId/variants', this.listVariantsForProduct, AuthRole.ANY);
+        this.addRouteGet('/', this.list, AuthRole.ANY);
+        this.addRouteGet('/:id', this.getOne, AuthRole.ANY);
+        this.addRoutePost('/', this.create, this.getDefaultAuthRole());
+        this.addRoutePut('/:id', this.update, this.getDefaultAuthRole());
+        this.addRouteDelete('/:id', this.delete, this.getDefaultAuthRole());
+    }
+
+    private listVariantsForProduct(req: Request, res: Response, next: NextFunction): void {
+        let dao: ProductVariantDao = Container.get(ProductVariantDao);
+        let productId = req.params.productId;
+        Container.get(ProductDao).getByUuid(productId).then(product => {
+            if (product) {
+                dao.getAllForProduct(product).then(entities => {
+                    res.send(entities.map(entity => entity.serialize()));
+                });
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => this.notFound(res));
     }
 }
 

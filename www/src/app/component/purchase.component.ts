@@ -34,7 +34,7 @@ export class PurchaseComponent implements OnInit {
     }
 
     selectProduct(product: Product): void {
-        this.productVariantService.listForProduct(product.uuid).then(variants => this.variants = variants);
+        this.productService.listVariantsForProduct(product.uuid).then(variants => this.variants = variants);
         this.selectedProduct = product;
         this.selectedTypes = null;
         this.selectedVariant = null;

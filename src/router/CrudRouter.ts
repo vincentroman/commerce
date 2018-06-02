@@ -17,10 +17,11 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
     }
 
     protected init(): void {
-        this.addRouteGet('/get/:id', this.getOne, this.getDefaultAuthRole());
-        this.addRouteGet('/list', this.list, this.getDefaultAuthRole());
-        this.addRouteDelete('/delete/:id', this.delete, this.getDefaultAuthRole());
-        this.addRoutePut('/save', this.save, this.getDefaultAuthRole());
+        this.addRouteGet('/', this.list, this.getDefaultAuthRole());
+        this.addRouteGet('/:id', this.getOne, this.getDefaultAuthRole());
+        this.addRoutePost('/', this.create, this.getDefaultAuthRole());
+        this.addRoutePut('/:id', this.update, this.getDefaultAuthRole());
+        this.addRouteDelete('/:id', this.delete, this.getDefaultAuthRole());
     }
 
     protected getOne(req: Request, res: Response, next: NextFunction): void {
@@ -59,35 +60,41 @@ export abstract class CrudRouter<TEntity extends DbEntity<TEntity>, TDao extends
         }).catch(e => this.notFound(res));
     }
 
-    protected save(req: Request, res: Response, next: NextFunction): void {
+    protected create(req: Request, res: Response, next: NextFunction): void {
         let dao: TDao = this.getDao();
         if (req.body.uuid) {
-            dao.getByUuid(req.body.uuid).then(entity => {
-                if (entity) {
-                    entity.deserialize(req.body);
-                    this.fixRelationsBeforeSave(entity).then(entity => {
-                        if (entity.isConsistent()) {
-                            dao.save(entity).then(entity => {
-                                this.saved(res, entity);
-                            }).catch(e => this.internalServerError(res));
-                        } else {
-                            this.badRequest(res);
-                        }
-                    }).catch(e => this.notFound(res));
-                } else {
-                    this.notFound(res);
-                }
-            }).catch(e => this.notFound(res));
-        } else {
-            this.createEntity(req.body).then(entity => {
-                if (entity.isConsistent()) {
-                    dao.save(entity).then(entity => {
-                        this.saved(res, entity);
-                    }).catch(e => this.badRequest(res));
-                } else {
-                    this.badRequest(res);
-                }
-            }).catch(e => this.badRequest(res));
+            this.badRequest(res);
+            return;
         }
+        this.createEntity(req.body).then(entity => {
+            if (entity.isConsistent()) {
+                dao.save(entity).then(entity => {
+                    this.created(res, entity);
+                }).catch(e => this.badRequest(res));
+            } else {
+                this.badRequest(res);
+            }
+        }).catch(e => this.badRequest(res));
+    }
+
+    protected update(req: Request, res: Response, next: NextFunction): void {
+        let dao: TDao = this.getDao();
+        let id = req.params.id;
+        dao.getByUuid(id).then(entity => {
+            if (entity) {
+                entity.deserialize(req.body);
+                this.fixRelationsBeforeSave(entity).then(entity => {
+                    if (entity.isConsistent()) {
+                        dao.save(entity).then(entity => {
+                            this.updated(res, entity);
+                        }).catch(e => this.internalServerError(res));
+                    } else {
+                        this.badRequest(res);
+                    }
+                }).catch(e => this.notFound(res));
+            } else {
+                this.notFound(res);
+            }
+        }).catch(e => this.notFound(res));
     }
 }

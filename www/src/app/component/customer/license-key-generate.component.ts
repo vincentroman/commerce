@@ -36,7 +36,7 @@ export class LicenseKeyMyGenerateComponent implements OnInit {
                 this.uuid = uuid;
             }
         });
-        this.licenseKeyService.getMyOne(this.uuid).then(entity => {
+        this.licenseKeyService.get(this.uuid).then(entity => {
             this.entity = entity;
             for (let i = 0; i < entity.productVariant.numDomains; i++) {
                 this.model.domains.push({value: ""});

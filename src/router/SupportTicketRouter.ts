@@ -25,16 +25,19 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
     }
 
     protected init(): void {
-        super.init();
         this.addRouteGet('/my', this.my, AuthRole.CUSTOMER);
         this.addRouteGet('/mystats', this.myStats, AuthRole.CUSTOMER);
-        this.addRouteGet('/getmyone/:id', this.getMyOne, AuthRole.CUSTOMER);
-        this.addRouteGet('/comments/:id', this.getComments, AuthRole.USER);
         this.addRoutePut('/assign', this.assign, AuthRole.ADMIN);
         this.addRouteGet('/stats', this.adminStats, AuthRole.ADMIN);
-        this.addRoutePost('/open/:id', this.open, AuthRole.USER);
-        this.addRoutePost('/close/:id', this.close, AuthRole.USER);
-        this.addRoutePost('/addcomment/:id', this.addComment, AuthRole.USER);
+        this.addRouteGet('/', this.list, this.getDefaultAuthRole());
+        this.addRouteGet('/:id/comments', this.getComments, AuthRole.USER);
+        this.addRouteGet('/:id', this.getOne, AuthRole.ANY);
+        this.addRoutePost('/', this.create, this.getDefaultAuthRole());
+        this.addRoutePost('/:id/comments', this.addComment, AuthRole.USER);
+        this.addRoutePost('/:id/open', this.open, AuthRole.USER);
+        this.addRoutePost('/:id/close', this.close, AuthRole.USER);
+        this.addRoutePut('/:id', this.update, this.getDefaultAuthRole());
+        this.addRouteDelete('/:id', this.delete, this.getDefaultAuthRole());
     }
 
     protected adminStats(req: Request, res: Response, next: NextFunction): void {
@@ -104,17 +107,25 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
         });
     }
 
-    protected getMyOne(req: Request, res: Response, next: NextFunction): void {
-        let customerUuid = this.getJwtUserUuid(req);
-        let dao: SupportTicketDao = this.getDao();
-        let id = req.params.id;
-        dao.getByUuid(id).then(entity => {
-            if (entity.customer && entity.customer.uuid === customerUuid) {
-                res.send(entity.serialize());
-            } else {
+    protected getOne(req: Request, res: Response, next: NextFunction): void {
+        this.getJwtUser(req).then(user => {
+            if (!user || !(user.roleAdmin || user.roleCustomer)) {
                 this.forbidden(res);
+            } else if (user.roleAdmin) {
+                super.getOne(req, res, next);
+            } else if (user.roleCustomer) {
+                let customerUuid = this.getJwtUserUuid(req);
+                let dao: SupportTicketDao = this.getDao();
+                let id = req.params.id;
+                dao.getByUuid(id).then(entity => {
+                    if (entity.customer && entity.customer.uuid === customerUuid) {
+                        res.send(entity.serialize());
+                    } else {
+                        this.forbidden(res);
+                    }
+                }).catch(e => this.notFound(res));
             }
-        }).catch(e => this.notFound(res));
+        }).catch(e => this.forbidden(res));
     }
 
     private my(req: Request, res: Response, next: NextFunction): void {
@@ -161,7 +172,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
                 supportRequest.productVariant = productVariant;
                 supportRequest.status = SupportRequestStatus.NEW;
                 dao.save(supportRequest).then(entity => {
-                    this.saved(res, entity);
+                    this.created(res, entity);
                 });
             }).catch((e) => {
                 this.badRequest(res);
@@ -180,7 +191,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
                 entity.text = req.body.text;
                 entity.status = SupportRequestStatus.OPEN;
                 dao.save(entity).then((entity) => {
-                    this.saved(res, entity);
+                    this.updated(res, entity);
                 });
             } else {
                 this.forbidden(res);
@@ -193,7 +204,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
         let doUpdate = function(entity: SupportTicket) {
             entity.status = SupportRequestStatus.CLOSED;
             dao.save(entity).then((entity) => {
-                that.saved(res, entity);
+                that.updated(res, entity);
             });
         };
         let customerUuid = this.getJwtUserUuid(req);
@@ -226,7 +237,7 @@ class SupportTicketRouter extends CrudRouter<SupportTicket, SupportTicketDao> {
                     comment.text = req.body.text;
                     comment.supportTicket = entity;
                     comment.author = user;
-                    commentDao.save(comment).then(comment => this.saved(res, comment));
+                    commentDao.save(comment).then(comment => this.created(res, comment));
                 } else {
                     this.forbidden(res);
                 }

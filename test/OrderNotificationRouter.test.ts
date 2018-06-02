@@ -107,7 +107,7 @@ describe('Router '+endpoint, () => {
             .set('Content-Type', 'application/json')
             .send(input)
             .then(res => {
-                expect(res.status).to.equal(200);
+                expect(res.status).to.equal(201);
                 expect(res).to.be.json;
                 expect(res.body).to.be.an('object');
                 expect(res.body.uuid).to.be.string;
@@ -147,7 +147,7 @@ describe('Router '+endpoint, () => {
             .set('Content-Type', 'application/json')
             .send(input)
             .then(res => {
-                expect(res.status).to.equal(200);
+                expect(res.status).to.equal(204);
                 expect(res.body.uuid).to.be.undefined;
                 // Ensure that is only one pending action
                 return Container.get(PendingActionDao).getAll().then(allActions => {

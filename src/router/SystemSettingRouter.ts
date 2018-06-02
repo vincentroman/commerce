@@ -22,9 +22,9 @@ class SystemSettingRouter extends CrudRouter<SystemSetting, SystemSettingDao> {
     }
 
     protected init(): void {
-        super.init();
         this.addRouteGet('/version', this.getVersion, AuthRole.ANY);
         this.addRouteGet('/public', this.getPublicSettings, AuthRole.ANY);
+        super.init();
     }
 
     private getVersion(req: Request, res: Response, next: NextFunction): void {

@@ -25,7 +25,7 @@ export class PurchaseService extends CrudService<Purchase> {
     public getPurchaseItems(uuid: string): Promise<PurchaseItem[]> {
         return new Promise((resolve, reject) => {
             this.http
-            .get(this.httpService.getUrl("purchaseitem/" + uuid + "/list"), this.httpService.getOptions())
+            .get(this.httpService.getUrl(this.getPath() + "/" + uuid + "/items"), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: PurchaseItem[] = (<PurchaseItem[]>res.json()).map(o => new PurchaseItem().deserialize(o));

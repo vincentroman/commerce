@@ -35,7 +35,7 @@ export class TicketsMyViewComponent implements OnInit {
                 this.uuid = uuid;
             }
         });
-        this.supportTicketService.getMyOne(this.uuid).then(entity => this.entity = entity);
+        this.supportTicketService.get(this.uuid).then(entity => this.entity = entity);
         this.supportTicketService.getComments(this.uuid).then(comments => this.comments = comments);
     }
 
@@ -53,7 +53,7 @@ export class TicketsMyViewComponent implements OnInit {
     private openCase(): void {
         this.supportTicketService.open(this.uuid, this.entity.text)
             .then(entity => {
-                this.supportTicketService.getMyOne(this.uuid).then(entity => {
+                this.supportTicketService.get(this.uuid).then(entity => {
                     this.entity = entity;
                     this.submitting = false;
                     this.caseOpenedClosed = true;
@@ -68,7 +68,7 @@ export class TicketsMyViewComponent implements OnInit {
         }
         this.supportTicketService.close(this.uuid)
             .then(entity => {
-                this.supportTicketService.getMyOne(this.uuid).then(entity => {
+                this.supportTicketService.get(this.uuid).then(entity => {
                     this.entity = entity;
                     this.submitting = false;
                     this.caseOpenedClosed = true;

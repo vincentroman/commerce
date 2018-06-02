@@ -8,25 +8,6 @@ import { ProductDao } from "../dao/ProductDao";
 import { AuthRole } from "./BaseRouter";
 
 class ProductVariantRouter extends CrudRouter<ProductVariant, ProductVariantDao> {
-    protected init(): void {
-        super.init();
-        this.addRouteGet('/list/:productId', this.listForProduct, AuthRole.ANY);
-    }
-
-    private listForProduct(req: Request, res: Response, next: NextFunction): void {
-        let dao: ProductVariantDao = this.getDao();
-        let productId = req.params.productId;
-        Container.get(ProductDao).getByUuid(productId).then(product => {
-            if (product) {
-                dao.getAllForProduct(product).then(entities => {
-                    res.send(entities.map(entity => entity.serialize()));
-                });
-            } else {
-                this.notFound(res);
-            }
-        }).catch(e => this.notFound(res));
-    }
-
     protected getDao(): ProductVariantDao {
         return Container.get(ProductVariantDao);
     }

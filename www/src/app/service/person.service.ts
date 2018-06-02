@@ -55,7 +55,7 @@ export class PersonService extends CrudService<Person> {
     getComments(id: string): Promise<Comment[]> {
         return new Promise((resolve, reject) => {
             this.http
-            .get(this.httpService.getUrl(this.getPath() + "/comments/" + id), this.httpService.getOptions())
+            .get(this.httpService.getUrl(this.getPath() + "/" + id + "/comments"), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: Comment[] = (<Comment[]>res.json()).map(o => new Comment().deserialize(o));
@@ -69,7 +69,7 @@ export class PersonService extends CrudService<Person> {
         let payload = {
             text: text
         };
-        return this.http.post(this.httpService.getUrl(this.getPath() + "/addcomment/" + id), payload, this.httpService.getOptions())
+        return this.http.post(this.httpService.getUrl(this.getPath() + "/" + id + "/comments"), payload, this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 return res.json().uuid;
@@ -119,7 +119,7 @@ export class PersonService extends CrudService<Person> {
                 subject: subject,
                 body: body
             };
-            this.http.post(this.httpService.getUrl(this.getPath() + "/sendmail/" + uuid), payload, this.httpService.getOptions())
+            this.http.post(this.httpService.getUrl(this.getPath() + "/" + uuid + "/sendmail"), payload, this.httpService.getOptions())
             .toPromise()
             .then(res => resolve())
             .catch(error => reject(this.httpService.handleError(error)));
@@ -134,7 +134,7 @@ export class PersonService extends CrudService<Person> {
                 startIdx: startIdx,
                 limit: limit
             };
-            this.http.post(this.httpService.getUrl(this.getPath() + "/sendmail/all"), payload, this.httpService.getOptions())
+            this.http.post(this.httpService.getUrl(this.getPath() + "/all/sendmail"), payload, this.httpService.getOptions())
             .toPromise()
             .then(res => resolve())
             .catch(error => reject(this.httpService.handleError(error)));

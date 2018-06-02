@@ -49,7 +49,7 @@ class OrderNotificationRouter extends BaseRouter {
                                 " with content: " + JSON.stringify(req.body),
                                 LogEntryType.Order);
                             this.processPurchaseWithoutDoubleOptIn(mappedInput, broker)
-                                .then(order => this.saved(res, order))
+                                .then(order => this.created(res, order))
                                 .catch(e => this.internalServerError(res));
                         } else {
                             Log.info("Customer for order notification does not exist," +
@@ -85,7 +85,7 @@ class OrderNotificationRouter extends BaseRouter {
                                 " for customer " + order.customer.uuid +
                                 " from ip " + req.ip,
                                 LogEntryType.OptIn);
-                            actionDao.delete(action).then(() => this.saved(res, order));
+                            actionDao.delete(action).then(() => this.updated(res, order));
                         }).catch(e => this.internalServerError(res));
                     } else {
                         this.internalServerError(res);

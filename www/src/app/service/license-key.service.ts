@@ -48,19 +48,6 @@ export class LicenseKeyService extends CrudService<LicenseKey> {
         });
     }
 
-    getMyOne(id: string): Promise<LicenseKey> {
-        return new Promise((resolve, reject) => {
-            this.http
-            .get(this.httpService.getUrl(this.getPath() + "/getmyone/" + id), this.httpService.getOptions())
-            .toPromise()
-            .then(res => {
-                let entity = this.newTypeInstance().deserialize(<LicenseKey>res.json());
-                resolve(entity);
-            })
-            .catch(error => reject(this.httpService.handleError(error)));
-        });
-    }
-
     assign(productVariantUuid: string, customerUuid: string): Promise<string> {
         let payload = {
             productVariantUuid: productVariantUuid,
@@ -80,7 +67,7 @@ export class LicenseKeyService extends CrudService<LicenseKey> {
         let payload = {
             domains: domains
         };
-        return this.http.post(this.httpService.getUrl(this.getPath() + "/issue/" + id), payload, this.httpService.getOptions())
+        return this.http.post(this.httpService.getUrl(this.getPath() + "/" + id + "/issue"), payload, this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 console.log("status: %d", res.status);

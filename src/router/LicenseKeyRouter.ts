@@ -32,13 +32,16 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     }
 
     protected init(): void {
-        super.init();
         this.addRouteGet('/my', this.my, AuthRole.CUSTOMER);
         this.addRouteGet('/mystats', this.myStats, AuthRole.CUSTOMER);
-        this.addRouteGet('/getmyone/:id', this.getMyOne, AuthRole.CUSTOMER);
         this.addRoutePut('/assign', this.assign, AuthRole.ADMIN);
         this.addRoutePost('/generate', this.generate, AuthRole.ADMIN);
-        this.addRoutePost('/issue/:id', this.issue, AuthRole.CUSTOMER);
+        this.addRoutePost('/:id/issue', this.issue, AuthRole.CUSTOMER);
+        this.addRouteGet('/', this.list, this.getDefaultAuthRole());
+        this.addRouteGet('/:id', this.getOne, AuthRole.ANY);
+        this.addRoutePost('/', this.create, this.getDefaultAuthRole());
+        this.addRoutePut('/:id', this.update, this.getDefaultAuthRole());
+        this.addRouteDelete('/:id', this.delete, this.getDefaultAuthRole());
     }
 
     protected myStats(req: Request, res: Response, next: NextFunction): void {
@@ -82,35 +85,28 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     }
 
     protected getOne(req: Request, res: Response, next: NextFunction): void {
-        let dao: LicenseKeyDao = this.getDao();
-        let id = req.params.id;
-        dao.getByUuid(id).then(entity => {
-            if (entity) {
-                this.sendOneItem(res, entity);
+        this.getJwtUser(req).then(user => {
+            if (!user || !(user.roleAdmin || user.roleCustomer)) {
+                this.forbidden(res);
             } else {
-                this.notFound(res);
+                let dao: LicenseKeyDao = this.getDao();
+                let id = req.params.id;
+                dao.getByUuid(id).then(entity => {
+                    if (entity) {
+                        if (user.roleAdmin || (user.roleCustomer && entity.customer && entity.customer.uuid === user.uuid)) {
+                            this.sendOneItem(res, entity);
+                        } else {
+                            this.forbidden(res);
+                        }
+                    } else {
+                        this.notFound(res);
+                    }
+                }).catch(e => {
+                    // TODO Log exception
+                    this.internalServerError(res);
+                });
             }
-        }).catch(e => {
-            // TODO Log exception
-            this.internalServerError(res);
-        });
-    }
-
-    protected getMyOne(req: Request, res: Response, next: NextFunction): void {
-        let customerUuid = this.getJwtUserUuid(req);
-        let dao: LicenseKeyDao = this.getDao();
-        let id = req.params.id;
-        dao.getByUuid(id).then(entity => {
-            if (entity) {
-                if (entity.customer && entity.customer.uuid === customerUuid) {
-                    this.sendOneItem(res, entity);
-                } else {
-                    this.forbidden(res);
-                }
-            } else {
-                this.notFound(res);
-            }
-        }).catch(e => this.notFound(res));
+        }).catch(e => this.forbidden(res));
     }
 
     private sendOneItem(res: Response, entity: LicenseKey): void {
@@ -157,7 +153,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                 licenseKey.customer = customer;
                 licenseKey.productVariant = productVariant;
                 dao.save(licenseKey).then(entity => {
-                    this.saved(res, entity);
+                    this.created(res, entity);
                 });
             }).catch((e) => {
                 this.badRequest(res);

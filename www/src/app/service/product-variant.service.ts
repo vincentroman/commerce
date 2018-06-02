@@ -22,19 +22,6 @@ export class ProductVariantService extends CrudService<ProductVariant> {
         return "productvariant";
     }
 
-    listForProduct(productUuid: string): Promise<ProductVariant[]> {
-        return new Promise((resolve, reject) => {
-            this.http
-            .get(this.httpService.getUrl(this.getPath() + "/list/" + productUuid), this.httpService.getOptions())
-            .toPromise()
-            .then(res => {
-                let list: ProductVariant[] = (<ProductVariant[]>res.json()).map(o => this.newTypeInstance().deserialize(o));
-                resolve(list);
-            })
-            .catch(error => reject(this.httpService.handleError(error)));
-        });
-    }
-
     public getBrokerProductVariant(brokerUuid: string, variantUuid: string): Promise<BrokerProductVariant> {
         return new Promise((resolve, reject) => {
             this.http

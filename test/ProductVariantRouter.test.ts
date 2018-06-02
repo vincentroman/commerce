@@ -42,7 +42,7 @@ describe('Router '+endpoint, () => {
         }).catch(e => done(e));
     });
 
-    describe('PUT '+endpoint+'save', () => {
+    describe('POST '+endpoint, () => {
         it('should save a new product variant', () => {
             let pv1 = {
                 title: "Product Variant WP.1",
@@ -54,11 +54,11 @@ describe('Router '+endpoint, () => {
                     uuid: p1uuid
                 }
             };
-            return chai.request(App.getInstance().express).put(endpoint+'save')
+            return chai.request(App.getInstance().express).post(endpoint)
             .set("Authorization", "Bearer " + jwt)
             .send(pv1)
             .then(res => {
-                expect(res.status).to.equal(200);
+                expect(res.status).to.equal(201);
                 expect(res).to.be.json;
                 expect(res.body).to.be.an('object');
                 expect(res.body.uuid).to.be.string;
@@ -67,9 +67,9 @@ describe('Router '+endpoint, () => {
         });
     });
 
-    describe('GET '+endpoint+'get', () => {
+    describe('GET '+endpoint, () => {
         it('should return the previously inserted variant', () => {
-            return chai.request(App.getInstance().express).get(endpoint+'get/'+putId)
+            return chai.request(App.getInstance().express).get(endpoint+putId)
             .set("Authorization", "Bearer " + jwt)
             .then(res => {
                 expect(res.status).to.equal(200);

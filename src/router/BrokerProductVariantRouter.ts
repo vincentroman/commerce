@@ -64,9 +64,9 @@ class BrokerProductVariantRouter extends BaseRouter {
                             Container.get(BrokerProductVariantDao).addOrReplace(broker, productVariant, req.body.idForBroker).then(bpv => {
                                 if (bpv) {
                                     bpv.url = req.body.url;
-                                    Container.get(BrokerProductVariantDao).save(bpv).then(bpv => this.saved(res, bpv));
+                                    Container.get(BrokerProductVariantDao).save(bpv).then(bpv => this.updated(res, bpv));
                                 } else {
-                                    this.saved(res, bpv);
+                                    this.updated(res, bpv);
                                 }
                             }).catch(e => this.internalServerError(res));
                         } else {

@@ -26,7 +26,7 @@ export class LicenseKeyMyViewComponent implements OnInit {
                 this.uuid = uuid;
             }
         });
-        this.licenseKeyService.getMyOne(this.uuid).then(entity => {
+        this.licenseKeyService.get(this.uuid).then(entity => {
             this.entity = entity;
         });
     }

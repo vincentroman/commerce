@@ -35,7 +35,7 @@ export class ProductEditComponent extends EntityEditComponent<Product> {
     protected onInit(): void {
         if (this.uuid) {
             this.brokerService.list().then(brokers => this.brokers = brokers);
-            this.productVariantService.listForProduct(this.uuid).then(variants => this.variants = variants);
+            this.productService.listVariantsForProduct(this.uuid).then(variants => this.variants = variants);
             this.productVariantService.getBrokerProductVariants(this.uuid).then(list => {
                 this.brokerProductVariants = list;
             });

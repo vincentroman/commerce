@@ -13,7 +13,6 @@ import BrokerRouter from './router/BrokerRouter';
 import CommentRouter from './router/CommentRouter';
 import LicenseKeyRouter from './router/LicenseKeyRouter';
 import MailTemplateRouter from './router/MailTemplateRouter';
-import PurchaseItemRouter from './router/PurchaseItemRouter';
 import OrderNotificationRouter from './router/OrderNotificationRouter';
 import PersonRouter from './router/PersonRouter';
 import PurchaseRouter from './router/PurchaseRouter';
@@ -110,7 +109,6 @@ export class App extends EventEmitter {
         this.express.use('/api/v1/comment', CommentRouter);
         this.express.use('/api/v1/licensekey', LicenseKeyRouter);
         this.express.use('/api/v1/mailtemplate', MailTemplateRouter);
-        this.express.use('/api/v1/purchaseitem', PurchaseItemRouter);
         this.express.use('/api/v1/ordernotification', OrderNotificationRouter);
         this.express.use('/api/v1/person', PersonRouter);
         this.express.use('/api/v1/purchase', PurchaseRouter);

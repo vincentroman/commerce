@@ -4,6 +4,7 @@ import "rxjs/add/operator/toPromise";
 
 import { HttpService } from "./http.service";
 import { RestModel } from "../model/rest-model";
+import { Observable } from "rxjs/Observable";
 
 export abstract class CrudService<T extends RestModel<T>> {
     constructor(
@@ -18,7 +19,7 @@ export abstract class CrudService<T extends RestModel<T>> {
     list(): Promise<T[]> {
         return new Promise((resolve, reject) => {
             this.http
-            .get(this.httpService.getUrl(this.getPath() + "/list"), this.httpService.getOptions())
+            .get(this.httpService.getUrl(this.getPath() + "/"), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let list: T[] = (<T[]>res.json()).map(o => this.newTypeInstance().deserialize(o));
@@ -31,7 +32,7 @@ export abstract class CrudService<T extends RestModel<T>> {
     get(id: string): Promise<T> {
         return new Promise((resolve, reject) => {
             this.http
-            .get(this.httpService.getUrl(this.getPath() + "/get/" + id), this.httpService.getOptions())
+            .get(this.httpService.getUrl(this.getPath() + "/" + id), this.httpService.getOptions())
             .toPromise()
             .then(res => {
                 let entity = this.newTypeInstance().deserialize(<T>res.json());
@@ -43,8 +44,13 @@ export abstract class CrudService<T extends RestModel<T>> {
 
     save(entity: T): Promise<T> {
         return new Promise((resolve, reject) => {
-            this.http.put(this.httpService.getUrl(this.getPath() + "/save"), entity.serialize(), this.httpService.getOptions())
-            .toPromise()
+            let req: Observable<Response>;
+            if (entity.uuid) {
+                req = this.http.put(this.httpService.getUrl(this.getPath() + "/" + entity.uuid), entity.serialize(), this.httpService.getOptions());
+            } else {
+                req = this.http.post(this.httpService.getUrl(this.getPath() + "/"), entity.serialize(), this.httpService.getOptions());
+            }
+            req.toPromise()
             .then(res => {
                 entity.uuid = res.json().uuid;
                 resolve(entity);
@@ -55,7 +61,7 @@ export abstract class CrudService<T extends RestModel<T>> {
 
     delete(id: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.http.delete(this.httpService.getUrl(this.getPath() + "/delete/" + id), this.httpService.getOptions())
+            this.http.delete(this.httpService.getUrl(this.getPath() + "/" + id), this.httpService.getOptions())
             .toPromise()
             .then(res => resolve())
             .catch(error => reject(this.httpService.handleError(error)));

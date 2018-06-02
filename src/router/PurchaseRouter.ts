@@ -8,6 +8,7 @@ import { PendingActionDao } from '../dao/PendingActionDao';
 import { ActionType } from '../entity/PendingAction';
 import { BrokerDao } from '../dao/BrokerDao';
 import { MappedOrderInput } from '../util/OrderNotificationMapper';
+import { PurchaseItemDao } from '../dao/PurchaseItemDao';
 
 class PurchaseRouter extends CrudRouter<Purchase, PurchaseDao> {
     protected getDao(): PurchaseDao {
@@ -25,9 +26,10 @@ class PurchaseRouter extends CrudRouter<Purchase, PurchaseDao> {
     }
 
     protected init(): void {
-        super.init();
         this.addRouteGet('/latest/:limit', this.getLatest, AuthRole.ADMIN);
         this.addRouteGet('/pending/:uuid', this.getPendingOrder, AuthRole.ANY);
+        this.addRouteGet('/:purchaseId/items', this.listPurchaseItems, AuthRole.ADMIN);
+        super.init();
     }
 
     private getLatest(req: Request, res: Response, next: NextFunction): void {
@@ -67,6 +69,17 @@ class PurchaseRouter extends CrudRouter<Purchase, PurchaseDao> {
                 this.notFound(res);
             }
         }).catch(e => this.internalServerError(res));
+    }
+
+    private listPurchaseItems(req: Request, res: Response, next: NextFunction): void {
+        let purchaseDao: PurchaseDao = this.getDao();
+        let dao: PurchaseItemDao = Container.get(PurchaseItemDao);
+        let purchaseId = req.params.purchaseId;
+        purchaseDao.getByUuid(purchaseId).then(purchase => {
+            dao.getByPurchase(purchase).then(entities => {
+                res.send(entities.map(entity => entity.serialize()));
+            });
+        }).catch(e => this.notFound(res));
     }
 }
 
