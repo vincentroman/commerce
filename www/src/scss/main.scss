@@ -10,6 +10,12 @@ h1 {
 .page-header {
   margin-top: 0px;
   margin-bottom: 30px;
+
+  .search-form {
+    float: left;
+    padding-top: 7px;
+    margin-right: 10px;
+  }
 }
 
 .entity-list-toolbar {

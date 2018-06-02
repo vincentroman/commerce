@@ -29,13 +29,20 @@ export class PersonDao extends Dao<Person> {
         });
     }
 
-    public async getAll(maxResults?: number, skipNumResults?: number): Promise<Person[]> {
-        return this.getManyWithLimits(this.getRepository()
+    public async getAll(maxResults?: number, skipNumResults?: number, search?: string): Promise<Person[]> {
+        let query = this.getRepository()
             .createQueryBuilder("p")
             .where("p.deleted != 1")
             .orderBy("p.firstname")
-            .addOrderBy("p.lastname"),
-            maxResults, skipNumResults);
+            .addOrderBy("p.lastname");
+        if (search) {
+            query = query.andWhere("(p.firstname LIKE :keyword OR " +
+                "p.lastname LIKE :keyword OR " +
+                "p.company LIKE :keyword OR " +
+                "p.email LIKE :keyword)");
+            query = query.setParameters({keyword: "%" + search + "%"});
+        }
+        return this.getManyWithLimits(query, maxResults, skipNumResults);
     }
 
     public async getSuggestions(keyword: string): Promise<Person[]> {

@@ -16,8 +16,8 @@ export class PurchaseDao extends Dao<Purchase> {
         return new Promise((resolve, reject) => resolve(false));
     }
 
-    public async getAll(maxResults?: number, skipNumResults?: number): Promise<Purchase[]> {
-        return this.getManyWithLimits(this.getRepository()
+    public async getAll(maxResults?: number, skipNumResults?: number, search?: string): Promise<Purchase[]> {
+        let query = this.getRepository()
             .createQueryBuilder("order")
             .innerJoinAndSelect("order.broker", "broker")
             .leftJoinAndSelect("order.items", "items")
@@ -25,8 +25,15 @@ export class PurchaseDao extends Dao<Purchase> {
             .leftJoinAndSelect("items.productVariant", "productVariant")
             .leftJoinAndSelect("productVariant.product", "product")
             .where("order.deleted != 1")
-            .orderBy("order.createDate", "DESC"),
-            maxResults, skipNumResults);
+            .orderBy("order.createDate", "DESC");
+        if (search) {
+            query = query.andWhere("(customer.firstname LIKE :keyword OR " +
+                "customer.lastname LIKE :keyword OR " +
+                "customer.company LIKE :keyword OR " +
+                "customer.email LIKE :keyword)");
+            query = query.setParameters({keyword: "%" + search + "%"});
+        }
+        return this.getManyWithLimits(query, maxResults, skipNumResults);
     }
 
     public async getByUuid(uuid: string): Promise<Purchase> {

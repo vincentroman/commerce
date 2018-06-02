@@ -9,6 +9,8 @@ export abstract class EntityListComponent<T extends RestModel<T>> implements OnI
     maxResults: number;
     fetching: boolean;
     enableFetchMore: boolean;
+    search: string;
+    searchTimeout: number;
 
     constructor(
         protected router: Router,
@@ -22,7 +24,7 @@ export abstract class EntityListComponent<T extends RestModel<T>> implements OnI
     }
 
     protected loadList(): void {
-        this.getListFunction().call(this.crudService, this.maxResults, this.skip).then(entities => {
+        this.getListFunction().call(this.crudService, this.maxResults, this.skip, this.search).then(entities => {
             this.entities = entities;
             this.enableFetchMore = (this.entities.length === this.maxResults);
         });
@@ -33,6 +35,7 @@ export abstract class EntityListComponent<T extends RestModel<T>> implements OnI
         this.maxResults = 25;
         this.fetching = false;
         this.enableFetchMore = true;
+        this.search = "";
         this.loadList();
     }
 
@@ -43,11 +46,18 @@ export abstract class EntityListComponent<T extends RestModel<T>> implements OnI
     fetchMore(): void {
         this.fetching = true;
         this.skip += this.maxResults;
-        this.getListFunction().call(this.crudService, this.maxResults, this.skip).then(entities => {
+        this.getListFunction().call(this.crudService, this.maxResults, this.skip, this.search).then(entities => {
             let prevLen = entities.length;
             this.entities = this.entities.concat(entities);
             this.fetching = false;
             this.enableFetchMore = ((this.entities.length > prevLen) && (this.entities.length % this.maxResults === 0));
         });
+    }
+
+    onSearchChange(): void {
+        window.clearTimeout(this.searchTimeout);
+        this.searchTimeout = window.setTimeout(() => {
+            this.loadList();
+        }, 250);
     }
 }

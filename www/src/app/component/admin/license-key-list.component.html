@@ -1,5 +1,13 @@
 <div class="page-header">
     <div class="btn-toolbar pull-right">
+        <form class="form-inline search-form">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+                    <input type="text" class="form-control" name="search" autofocus="autofocus" (input)="onSearchChange()" [(ngModel)]="search" />
+                </div>
+            </div>
+        </form>
         <a routerLink="/admin/licensekeys/new" class="btn btn-primary btn-lg" title="Add new"><span class="glyphicon glyphicon-plus"></span></a>
     </div>
     <h1>License Keys</h1>

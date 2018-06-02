@@ -26,8 +26,8 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .getOne();
     }
 
-    public async getAll(maxResults?: number, skipNumResults?: number): Promise<SupportTicket[]> {
-        return this.getManyWithLimits(this.getRepository()
+    public async getAll(maxResults?: number, skipNumResults?: number, search?: string): Promise<SupportTicket[]> {
+        let query = this.getRepository()
             .createQueryBuilder("st")
             .innerJoinAndSelect("st.customer", "customer")
             .innerJoinAndSelect("st.productVariant", "productVariant")
@@ -35,8 +35,15 @@ export class SupportTicketDao extends Dao<SupportTicket> {
             .leftJoinAndSelect("st.purchaseItem", "purchaseItem")
             .where("st.deleted != 1")
             .orderBy("st.createDate", "DESC")
-            .addOrderBy("st.sendDate", "DESC"),
-            maxResults, skipNumResults);
+            .addOrderBy("st.sendDate", "DESC");
+        if (search) {
+            query = query.andWhere("(customer.firstname LIKE :keyword OR " +
+                "customer.lastname LIKE :keyword OR " +
+                "customer.company LIKE :keyword OR " +
+                "customer.email LIKE :keyword)");
+            query = query.setParameters({keyword: "%" + search + "%"});
+        }
+        return this.getManyWithLimits(query, maxResults, skipNumResults);
     }
 
     public async getAllCustomerTickets(customerUuid: string, maxResults?: number, skipNumResults?: number): Promise<SupportTicket[]> {

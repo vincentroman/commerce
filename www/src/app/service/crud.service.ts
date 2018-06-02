@@ -16,13 +16,16 @@ export abstract class CrudService<T extends RestModel<T>> {
 
     protected abstract newTypeInstance(): T;
 
-    list(maxResults?: number, skipNumResults?: number): Promise<T[]> {
+    list(maxResults?: number, skipNumResults?: number, search?: string): Promise<T[]> {
         let params = {};
         if (typeof maxResults !== "undefined") {
             params["size"] = maxResults;
         }
         if (typeof skipNumResults !== "undefined") {
             params["skip"] = skipNumResults;
+        }
+        if (typeof search !== "undefined") {
+            params["search"] = search;
         }
         let options = Object.assign({params: params}, this.httpService.getOptions());
         return new Promise((resolve, reject) => {

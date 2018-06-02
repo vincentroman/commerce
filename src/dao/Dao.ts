@@ -33,7 +33,7 @@ export abstract class Dao<T extends DbEntity<T>> {
         return qb.skip(skipNumResults).take(maxResults).getMany();
     }
 
-    public async getAll(maxResults?: number, skipNumResults?: number): Promise<T[]> {
+    public async getAll(maxResults?: number, skipNumResults?: number, search?: string): Promise<T[]> {
         return this.getManyWithLimits(this.getRepository()
             .createQueryBuilder("e")
             .where("e.deleted != 1"),
