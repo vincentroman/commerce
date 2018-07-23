@@ -129,6 +129,15 @@ export class App extends EventEmitter {
         }
 
         if (!this.devEnvironment) {
+            this.express.get("/", function(request, response) {
+                let filePath: string = path.join(process.cwd(), "./www/dist/index.html");
+                let buffer: string = fs.readFileSync(filePath, "utf8");
+                buffer = buffer.replace('<base href="/"', '<base href="' + basePath + '"');
+                response
+                    .status(200)
+                    .contentType("text/html; charset=UTF-8")
+                    .send(buffer);
+            });
             this.express.get("/app/app.bundle.js", function(request, response) {
                 let filePath: string = path.join(process.cwd(), "./www/dist/app/app.bundle.js");
                 let buffer: string = fs.readFileSync(filePath, "utf8");
