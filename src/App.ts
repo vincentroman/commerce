@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import { createConnection, Connection, ConnectionOptions } from "typeorm";
 import { Config } from './util/Config';
 import { DefaultSettingsCheck } from "./util/DefaultSettingsCheck";
+import { Response, Request, NextFunction } from 'express';
 
 import AuthRouter from './router/AuthRouter';
 import BrokerRouter from './router/BrokerRouter';
@@ -122,7 +123,22 @@ export class App extends EventEmitter {
 
     private addStaticFilesRoutes(): void {
         let router = express.Router();
+        let basePath = Config.getInstance().get("basePath");
+        if (!basePath) {
+            basePath = "/";
+        }
 
+        if (!this.devEnvironment) {
+            this.express.get("/app/app.bundle.js", function(request, response) {
+                let filePath: string = path.join(process.cwd(), "./www/dist/app/app.bundle.js");
+                let buffer: string = fs.readFileSync(filePath, "utf8");
+                buffer = buffer.replace("'/api/v1/", "'" + basePath + "api/v1/");
+                response
+                    .status(200)
+                    .contentType("application/javascript; charset=UTF-8")
+                    .send(buffer);
+            });
+        }
         let staticFilesPaths = [
             path.join(__dirname, "../www/dist"),
             path.join(__dirname, "../www/src")
@@ -144,7 +160,12 @@ export class App extends EventEmitter {
         }
         console.log("Adding fallback route to index.html as %s", fallbackPath);
         this.express.get('*', function(request, response) {
-            response.sendFile(fallbackPath);
+            let buffer: string = fs.readFileSync(fallbackPath, "utf8");
+            buffer = buffer.replace('<base href="/"', '<base href="' + basePath + '"');
+            response
+                .status(200)
+                .contentType("text/html; charset=UTF-8")
+                .send(buffer);
         });
     }
 

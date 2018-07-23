@@ -10,6 +10,7 @@
         },
         "logging": ["error", "warn"]
     },
+    "basePath": "/",
     "session": {
         "secret": "fkj49l7WwjUtqcfLZKlLA269J28kC4uL",
         "issuer": "https://change.me",
