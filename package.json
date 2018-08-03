@@ -9,7 +9,7 @@
     "dev": "npm run clean && npm run grunt && NODE_ENV=dev node dist/server.js",
     "clean": "rm -rf dist/",
     "test": "mocha --reporter spec --require ts-node/register 'test/**/*.test.ts'",
-    "build-prod": "npm run clean && cd www && npm install && npm run clean && npm run build && npm prune --production && cd .. && npm run grunt && npm prune --production"
+    "build-prod": "npm run clean && npm run grunt && npm prune --production"
   },
   "author": "weweave UG <mail@weweave.net>",
   "license": "GPL-3.0",
