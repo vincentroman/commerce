@@ -63,7 +63,10 @@ export class App extends EventEmitter {
                 this.ready = true;
                 console.log("Server ready");
             });
-        }).catch(error => console.log("TypeORM connection error: ", error));
+        }).catch(error => {
+            console.log("TypeORM connection error: ", error);
+            process.exit(-1);
+        });
     }
 
     private exitOnSignal(): void {
