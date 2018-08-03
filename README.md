@@ -15,8 +15,8 @@ Features:
   * Purchase assistant
 
 The software consists of two parts:
-* A backend providing REST APIs, written in TypeScript, based on Node.js
-* A frontend for customers and administrators, written in TypeScript, based on Angular
+* A backend providing REST APIs, written in TypeScript, based on Node.js (this project)
+* A frontend for customers and administrators, written in TypeScript, based on Angular (see [this project](https://github.com/weweave/commerce-www))
 
 ## Setup
 The easiest way of getting weweave Commerce up and running is to use our pre-built Docker images. However, you can of course choose to build from source.
@@ -67,6 +67,7 @@ The settings required on server start are in ```config.json```. Make sure to cha
         },
         "logging": ["error", "warn"]
     },
+    "basePath": "/",
     "session": {
         "secret": "fkj49l7WwjUtqcfLZKlLA269J28kC4uL",
         "issuer": "https://change.me",
@@ -78,6 +79,31 @@ The settings required on server start are in ```config.json```. Make sure to cha
 
 More settings can be changed at runtime by logging in with an administrator account and navigating to "Settings".
 
+## Adding the web frontend
+If you just set up this project, you'll just get the backend up and running. The frontend must be set up separately.
+
+### Docker Compose
+Please use a cloud native edge router like [Traefik](https://traefik.io/) (or nginx or haproxy):
+
+* Route all incoming requests to ```/api/``` to the backend.
+* Route all other incoming requests to the frontend.
+
+If your frontend is not running at the root path, you must change the base href by setting the frontend's docker environment variable ```BASE_HREF```.
+
+### Building from source
+1. Make sure you have [Node.js](https://nodejs.org) installed (tested with Node.js v8).
+1. Make sure you have Angular CLI installed:
+    ```
+    npm install -g @angular/cli
+    ```
+1. Check out the source code and build it:
+    ```
+    git clone https://github.com/weweave/commerce-www.git
+    cd commerce-www
+    npm install
+    ng build --prod
+    ```
+1. Copy the contents of the ```dist/commerce-www/``` folder to the ```www/``` folder of the previously built backend project.
 
 ## Demo Mode
 Just want to sneak a peek with some demo data prepared for you?

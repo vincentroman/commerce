@@ -125,60 +125,37 @@ export class App extends EventEmitter {
     }
 
     private addStaticFilesRoutes(): void {
-        let router = express.Router();
+        let staticFilesPath = path.join(process.cwd(), "./www");
+        if (fs.existsSync(path.join(process.cwd(), "./www/index.html"))) {
+            console.log("Adding %s as static htdocs folder", staticFilesPath);
+            let self = this;
+            if (!this.devEnvironment) {
+                this.express.get("/", function(request, response) {
+                    self.sendFixedIndex(response);
+                });
+            }
+            this.express.use(express.static(staticFilesPath));
+            // HTML5 Push State
+            this.express.get('*', function(request, response) {
+                self.sendFixedIndex(response);
+            });
+        } else {
+            console.log("Not adding %s as static htdocs folder because index.html not found in folder.", staticFilesPath);
+        }
+    }
+
+    private sendFixedIndex(response: Response): void {
         let basePath = Config.getInstance().get("basePath");
         if (!basePath) {
             basePath = "/";
         }
-
-        if (!this.devEnvironment) {
-            this.express.get("/", function(request, response) {
-                let filePath: string = path.join(process.cwd(), "./www/dist/index.html");
-                let buffer: string = fs.readFileSync(filePath, "utf8");
-                buffer = buffer.replace('<base href="/"', '<base href="' + basePath + '"');
-                response
-                    .status(200)
-                    .contentType("text/html; charset=UTF-8")
-                    .send(buffer);
-            });
-            this.express.get("/app/app.bundle.js", function(request, response) {
-                let filePath: string = path.join(process.cwd(), "./www/dist/app/app.bundle.js");
-                let buffer: string = fs.readFileSync(filePath, "utf8");
-                buffer = buffer.replace("'/api/v1/", "'" + basePath + "api/v1/");
-                response
-                    .status(200)
-                    .contentType("application/javascript; charset=UTF-8")
-                    .send(buffer);
-            });
-        }
-        let staticFilesPaths = [
-            path.join(__dirname, "../www/dist"),
-            path.join(__dirname, "../www/src")
-        ];
-        staticFilesPaths.forEach(staticFilesPath => {
-            console.log("Adding static files path %s", staticFilesPath);
-            this.express.use(express.static(staticFilesPath));
-        });
-
-        // node_modules
-        let nodePath = path.join(__dirname, "../www/node_modules");
-        console.log("Adding route to node_modules in %s", nodePath);
-        this.express.use('/node_modules', express.static(nodePath));
-
-        // HTML5 Push State
-        let fallbackPath = path.join(__dirname, "../www/dist/index.html");
-        if (this.devEnvironment) {
-            fallbackPath = path.join(__dirname, "../www/src/index.html");
-        }
-        console.log("Adding fallback route to index.html as %s", fallbackPath);
-        this.express.get('*', function(request, response) {
-            let buffer: string = fs.readFileSync(fallbackPath, "utf8");
-            buffer = buffer.replace('<base href="/"', '<base href="' + basePath + '"');
-            response
-                .status(200)
-                .contentType("text/html; charset=UTF-8")
-                .send(buffer);
-        });
+        let fallbackPath = path.join(process.cwd(), "./www/index.html");
+        let buffer: string = fs.readFileSync(fallbackPath, "utf8");
+        buffer = buffer.replace('<base href="/"', '<base href="' + basePath + '"');
+        response
+            .status(200)
+            .contentType("text/html; charset=UTF-8")
+            .send(buffer);
     }
 
     private async setupOrm(): Promise<Connection> {
