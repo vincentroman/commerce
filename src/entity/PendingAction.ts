@@ -6,7 +6,7 @@ export class PendingAction extends DbEntity<PendingAction> {
     @Column()
     type: ActionType;
 
-    @Column()
+    @Column("text")
     payload: string;
 
     @Column({nullable: true})
