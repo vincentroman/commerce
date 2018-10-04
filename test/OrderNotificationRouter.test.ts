@@ -24,6 +24,7 @@ import { PersonDao } from "../src/dao/PersonDao";
 import { PendingActionDao } from '../src/dao/PendingActionDao';
 import { ActionType } from '../src/entity/PendingAction';
 import { PurchaseItemDao } from '../src/dao/PurchaseItemDao';
+import { SupportTicketDao } from '../src/dao/SupportTicketDao';
 
 chai.use(chaiHttp);
 const expect = chai.expect;
@@ -82,14 +83,16 @@ describe('Router '+endpoint, () => {
 
     afterEach(done => {
         Container.get(LicenseKeyDao).removeAll().then(() => {
-            Container.get(PurchaseItemDao).removeAll().then(() => {
-                Container.get(PurchaseDao).removeAll().then(() => {
-                    Container.get(PersonDao).removeAll().then(() => {
-                        Container.get(BrokerProductVariantDao).removeAll().then(() => {
-                            Container.get(ProductVariantDao).removeAll().then(() => {
-                                Container.get(ProductDao).removeAll().then(() => {
-                                    Container.get(BrokerDao).removeAll().then(() => {
-                                        DefaultSettingsCheck.check().then(() => done());
+            Container.get(SupportTicketDao).removeAll().then(() => {
+                Container.get(PurchaseItemDao).removeAll().then(() => {
+                    Container.get(PurchaseDao).removeAll().then(() => {
+                        Container.get(PersonDao).removeAll().then(() => {
+                            Container.get(BrokerProductVariantDao).removeAll().then(() => {
+                                Container.get(ProductVariantDao).removeAll().then(() => {
+                                    Container.get(ProductDao).removeAll().then(() => {
+                                        Container.get(BrokerDao).removeAll().then(() => {
+                                            DefaultSettingsCheck.check().then(() => done());
+                                        }).catch(e => done(e));
                                     }).catch(e => done(e));
                                 }).catch(e => done(e));
                             }).catch(e => done(e));
