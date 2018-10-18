@@ -16,6 +16,21 @@ export class BrokerProductVariantDao extends Dao<BrokerProductVariant> {
         return new Promise((resolve, reject) => resolve(false));
     }
 
+    public async getAllWithUrl(): Promise<BrokerProductVariant[]> {
+        return this.getRepository()
+            .createQueryBuilder("bpv")
+            .innerJoinAndSelect("bpv.broker", "broker")
+            .innerJoinAndSelect("bpv.productVariant", "productVariant")
+            .innerJoinAndSelect("productVariant.product", "product")
+            .where("bpv.deleted != 1")
+            .andWhere("bpv.url IS NOT NULL")
+            .andWhere("bpv.url != ''")
+            .orderBy("product.title", "ASC")
+            .addOrderBy("productVariant.title", "ASC")
+            .addOrderBy("broker.name", "ASC")
+            .getMany();
+    }
+
     public async getByBrokerProductVariant(broker: Broker, productVariant: ProductVariant): Promise<BrokerProductVariant> {
         return this.getRepository()
             .createQueryBuilder("bpv")
