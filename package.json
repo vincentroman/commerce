@@ -28,6 +28,7 @@
     "object-mapper": "5.0.0",
     "reflect-metadata": "0.1.12",
     "sqlite3": "4.0.2",
+    "ts-md5": "1.2.4",
     "typedi": "0.8.0",
     "typeorm": "0.2.7",
     "uuid": "3.3.2",

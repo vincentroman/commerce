@@ -1,10 +1,9 @@
 import * as pwGen from 'generate-password';
-import { Router, Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { Container } from "typedi";
 import { BaseRouter, AuthRole } from "./BaseRouter";
-import { Broker } from "../entity/Broker";
+import { Broker, BrokerSecurityType } from "../entity/Broker";
 import { BrokerDao } from "../dao/BrokerDao";
-import { PurchaseDao } from "../dao/PurchaseDao";
 import { OrderNotificationMapper, MappedOrderInput } from "../util/OrderNotificationMapper";
 import { Purchase } from "../entity/Purchase";
 import { PurchaseItem } from "../entity/PurchaseItem";
@@ -24,6 +23,7 @@ import { PendingAction, ActionType } from '../entity/PendingAction';
 import { PendingActionDao } from '../dao/PendingActionDao';
 import { Log } from '../util/Log';
 import { LogEntryType } from '../entity/LogEntry';
+import { Md5 } from 'ts-md5/dist/md5';
 
 class OrderNotificationRouter extends BaseRouter {
     protected init(): void {
@@ -31,7 +31,7 @@ class OrderNotificationRouter extends BaseRouter {
         this.addRoutePost('/:id', this.notify, AuthRole.ANY);
     }
 
-    private notify(req: Request, res: Response, next: NextFunction): void {
+    private notify(req: Request, res: Response): void {
         let brokerId = req.params.id;
         let brokerDao: BrokerDao = Container.get(BrokerDao);
         Log.info("Incoming order notification" +
@@ -41,27 +41,32 @@ class OrderNotificationRouter extends BaseRouter {
         brokerDao.getByUuid(brokerId).then((broker) => {
             if (broker) {
                 OrderNotificationMapper.mapAndValidate(req.body, broker).then(mappedInput => {
-                    Container.get(PersonDao).existsPerson(mappedInput.customer.email).then(customerExists => {
-                        if (customerExists) {
-                            Log.info("Customer for order notification already exists," +
-                                " continuing without double opt in" +
-                                " for broker uuid " + brokerId +
-                                " with content: " + JSON.stringify(req.body),
-                                LogEntryType.Order);
-                            this.processPurchaseWithoutDoubleOptIn(mappedInput, broker)
-                                .then(order => this.created(res, order))
-                                .catch(e => this.internalServerError(res));
-                        } else {
-                            Log.info("Customer for order notification does not exist," +
-                                " initiating double opt in" +
-                                " for broker uuid " + brokerId +
-                                " with content: " + JSON.stringify(req.body),
-                                LogEntryType.Order);
-                            this.startDoubleOptInForPurchase(mappedInput, broker)
-                                .then(() => this.ok(res))
-                                .catch(e => this.internalServerError(res));
-                        }
-                    });
+                    if (this.isValidSecurityToken(broker, mappedInput, req)) {
+                        Container.get(PersonDao).existsPerson(mappedInput.customer.email).then(customerExists => {
+                            if (customerExists) {
+                                Log.info("Customer for order notification already exists," +
+                                    " continuing without double opt in" +
+                                    " for broker uuid " + brokerId +
+                                    " with content: " + JSON.stringify(req.body),
+                                    LogEntryType.Order);
+                                this.processPurchaseWithoutDoubleOptIn(mappedInput, broker)
+                                    .then(order => this.created(res, order))
+                                    .catch(() => this.internalServerError(res));
+                            } else {
+                                Log.info("Customer for order notification does not exist," +
+                                    " initiating double opt in" +
+                                    " for broker uuid " + brokerId +
+                                    " with content: " + JSON.stringify(req.body),
+                                    LogEntryType.Order);
+                                this.startDoubleOptInForPurchase(mappedInput, broker)
+                                    .then(() => this.ok(res))
+                                    .catch(() => this.internalServerError(res));
+                            }
+                        });
+                    } else {
+                        console.log("Invalid security token for broker %s", brokerId);
+                        this.forbidden(res);
+                    }
                 }).catch(e => {
                     console.log("Order Notification Mapping failed: " + e.stack);
                     this.badRequest(res);
@@ -70,10 +75,28 @@ class OrderNotificationRouter extends BaseRouter {
                 console.log("No such broker: %s", brokerId);
                 this.notFound(res);
             }
-        }).catch(e => this.notFound(res));
+        }).catch(() => this.notFound(res));
     }
 
-    private confirmOrder(req: Request, res: Response, next: NextFunction): void {
+    private isValidSecurityToken(broker: Broker, mappedInput: MappedOrderInput, req: Request): boolean {
+        console.log("Checking broker security type %d for broker %s", broker.securityType, broker.uuid);
+        if (broker.securityType === BrokerSecurityType.None || !broker.securityType) {
+            return true;
+        } else if (broker.securityType === BrokerSecurityType.HttpRequestHeader) {
+            let headerValue = req.header(broker.securityKey);
+            return (broker.securityMatchValue === headerValue);
+        } else if (broker.securityType === BrokerSecurityType.JsonPath) {
+            return (broker.securityMatchValue === mappedInput.securityToken);
+        } else if (broker.securityType === BrokerSecurityType.FastSpring) {
+            let securityData = req.header("x-security-data");
+            let securityHash = req.header("x-security-hash");
+            let md5 = Md5.hashAsciiStr(securityData + broker.securityMatchValue);
+            return (md5 === securityHash);
+        }
+        return false;
+    }
+
+    private confirmOrder(req: Request, res: Response): void {
         let actionDao: PendingActionDao = Container.get(PendingActionDao);
         actionDao.getByUuid(req.body.uuid).then(action => {
             if (action && action.type === ActionType.ConfirmOrder) {
@@ -86,15 +109,15 @@ class OrderNotificationRouter extends BaseRouter {
                                 " from ip " + req.ip,
                                 LogEntryType.OptIn);
                             actionDao.delete(action).then(() => this.updated(res, order));
-                        }).catch(e => this.internalServerError(res));
+                        }).catch(() => this.internalServerError(res));
                     } else {
                         this.internalServerError(res);
                     }
-                }).catch(e => this.internalServerError(res));
+                }).catch(() => this.internalServerError(res));
             } else {
                 this.notFound(res);
             }
-        }).catch(e => this.internalServerError(res));
+        }).catch(() => this.internalServerError(res));
     }
 
     private processPurchaseWithoutDoubleOptIn(mappedInput: MappedOrderInput, broker: Broker): Promise<Purchase> {
@@ -213,7 +236,7 @@ class OrderNotificationRouter extends BaseRouter {
                     });
                 });
             } else if (type === ProductVariantType.LifetimeLicense) {
-                this.createLicenseKeyRequest(item).then(licenseKeys => {
+                this.createLicenseKeyRequest(item).then(() => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let params = {
                             firstname: customer.firstname,
@@ -225,9 +248,9 @@ class OrderNotificationRouter extends BaseRouter {
                             resolve();
                         });
                     });
-                }).catch(e => reject());
+                }).catch(() => reject());
             } else if (type === ProductVariantType.LimitedLicense) {
-                this.createLicenseKeyRequest(item).then(licenseKeys => {
+                this.createLicenseKeyRequest(item).then(() => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let params = {
                             firstname: customer.firstname,
@@ -239,9 +262,9 @@ class OrderNotificationRouter extends BaseRouter {
                             resolve();
                         });
                     });
-                }).catch(e => reject());
+                }).catch(() => reject());
             } else if (type === ProductVariantType.TrialLicense) {
-                this.createLicenseKeyRequest(item).then(licenseKeys => {
+                this.createLicenseKeyRequest(item).then(() => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseLicenseKey).then((template) => {
                         let params = {
                             firstname: customer.firstname,
@@ -253,9 +276,9 @@ class OrderNotificationRouter extends BaseRouter {
                             resolve();
                         });
                     });
-                }).catch(e => reject());
+                }).catch(() => reject());
             } else if (type === ProductVariantType.SupportTicket) {
-                this.createSupportRequest(item).then(supportTickets => {
+                this.createSupportRequest(item).then(() => {
                     mailTemplateDao.getByType(MailTemplateType.PurchaseSupportTicket).then((template) => {
                         let params = {
                             firstname: customer.firstname,
@@ -267,7 +290,7 @@ class OrderNotificationRouter extends BaseRouter {
                             resolve();
                         });
                     });
-                }).catch(e => reject());
+                }).catch(() => reject());
             }
             resolve();
         });

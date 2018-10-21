@@ -153,6 +153,7 @@ export type MappedOrderInput = {
     id: string;
     customer: MappedCustomer;
     items: MappedItem[];
+    securityToken?: string;
 };
 
 export type MappedCustomer = {
