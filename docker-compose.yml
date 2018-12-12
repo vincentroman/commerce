@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  # The reverse proxy service (Traefik)
+  reverse-proxy:
+    image: traefik  # The official Traefik docker image
+    command: --web --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - "80:80"      # The HTTP port
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # So that Traefik can listen to the Docker events
+
+  mysql:
+    image: mysql:5.6
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+      MYSQL_DATABASE: commerce
+
+  commerce:
+    image: weweave/commerce
+    ports:
+      - "3000:3000"
+    depends_on:
+      - "mysql"
+    volumes:
+      - ./config.json:/usr/src/app/config.json
+    labels:
+      - "traefik.frontend.rule=Host:commerce.docker.localhost;PathPrefix:/api/"
+      - "traefik.port=3000"
+
+  commerce-www:
+    image: weweave/commerce-www
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "commerce"
+    labels:
+      - "traefik.frontend.rule=Host:commerce.docker.localhost"
