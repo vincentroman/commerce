@@ -35,6 +35,10 @@ The easiest way of getting weweave Commerce up and running is to use our pre-bui
 1. Access the web frontend at port 3000. Default username is "admin@admin.local", password is "admin".
 1. After logging in with the admin account, change the username and/or password under "Persons" and configure the system further under "Settings".
 
+### Using with docker-compose
+After the ```config.json``` file created use the following command:
+`docker-compose up -d`
+
 ### Building from source
 1. Make sure you have [Node.js](https://nodejs.org) installed (tested with Node.js v8).
 1. Check out the source code and build it:
