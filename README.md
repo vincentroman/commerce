@@ -1,6 +1,8 @@
 # weweave Commerce
 weweave Commerce is an open source web platform for selling digital goods. It relies on external brokers performing the actual transaction and provides a order notification API for those.
 
+![Screenshot weweave Commerce](./htdocs/screenshot-home.png)
+
 Features:
 * Backend for handling order notifications from brokers
 * Domain-based license key generation (incl. RSA-based public/private key signature)
@@ -17,6 +19,13 @@ Features:
 The software consists of two parts:
 * A backend providing REST APIs, written in TypeScript, based on Node.js (this project)
 * A frontend for customers and administrators, written in TypeScript, based on Angular (see [this project](https://github.com/weweave/commerce-www))
+
+<a href="./blob/master/htdocs/screenshot-login.png"><img src="./blob/master/htdocs/screenshot-login.png" width="200" /></a>
+<a href="./blob/master/htdocs/screenshot-orders.png"><img src="./blob/master/htdocs/screenshot-orders.png" width="200" /></a>
+<a href="./blob/master/htdocs/screenshot-verify-data.png"><img src="./blob/master/htdocs/screenshot-verify-data.png" width="200" /></a>
+<a href="./blob/master/htdocs/screenshot-add-key.png"><img src="./blob/master/htdocs/screenshot-add-key.png" width="200" /></a>
+<a href="./blob/master/htdocs/screenshot-edit-broker.png"><img src="./blob/master/htdocs/screenshot-edit-broker.png" width="200" /></a>
+<a href="./blob/master/htdocs/screenshot-persons.png"><img src="./blob/master/htdocs/screenshot-persons.png" width="200" /></a>
 
 ## Setup
 The easiest way of getting weweave Commerce up and running is to use our pre-built Docker images. However, you can of course choose to build from source.
