@@ -23,6 +23,15 @@ export class PendingActionDao extends Dao<PendingAction> {
             .getOne();
     }
 
+    public async getAllOfType(type: ActionType): Promise<PendingAction[]> {
+        return this.getRepository()
+            .createQueryBuilder("a")
+            .where("a.type = :type", {type: type})
+            .orderBy("a.createDate", "DESC")
+            .addOrderBy("a.id", "DESC")
+            .getMany();
+    }
+
     public async deleteExpired(): Promise<number> {
         let today: string = moment()
             .hours(23).minutes(59).seconds(59)

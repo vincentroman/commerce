@@ -4,7 +4,7 @@ import { Container } from "typedi";
 import { BaseRouter, AuthRole } from "./BaseRouter";
 import { Broker, BrokerSecurityType } from "../entity/Broker";
 import { BrokerDao } from "../dao/BrokerDao";
-import { OrderNotificationMapper, MappedOrderInput } from "../util/OrderNotificationMapper";
+import { OrderNotificationMapper, MappedOrderInput, MappedCustomer } from "../util/OrderNotificationMapper";
 import { Purchase } from "../entity/Purchase";
 import { PurchaseItem } from "../entity/PurchaseItem";
 import { ProductVariant, ProductVariantType } from "../entity/ProductVariant";
@@ -96,24 +96,57 @@ class OrderNotificationRouter extends BaseRouter {
         return false;
     }
 
+    private isSameCustomer(c1: MappedCustomer, c2: MappedCustomer): boolean {
+        return (c1.company === c2.company) &&
+            (c1.country === c2.country) &&
+            (c1.email === c2.email) &&
+            (c1.firstname === c2.firstname) &&
+            (c1.lastname === c2.lastname);
+    }
+
+    private async getSimilarPendingActions(mappedInput: MappedOrderInput): Promise<PendingAction[]> {
+        let actionDao: PendingActionDao = Container.get(PendingActionDao);
+        return actionDao.getAllOfType(ActionType.ConfirmOrder).then(actions => {
+            let result: PendingAction[] = [];
+            actions.forEach(action => {
+                if (this.isSameCustomer(action.getPayload().mappedInput.customer, mappedInput.customer)) {
+                    result.push(action);
+                }
+            });
+            return result;
+        });
+    }
+
+    private async confirmOneOrder(actionDao: PendingActionDao, action: PendingAction, req: Request): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            Container.get(BrokerDao).getByUuid(action.getPayload().brokerUuid).then(broker => {
+                if (broker) {
+                    let mappedInput: MappedOrderInput = action.getPayload().mappedInput;
+                    this.processPurchaseWithoutDoubleOptIn(mappedInput, broker).then(order => {
+                        Log.info("Confirming order " + order.uuid +
+                            " for customer " + order.customer.uuid +
+                            " from ip " + req.ip,
+                            LogEntryType.OptIn);
+                        actionDao.delete(action).then(() => resolve());
+                    }).catch(() => reject());
+                } else {
+                    reject();
+                }
+            }).catch(() => reject());
+        });
+    }
+
+    private async confirmAllOrders(actionDao: PendingActionDao, actions: PendingAction[], req: Request): Promise<void> {
+        return actions.reduce((p, action) => p.then(_ => this.confirmOneOrder(actionDao, action, req)), Promise.resolve());
+    }
+
     private confirmOrder(req: Request, res: Response): void {
         let actionDao: PendingActionDao = Container.get(PendingActionDao);
-        actionDao.getByUuid(req.body.uuid).then(action => {
-            if (action && action.type === ActionType.ConfirmOrder) {
-                Container.get(BrokerDao).getByUuid(action.getPayload().brokerUuid).then(broker => {
-                    if (broker) {
-                        let mappedInput: MappedOrderInput = action.getPayload().mappedInput;
-                        this.processPurchaseWithoutDoubleOptIn(mappedInput, broker).then(order => {
-                            Log.info("Confirming order " + order.uuid +
-                                " for customer " + order.customer.uuid +
-                                " from ip " + req.ip,
-                                LogEntryType.OptIn);
-                            actionDao.delete(action).then(() => this.updated(res, order));
-                        }).catch(() => this.internalServerError(res));
-                    } else {
-                        this.internalServerError(res);
-                    }
-                }).catch(() => this.internalServerError(res));
+        actionDao.getByUuid(req.body.uuid).then(orgAction => {
+            if (orgAction && orgAction.type === ActionType.ConfirmOrder) {
+                this.getSimilarPendingActions(orgAction.getPayload().mappedInput).then(actions => {
+                    this.confirmAllOrders(actionDao, actions, req).then(() => this.ok(res)).catch(() => this.internalServerError(res));
+                });
             } else {
                 this.notFound(res);
             }

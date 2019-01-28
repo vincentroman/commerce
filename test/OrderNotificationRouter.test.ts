@@ -22,7 +22,7 @@ import { LicenseKeyDao } from "../src/dao/LicenseKeyDao";
 import { DefaultSettingsCheck } from "../src/util/DefaultSettingsCheck";
 import { PersonDao } from "../src/dao/PersonDao";
 import { PendingActionDao } from '../src/dao/PendingActionDao';
-import { ActionType } from '../src/entity/PendingAction';
+import { ActionType, PendingAction } from '../src/entity/PendingAction';
 import { PurchaseItemDao } from '../src/dao/PurchaseItemDao';
 import { SupportTicketDao } from '../src/dao/SupportTicketDao';
 
@@ -176,16 +176,15 @@ describe('Router '+endpoint, () => {
                             return chai.request(App.getInstance().express).post(endpoint + "confirm")
                             .send({uuid: action.uuid})
                             .then(res => {
-                                expect(res.status).to.equal(200);
-                                expect(res).to.be.json;
-                                expect(res.body).to.be.an('object');
-                                expect(res.body.uuid).to.be.string;
+                                expect(res.status).to.equal(204);
                                 let orderDao: PurchaseDao = Container.get(PurchaseDao);
                                 // Verify that order is in system
-                                return orderDao.getByUuid(res.body.uuid).then(order => {
+                                return orderDao.getAll().then(orders => {
+                                    expect(orders).to.have.lengthOf(1);
+                                    let order = orders[0];
                                     expect(order).to.be.not.null;
                                     expect(order).to.be.not.undefined;
-                                    expect(order.uuid).to.equal(res.body.uuid);
+                                    expect(order.uuid).to.be.not.null;
                                     expect(order.broker).to.be.not.null;
                                     expect(order.broker).to.be.not.undefined;
                                     expect(order.broker.id).to.equal(broker2.id);
@@ -206,17 +205,107 @@ describe('Router '+endpoint, () => {
                                     expect(order.items[0].productVariant.product).to.be.not.null;
                                     expect(order.items[0].productVariant.product).to.be.not.undefined;
                                     expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
-                                    // Verify there is only one order
-                                    return orderDao.getAll().then(allOrders => {
-                                        expect(allOrders).to.be.not.undefined;
-                                        expect(allOrders).to.have.lengthOf(1);
-                                        // Verify that double-opt-in-link is invalid now
-                                        return chai.request(App.getInstance().express).post(endpoint + "confirm")
-                                        .send({uuid: action.uuid})
-                                        .then(res => {
-                                            expect(res.status).to.equal(404);
-                                        }).catch(e => {
-                                            expect(e.response.status).to.equal(404);
+                                    // Verify that double-opt-in-link is invalid now
+                                    return chai.request(App.getInstance().express).post(endpoint + "confirm")
+                                    .send({uuid: action.uuid})
+                                    .then(res => {
+                                        expect(res.status).to.equal(404);
+                                    }).catch(e => {
+                                        expect(e.response.status).to.equal(404);
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
+        it("Should activate two orders for one customer with one double opt in link", () => {
+            let input = fs.readFileSync(path.join(process.cwd(), "./test/res/fastspring.json"), "utf8");
+            // Send first order notification
+            return chai.request(App.getInstance().express).post(endpoint + broker2.uuid)
+            .set('Content-Type', 'application/json')
+            .send(input)
+            .then(res => {
+                expect(res.status).to.equal(204);
+                expect(res.body.uuid).to.be.undefined;
+                // Send second order notification
+                return chai.request(App.getInstance().express).post(endpoint + broker2.uuid)
+                .set('Content-Type', 'application/json')
+                .send(input)
+                .then(res => {
+                    expect(res.status).to.equal(204);
+                    expect(res.body.uuid).to.be.undefined;
+                    // Send third order notification for another customer (!)
+                    let input2 = JSON.parse(input);
+                    input2.customer.email = "no-reply2@weweave.net";
+                    return chai.request(App.getInstance().express).post(endpoint + broker2.uuid)
+                    .set('Content-Type', 'application/json')
+                    .send(JSON.stringify(input2))
+                    .then(res => {
+                        expect(res.status).to.equal(204);
+                        expect(res.body.uuid).to.be.undefined;
+                        // Ensure that there are three pending actions
+                        return Container.get(PendingActionDao).getAll().then(allActions => {
+                            expect(allActions).to.be.not.undefined;
+                            expect(allActions).to.have.lengthOf(3);
+                            // Get corresponding pending action (the first)
+                            return Container.get(PendingActionDao).getAllOfType(ActionType.ConfirmOrder).then(actions => {
+                                let action: PendingAction = actions[2];
+                                expect(action).to.be.not.null;
+                                expect(action).to.be.not.undefined;
+                                // Get concrete pending action
+                                return chai.request(App.getInstance().express).get("/api/v1/purchase/pending/" + action.uuid)
+                                .then(res => {
+                                    expect(res.status).to.equal(200);
+                                    expect(res).to.be.json;
+                                    expect(res.body).to.be.an('object');
+                                    expect(res.body.broker.name).to.equal("FastSpring");
+                                    expect(res.body.customer.firstname).to.equal("John");
+                                    expect(res.body.customer.lastname).to.equal("Doe");
+                                    expect(res.body.customer.company).to.equal("weweave");
+                                    expect(res.body.customer.email).to.equal("no-reply@weweave.net");
+                                    expect(res.body.customer.country).to.be.undefined
+                                    // Confirm order
+                                    return chai.request(App.getInstance().express).post(endpoint + "confirm")
+                                    .send({uuid: action.uuid})
+                                    .then(res => {
+                                        expect(res.status).to.equal(204);
+                                        let orderDao: PurchaseDao = Container.get(PurchaseDao);
+                                        // Verify that both (!) orders are in system
+                                        return orderDao.getAll().then(orders => {
+                                            expect(orders).to.have.lengthOf(2);
+                                            let order = orders[0];
+                                            expect(order).to.be.not.null;
+                                            expect(order).to.be.not.undefined;
+                                            expect(order.uuid).to.be.not.null;
+                                            expect(order.broker).to.be.not.null;
+                                            expect(order.broker).to.be.not.undefined;
+                                            expect(order.broker.id).to.equal(broker2.id);
+                                            expect(order.broker.name).to.equal(broker2.name);
+                                            expect(order.items).to.be.not.null;
+                                            expect(order.items).to.be.not.undefined;
+                                            expect(order.items).to.be.an('array');
+                                            expect(order.items).to.have.lengthOf(1);
+                                            expect(order.items[0]).to.be.not.null;
+                                            expect(order.items[0]).to.be.not.undefined;
+                                            expect(order.items[0]).to.be.an.instanceOf(PurchaseItem);
+                                            expect(order.items[0].quantity).to.be.equal(2);
+                                            expect(order.items[0].productVariant).to.be.not.null;
+                                            expect(order.items[0].productVariant).to.be.not.undefined;
+                                            expect(order.items[0].productVariant.type).to.be.not.null;
+                                            expect(order.items[0].productVariant.type).to.be.not.undefined;
+                                            expect(order.items[0].productVariant.type).to.be.equal(ProductVariantType.LimitedLicense);
+                                            expect(order.items[0].productVariant.product).to.be.not.null;
+                                            expect(order.items[0].productVariant.product).to.be.not.undefined;
+                                            expect(order.items[0].productVariant.product.title).to.equal("WP Ajaxify Comments");
+                                            // Verify that first double-opt-in-link is invalid now
+                                            return Container.get(PendingActionDao).getAllOfType(ActionType.ConfirmOrder).then(allActions => {
+                                                expect(allActions).to.be.not.undefined;
+                                                expect(allActions).to.have.lengthOf(1);
+                                                expect(allActions[0].getPayload().mappedInput.customer.email).to.equal(input2.customer.email);
+                                            });
                                         });
                                     });
                                 });
