@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { Container } from "typedi";
 import { CrudRouter } from "./CrudRouter";
 import { LicenseKeyEncoder, DomainList } from "commerce-key";
@@ -8,7 +8,7 @@ import { LicenseKeyDao } from "../dao/LicenseKeyDao";
 import { ProductVariantDao } from "../dao/ProductVariantDao";
 import { ProductVariantType } from "../entity/ProductVariant";
 import { SystemSettingDao } from "../dao/SystemSettingDao";
-import { SystemSetting, SystemSettingId } from "../entity/SystemSetting";
+import { SystemSettingId } from "../entity/SystemSetting";
 import * as moment from "moment";
 import { ProductDao } from "../dao/ProductDao";
 import { AuthRole, RestError } from "./BaseRouter";
@@ -22,7 +22,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     }
 
     protected createEntity(requestBody: any): Promise<LicenseKey> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             resolve(new LicenseKey(requestBody));
         });
     }
@@ -44,7 +44,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         this.addRouteDelete('/:id', this.delete, this.getDefaultAuthRole());
     }
 
-    protected myStats(req: Request, res: Response, next: NextFunction): void {
+    protected myStats(req: Request, res: Response): void {
         let customerUuid = this.getJwtUserUuid(req);
         let dao: LicenseKeyDao = this.getDao();
         dao.getAllCustomerLicenses(customerUuid).then(licenses => {
@@ -101,12 +101,12 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                     } else {
                         this.notFound(res);
                     }
-                }).catch(e => {
+                }).catch(() => {
                     // TODO Log exception
                     this.internalServerError(res);
                 });
             }
-        }).catch(e => this.forbidden(res));
+        }).catch(() => this.forbidden(res));
     }
 
     private sendOneItem(res: Response, entity: LicenseKey): void {
@@ -135,7 +135,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         });
     }
 
-    private my(req: Request, res: Response, next: NextFunction): void {
+    private my(req: Request, res: Response): void {
         let dao: LicenseKeyDao = this.getDao();
         let customerUuid = this.getJwtUserUuid(req);
         dao.getAllCustomerLicenses(customerUuid, req.query.size, req.query.skip).then(entities => {
@@ -143,7 +143,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
         });
     }
 
-    private assign(req: Request, res: Response, next: NextFunction): void {
+    private assign(req: Request, res: Response): void {
         let personDao: PersonDao = Container.get(PersonDao);
         let productVariantDao: ProductVariantDao = Container.get(ProductVariantDao);
         let dao: LicenseKeyDao = this.getDao();
@@ -155,15 +155,15 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                 dao.save(licenseKey).then(entity => {
                     this.created(res, entity);
                 });
-            }).catch((e) => {
+            }).catch(() => {
                 this.badRequest(res);
             });
-        }).catch((e) => {
+        }).catch(() => {
             this.badRequest(res);
         });
     }
 
-    private generate(req: Request, res: Response, next: NextFunction): void {
+    private generate(req: Request, res: Response): void {
         let encoder: LicenseKeyEncoder = new LicenseKeyEncoder();
         let wildcard = false;
         if (req.body.wildcard) {
@@ -187,12 +187,12 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                         status: res.status,
                         licenseKey: licenseKey
                     });
-                }).catch(e => this.internalServerError(res));
-            }).catch(e => this.badRequest(res));
-        }).catch(e => this.badRequest(res));
+                }).catch(() => this.internalServerError(res));
+            }).catch(() => this.badRequest(res));
+        }).catch(() => this.badRequest(res));
     }
 
-    private issue(req: Request, res: Response, next: NextFunction): void {
+    private issue(req: Request, res: Response): void {
         let dao: LicenseKeyDao = this.getDao();
         let id = req.params.id;
         let customerUuid = this.getJwtUserUuid(req);
@@ -249,7 +249,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
             } else {
                 this.forbidden(res);
             }
-        }).catch(e => this.notFound(res));
+        }).catch(() => this.notFound(res));
     }
 
     private async buildDomainList(domains: string[]): Promise<DomainList> {
@@ -259,27 +259,32 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
                 return new Promise<string>((resolve, reject) => {
                     if (domain) {
                         domain = domain.trim();
-                        dao.isValidTld(domain).then(valid => {
-                            if (!valid) {
-                                let tld: string = DomainList.getTldFromDomain(domain);
-                                if (tld) {
-                                    dao.isValidTld(tld).then(valid => {
-                                        if (valid) {
-                                            resolve(domain);
-                                        } else {
-                                            reject(new LicenseKeyError(LicenseKeyErrorCode.INVALID_TLD,
-                                                "TLD '"+ tld +"' in domain '" + domain + "' is not valid"));
-                                        }
-                                    });
+                        if (!(domain.toLowerCase().startsWith("http://") || domain.toLowerCase().startsWith("https://"))) {
+                            dao.isValidTld(domain).then(valid => {
+                                if (!valid) {
+                                    let tld: string = DomainList.getTldFromDomain(domain);
+                                    if (tld) {
+                                        dao.isValidTld(tld).then(valid => {
+                                            if (valid) {
+                                                resolve(domain);
+                                            } else {
+                                                reject(new LicenseKeyError(LicenseKeyErrorCode.INVALID_TLD,
+                                                    "TLD '"+ tld +"' in domain '" + domain + "' is not valid"));
+                                            }
+                                        });
+                                    } else {
+                                        reject(new LicenseKeyError(LicenseKeyErrorCode.TLD_EMPTY,
+                                            "TLD must not be empty for domain '" + domain + "'"));
+                                    }
                                 } else {
-                                    reject(new LicenseKeyError(LicenseKeyErrorCode.TLD_EMPTY,
-                                        "TLD must not be empty for domain '" + domain + "'"));
+                                    reject(new LicenseKeyError(LicenseKeyErrorCode.DOMAIN_EQUALS_TLD,
+                                        "Domain '" + domain + "' must not equal a TLD"));
                                 }
-                            } else {
-                                reject(new LicenseKeyError(LicenseKeyErrorCode.DOMAIN_EQUALS_TLD,
-                                    "Domain '" + domain + "' must not equal a TLD"));
-                            }
-                        });
+                            });
+                        } else {
+                            reject(new LicenseKeyError(LicenseKeyErrorCode.DOMAIN_STARTS_HTTP,
+                                "Domain '" + domain + "' must not start with http(s)://"));
+                        }
                     } else {
                         reject(new LicenseKeyError(LicenseKeyErrorCode.DOMAIN_EMPTY, "Domain must not be empty"));
                     }
@@ -316,7 +321,7 @@ class LicenseKeyRouter extends CrudRouter<LicenseKey, LicenseKeyDao> {
     }
 
     private async getLicenseEncoderSubject(wildcard: boolean, domains?: string[]): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
+        return new Promise<string>((resolve) => {
             if (wildcard) {
                 resolve("^.*$");
             } else if (!wildcard && domains !== undefined && domains.length > 0) {
@@ -357,7 +362,8 @@ enum LicenseKeyErrorCode {
     INVALID_TLD = 101,
     TLD_EMPTY = 102,
     DOMAIN_EQUALS_TLD = 103,
-    DOMAIN_EMPTY = 104
+    DOMAIN_EMPTY = 104,
+    DOMAIN_STARTS_HTTP = 105
 }
 
 export default new LicenseKeyRouter().router;
